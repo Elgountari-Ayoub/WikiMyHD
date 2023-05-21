@@ -1,4 +1,5 @@
 import './assets/tailwindcss.css'
+import 'flowbite/dist/flowbite.css';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
