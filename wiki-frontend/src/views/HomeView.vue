@@ -1,12 +1,16 @@
 <template>
   <div>
-    <Layout/>
-    {{ isAuthenticated }}
+    <Layout>
+      <Hero/>
+    </Layout>
   </div>
 </template>
 
 <script setup>
-import Layout from '../components/layouts/layout.vue'
+import Layout from '../components/layouts/Layout.vue'
+import Nav from '../components/Nav.vue';
+import Hero from '../components/Hero.vue';
+
 
 import { ref } from 'vue';
 import axios from 'axios';

@@ -11,7 +11,6 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       // '@': `${__dirname}/resources/js`,
-
     }
   },
   server: {

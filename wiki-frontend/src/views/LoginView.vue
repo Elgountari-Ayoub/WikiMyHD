@@ -1,7 +1,9 @@
 <template>
-    {{ user }}
+    <!-- {{ user }} -->
+    <Nav />
+
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
-        <div class="w-full max-w-md p-6 mx-auto bg-white rounded-md shadow">
+        <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow ms:px-16">
             <h1 class="mb-6 text-3xl font-bold">Login</h1>
             <form @submit.prevent="login">
                 <div class="mb-4">
@@ -26,6 +28,7 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import Nav from '../components/Nav.vue';
 
 axios.defaults.withCredentials = true;
 
