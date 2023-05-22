@@ -21,8 +21,8 @@ class SpaceFactory extends Factory
         $user = User::where('email', $email)->first();
         return [
             'id_user' => $user->id,
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'title' => $this->faker->sentence(),
+            'description' => $this->faker->paragraph(),
         ];
     }
 }

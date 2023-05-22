@@ -7,7 +7,7 @@
                     <!-- <p>WikiMyHD</p> -->
                     WikiMyHD
                 </RouterLink>
-                <div class="hidden md:block">
+                <!-- <div class="hidden md:block">
                     <div class="flex items-baseline ml-10 space-x-4">
                         <a href="#"
                             class="px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">Home</a>
@@ -16,7 +16,7 @@
                         <a href="#"
                             class="px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">Contact</a>
                     </div>
-                </div>
+                </div> -->
                 <div class="hidden md:block">
                     <div class="flex items-center ml-4 md:ml-6">
                         <!-- Replace the following with your register and login buttons -->

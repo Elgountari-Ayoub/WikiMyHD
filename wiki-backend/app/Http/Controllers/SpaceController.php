@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Space;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use function PHPUnit\Framework\isEmpty;
 
 class SpaceController extends Controller
 {
@@ -12,15 +15,7 @@ class SpaceController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return Space::latest()->get();
     }
 
     /**
@@ -28,38 +23,64 @@ class SpaceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $userId = Auth::id();
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required'
+        ]);
+        $request['id_user'] = 1;
+
+        return Space::create($request->all());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Space $space)
+    public function show($id)
     {
-        //
+        return Space::find($id);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Space $space)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Space $space)
+    public function update(Request $request, $id)
     {
-        //
+        $space = space::find($id);
+        $space->update($request->all());
+        return $space;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Space $space)
+    public function destroy($id)
     {
-        //
+        return Space::destroy($id);
+    }
+
+    /**
+     * Search for a name
+     *
+     * @param  str  $name
+     * @return \Illuminate\Http\Response
+     */
+    public function search($title)
+    {
+        // return response()->json($title);
+        // $spaces = Space::latest()->filter(request('search'))->get();
+        // if (!isEmpty($title)) {
+        $spaces = Space::where('title', 'like', '%' . $title . '%')->get();
+        // }
+        // else {
+        // $spaces = Space::latest()->get();
+        // }
+        if (count($spaces) == 0) {
+            $spaces = Space::latest()->get();
+        }
+        return response()->json($spaces);
+        // return Space::latest()->filter(request(['search']))->get();
+        // return Space::where('title', 'like', '%'.$title.'%')->get();
     }
 }
