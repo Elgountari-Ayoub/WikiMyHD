@@ -4,35 +4,27 @@
     <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow">
       <h1 class="mb-6 text-3xl font-bold">Register</h1>
       <form @submit.prevent="register">
+
         <div class="mb-4">
-          <label for="name" class="block text-gray-700">Name:</label>
-          <input type="text" id="name" v-model="form.name" required
-            class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <TextInput label="Nom"  placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
+            error="This name error" />
+        </div>
+        
+        <div class="mb-4">
+          <TextInput label="Email"  placeholder="elgountariayoub22@gmai.com" v-model:input="email"
+            inputType="email" error="This is email error" />
         </div>
         <div class="mb-4">
-          <label for="email" class="block text-gray-700">Email:</label>
-          <input type="email" id="email" v-model="form.email" required
-            class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <TextInput label="Mot de passe"  v-model:input="password" inputType="password"
+            error="This is mot de passe error " />
         </div>
-        <div class="mb-6">
-          <label for="password" class="block text-gray-700">Password:</label>
-          <input type="password" id="password" v-model="form.password" required
-            class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div class="mb-4">
+          <TextInput label="Confiramtion de mot de passe"  v-model:input="password_confirmation"
+            inputType="text" error="This is confirmations mot de passe error" />
         </div>
-        <div class="mb-6">
-          <label for="password_confirmation" class="block text-gray-700">Password Confirmation:</label>
-          <input type="password" id="password_confirmation" v-model="form.password_confirmation" required
-            class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <div class="mb-6">
-          <label for="photo" class="block text-gray-700">Photo:</label>
-          <input type="file" id="photo" @change="handlePhotoChange" ref="photoInput"
-            class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <div class="mb-6">
-          <label for="post" class="block text-gray-700">Post:</label>
-          <input type="text" id="post" v-model="form.post" required
-            class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <div class="mb-4">
+          <TextInput label="Post"  placeholder="Web Developer" v-model:input="post"
+            inputType="text" error="This is post error" />
         </div>
         <div>
           <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
@@ -51,80 +43,70 @@ import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
+import TextInput from '../components/global/TextInput.vue';
 
 
 axios.defaults.withCredentials = true;
 
-const form = ref({
-  name: null,
-  email: null,
-  password: null,
-  password_confirmation: null,
-  photo: null,
-  post: null,
-});
+const name = ref(null)
+const email = ref(null)
+const password = ref(null)
+const password_confirmation = ref(null)
+const post = ref(null)
 
 
 const router = useRouter()
-
 async function register() {
   try {
-    // this.$swal('Hello Vue world!!!');
-
-
-
     // Get CSRF token from Laravel
     const csrf = await axios.get('http://localhost:8000/sanctum/csrf-cookie');
 
     const response = await axios.post('http://localhost:8000/register', {
-      name: form.value.name,
-      email: form.value.email,
-      password: form.value.password,
-      password_confirmation: form.value.password_confirmation,
-      photo: form.value.photo,
-      post: form.value.post,
-    }, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      password_confirmation: password_confirmation.value,
+      post: post.value,
     });
 
     console.log('Registration successful:', response.data);
 
     // Clear form fields
-    form.value.name = '';
-    form.value.email = '';
-    form.value.password = '';
-    form.value.photo = null;
-    form.value.post = null;
+    name.value = null;
+    email.value = null;
+    password.value = null;
+    password_confirmation.value = null;
+    post.value = null;
 
+    // Show Success Message
     Swal.fire({
-      // position: 'top-end',
+      position: 'top-end',
       icon: 'success',
       title: 'Votre demande à été envoyé',
       showConfirmButton: false,
       timer: 1500
     })
 
-    // router.push('/dashboard');
+    // send a notification to the admin to approve this new user
+    // code ...
+
+    
   } catch (error) {
     console.error('Registration failed:', error);
     Swal.fire({
       icon: 'error',
       title: 'Oops...',
       text: 'Quelque chose s\'est mal passé !',
-      // footer: '<a href="">Why do I have this issue?</a>'
     })
   }
 };
 
-async function handlePhotoChange(event) {
-  const file = event.target.files[0];
-  form.value.photo = file;
-}
+// async function handlePhotoChange(event) {
+//   const file = event.target.files[0];
+//   form.value.photo = file;
+// }
 </script>
   
 <style>
-/* You can add additional styles here if needed */
 </style>
   

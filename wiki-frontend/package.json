@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.13",
+    "@heroicons/vue": "^2.0.18",
     "@vue-hero-icons/outline": "^1.7.2",
     "@vue-hero-icons/solid": "^1.7.2",
     "axios": "^1.4.0",

@@ -1,7 +1,7 @@
 <template>
   <div>
     <Layout>
-      <Hero/>
+      <Hero />
     </Layout>
   </div>
 </template>
@@ -14,6 +14,7 @@ import Hero from '../components/Hero.vue';
 
 import { ref } from 'vue';
 import axios from 'axios';
+import TextInput from '../components/global/TextInput.vue';
 
 axios.defaults.withCredentials = true;
 const isAuthenticated = ref(false);
@@ -30,6 +31,4 @@ async function checkAuthStatus() {
 // Call the function when the component is mounted
 checkAuthStatus();
 </script>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
