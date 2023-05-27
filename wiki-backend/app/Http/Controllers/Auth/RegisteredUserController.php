@@ -18,35 +18,35 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'post' => 'required|string'
         ]);
 
         // Handle photo upload
-        if ($request->hasFile('photo')) {
-            $photo = $request->file('photo');
-            $photoPath = $photo->store('photos', 'public');
-        }
+        // if ($request->hasFile('photo')) {
+        //     $photo = $request->file('photo');
+        //     $photoPath = $photo->store('photos', 'public');
+        // }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'photo' => $photoPath ?? null,
+            // 'photo' => $photoPath ?? null,
             'post' => $request->input('post'),
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        // return response()->json(['message' => 'Registration successful', 'user' => $user]);
-        return response()->noContent();
+        return response()->json(['message' => 'Registration successful', 'user' => $user]);
+        // return response()->noContent();
     }
 }

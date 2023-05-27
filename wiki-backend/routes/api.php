@@ -30,21 +30,27 @@ Route::post('spaces', [SpaceController::class, 'store']);
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::put('/spaces/{id}', [SpaceController::class, 'update']);
-    Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
-    Route::post('/approve', [UserController::class, 'setStatus']);
-    // Route::post('/spaces', [SpaceController::class, 'store'])->middleware('admin');
-    // Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
-    // Route::delete('/spaces/{id}', [SpaceController::class, 'destroy'])->middleware('admin');
-    // Route::post('/approve', [UserController::class, 'setStatus'])->middleware('admin');
+    // Route::put('/spaces/{id}', [SpaceController::class, 'update']);
+    // Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
+    // Route::post('/approve', [UserController::class, 'setStatus']);
+    Route::post('/spaces', [SpaceController::class, 'store'])->middleware('admin');
+    Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
+    Route::delete('/spaces/{id}', [SpaceController::class, 'destroy'])->middleware('admin');
+    Route::post('/approve', [UserController::class, 'setStatus'])->middleware('admin');
     
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // user 
+    Route::put('/user', [UserController::class, 'update']);
 });
 
 
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+    $user = $request->user();
+    $user->makeVisible('password');
+    return response()->json(['user' => $user]);
+
 });
 
 
@@ -52,4 +58,4 @@ Route::get('/auth-status', function (Request $request) {
     return response()->json([
         'authenticated' => $request->user() !== null
     ]);
-})->middleware('auth:sanctum');
+});

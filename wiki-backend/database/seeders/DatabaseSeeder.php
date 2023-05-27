@@ -6,6 +6,8 @@ namespace Database\Seeders;
 use App\Models\Space;
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Facades\Hash;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -15,9 +17,14 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
+        $password = Hash::make('admin');
         \App\Models\User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Data Science',
+            'email' => 'karjane@havetdigital.fr',
+            'post' => 'Data scientist',
+            'password' => $password,
+            'role' => 'admin',
+            'status' => 1,
         ]);
 
         Space::factory()->count(10)->create();

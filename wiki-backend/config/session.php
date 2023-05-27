@@ -18,7 +18,8 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'file'),
+    'driver' => env('SESSION_DRIVER', 'cookie'),
+    // 'driver' => env('SESSION_DRIVER', 'file'), // THIS WAS THE DEFAULT STATUS
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +32,8 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 1440), // 1440min = 24h
+    'lifetime' => env('SESSION_LIFETIME', 120), // THIS WAS THE DEFAULT STATUS 120min = 2h
 
     'expire_on_close' => false,
 

@@ -47,7 +47,7 @@ class SpaceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $space = space::find($id);
+        $space = Space::find($id);
         $space->update($request->all());
         return $space;
     }

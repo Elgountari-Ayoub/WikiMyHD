@@ -17,7 +17,7 @@ class SpaceFactory extends Factory
      */
     public function definition(): array
     {
-        $email = 'test@example.com';
+        $email = 'karjane@havetdigital.fr';
         $user = User::where('email', $email)->first();
         return [
             'id_user' => $user->id,
