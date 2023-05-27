@@ -2,27 +2,24 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Space extends Model
+class Manual extends Model
 {
     use HasFactory;
-
     protected $guarded = [];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
-
-    public function spaces()
+    public function space()
     {
-        return $this->hasMany(Manual::class, 'id_space');
+        return $this->belongsTo(User::class, 'id_space');
     }
 
-    
+
     public function scopeFilter($query, array $filters)
     {
         if ($filters['search'] ?? false) {

@@ -5,13 +5,12 @@ import LoginView from "../views/LoginView.vue";
 import DashboardLayout from "../components/layouts/DashboardLayout.vue";
 
 import SpaceIndex from "../views/space/Index.vue";
-import CreateSpaceView from "../views/space/Create.vue";
-import editSpaceView from "../views/space/Edit.vue";
+
+import ManualIndex from "../views/manual/Index.vue";
 
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
 
-import image from "../views/Image.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,21 +56,13 @@ const router = createRouter({
       name: "spaces",
       component: SpaceIndex,
     },
+    // Manual Spaces
     {
-      path: "/spaces/create",
-      name: "createSpace",
-      component: CreateSpaceView,
+      path: "/manuals",
+      name: "manuals",
+      component: ManualIndex,
     },
-    {
-      path: "/spaces/edit",
-      name: "editSpace",
-      component: editSpaceView,
-    },
-    {
-      path: "/image",
-      name: "image",
-      component: image,
-    },
+
   ],
 });
 
