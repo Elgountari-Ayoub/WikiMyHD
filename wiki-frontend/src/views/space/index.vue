@@ -3,135 +3,142 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <!-- Add btn and search -->
-            <div class="flex items-center mb-4 gap-4">
-                <!-- <RouterLink :to="{ name: 'createSpace' }"> -->
-                <button @click="openModal" type="submit"
-                    class="px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 sm:text-sm md:text-base">
-                    Ajouter Espace
-                </button>
-                <!-- </RouterLink> -->
-                <!-- <SearchInput /> -->
-                <form class="relative z-10 flex items-center md:px-2 lg:px-24 sm:px-2  w-full m-auto"
-                    @submit.prevent="search">
-                    <!-- <form class="relative z-10 flex items-center m-auto px-52" @submit.prevent="submit"> -->
-                    <div class="relative w-full m-auto">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
-                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <input v-model="searchInput" name="search" type="text" id="simple-search"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
-                            placeholder="Search">
-                    </div>
-                    <button type="submit"
-                        class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        <span class="sr-only">Search</span>
+            <LoadingAnimation v-if="spaces.length == 0" />
+            <div v-else>
+
+
+                <!-- Add btn and search -->
+                <div class="flex items-center mb-4 gap-4" >
+                    <!-- <RouterLink :to="{ name: 'createSpace' }"> -->
+                    <button  v-if='userStore.isAdmin' @click="openModal" type="submit"
+                        class="px-4 py-2 w-40 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
+                        Ajouter Espace
                     </button>
-                </form>
-            </div>
-
-            <!-- Modal  Add Space form-->
-            <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center " @click.self="closeModal">
-                <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                    <h1 class="mb-4 text-2xl font-semibold">Ajouter un espace</h1>
-                    <form @submit.prevent="submitForm" class="space-y-4 ">
-                        <div>
-                            <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
-                            <input v-model="form.title" type="text" id="title" name="title"
-                                class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a title" required>
-                        </div>
-                        <div>
-                            <label for="description" class="block mb-2 font-medium text-gray-700">Description</label>
-                            <textarea v-model="form.description" id="description" name="description" rows="4"
-                                class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a description"
-                                required></textarea>
-                        </div>
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Modal  Edit Space form-->
-            <div v-if="isEditSpaceModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
-                @click.self="closeEditSpaceModal">
-                <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                    <h1 class="mb-4 text-2xl font-semibold">Modifier l'espace</h1>
-                    <form @submit.prevent="editSpace" class="space-y-4 ">
-                        <div>
-                            <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
-                            <input v-model="form.title" type="text" id="title" name="title"
-                                class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a title" required>
-                        </div>
-                        <div>
-                            <label for="description" class="block mb-2 font-medium text-gray-700">Description</label>
-                            <textarea v-model="form.description" id="description" name="description" rows="4"
-                                class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a description"
-                                required></textarea>
-                        </div>
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Editer</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-
-            <!-- spaces -->
-            <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                <div v-for="space in spaces" :key="space.id"
-                    class="flex flex-col  justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
-                    <p class="px-4 py-3 text-black border rounded-full m-auto w-fit"
-                        :style="{ backgroundColor: space.color }">{{
-                            space.title[0] }}</p>
-                    <div class="flex justify-between p-4 items-center">
-                        <p class="">{{ space.title.slice(0, 20) }}</p>
-                        <!-- <p class="font-bold text-4xl">:</p> -->
-
-
-                        <!-- Modal  Edit/Delete Space Buttons-->
-                        <Dropdown v-if='userStore.isAdmin'>
-                            <template #trigger>
-                                <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
-                                    class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
-                                    </path>
+                    <!-- </RouterLink> -->
+                    <!-- <SearchInput /> -->
+                    <form class="relative z-10 flex items-center md:px-16 lg:px-24 xlg:px-32 2xl:px-40 sm:px-2  w-full m-auto"
+                        @submit.prevent="search">
+                        <!-- <form class="relative z-10 flex items-center m-auto px-52" @submit.prevent="submit"> -->
+                        <div class="relative w-full m-auto">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
+                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                        clip-rule="evenodd"></path>
                                 </svg>
-                            </template>
-                            <template #content>
-                                <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                                    <button @click="openEditSpaceModal(space.id, space.title, space.description)"
-                                        class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
-                                        Editer
-                                    </button>
-                                    <button @click="deleteSpace(space.id)"
-                                        class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
-                                        Supprimer
-                                    </button>
-                                </div>
-                            </template>
-                        </Dropdown>
+                            </div>
+                            <input v-model="searchInput" name="search" type="text" id="simple-search"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
+                                placeholder="Search">
+                        </div>
+                        <button type="submit"
+                            class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span class="sr-only">Search</span>
+                        </button>
+                    </form>
+                </div>
 
+                <!-- Modal  Add Space form-->
+                <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
+                    @click.self="closeModal">
+                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
+                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un espace</h1>
+                        <form @submit.prevent="submitForm" class="space-y-4 ">
+                            <div>
+                                <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
+                                <input v-model="form.title" type="text" id="title" name="title"
+                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a title"
+                                    required>
+                            </div>
+                            <div>
+                                <label for="description" class="block mb-2 font-medium text-gray-700">Description</label>
+                                <textarea v-model="form.description" id="description" name="description" rows="4"
+                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a description"
+                                    required></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Submit</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+
+                <!-- Modal  Edit Space form-->
+                <div v-if="isEditSpaceModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
+                    @click.self="closeEditSpaceModal">
+                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
+                        <h1 class="mb-4 text-2xl font-semibold">Modifier l'espace</h1>
+                        <form @submit.prevent="editSpace" class="space-y-4 ">
+                            <div>
+                                <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
+                                <input v-model="form.title" type="text" id="title" name="title"
+                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a title"
+                                    required>
+                            </div>
+                            <div>
+                                <label for="description" class="block mb-2 font-medium text-gray-700">Description</label>
+                                <textarea v-model="form.description" id="description" name="description" rows="4"
+                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a description"
+                                    required></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Editer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                <!-- spaces -->
+                <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div v-for="space in spaces" :key="space.id"
+                        class="flex flex-col  rounded-md justify-between gap-2 rounded h-52 bg-gray-100 dark:bg-gray-800">
+                        <p class="px-4 py-3 text-black border rounded-full m-auto w-fit"
+                            :style="{ backgroundColor: space.color }">{{
+                                space.title[0] }}</p>
+                        <div class="flex justify-center px-8 py-2 items-center">
+                            <p class="">{{ space.title.slice(0, 20) }}</p>
+                            <!-- <p class="font-bold text-4xl">:</p> -->
+
+
+                            <!-- Modal  Edit/Delete Space Buttons-->
+                            <Dropdown class="ml-auto" v-if='userStore.isAdmin'>
+                                <template #trigger>
+                                    <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
+                                        class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
+                                        </path>
+                                    </svg>
+                                </template>
+                                <template #content>
+                                    <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
+                                        <button @click="openEditSpaceModal(space.id, space.title, space.description)"
+                                            class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
+                                            Editer
+                                        </button>
+                                        <button @click="deleteSpace(space.id)"
+                                            class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </template>
+                            </Dropdown>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
-
-
         </DashboardLayout>
     </div>
 </template>
@@ -147,6 +154,7 @@ import { useUserStore } from '../../stores/user-store';
 import { ref, watchEffect, onMounted } from 'vue';
 import axios from 'axios';
 import { RouterView } from 'vue-router';
+import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
 
 
 axios.defaults.withCredentials = true;
@@ -230,7 +238,7 @@ const submitForm = async () => {
             position: 'top-end',
             icon: 'success',
             width: '25rem',
-            title: 'l\'espace mis à jour avec succès',
+            title: 'l\'espace ajouté avec succès',
             showConfirmButton: false,
             timer: 1500,
         })
@@ -277,7 +285,7 @@ const editSpace = async () => {
             position: 'top-end',
             icon: 'success',
             width: '25rem',
-            title: 'l\'espace ajouté avec succès',
+            title: 'l\'espace mis à jour avec succès',
             showConfirmButton: false,
             timer: 1500,
         })

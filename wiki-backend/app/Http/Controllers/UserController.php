@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return User::latest()->get();
     }
 
     /**
@@ -50,60 +50,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    // public function update(Request $request)
-    // {
-    //     try {
-    //         $user = $request->user();
-    //         // Validate the request data
-
-    //         $validatedData = [];
-
-    //         if ($request->filled('name')) {
-    //             $validatedData['name'] = $request->validate([
-    //                 'name' => 'required|string|max:255',
-    //             ]);
-    //         }
-    //         if ($request->filled('email')) {
-    //             $validatedData['email'] = $request->validate([
-    //                 'email' => 'required|string|max:255',
-    //             ]);
-    //         }
-    //         if ($request->filled('name')) {
-    //             $validatedData['name'] = $request->validate([
-    //                 'name' => 'required|string|max:255',
-    //             ]);
-    //         }
-
-    //         // Update the user's name
-    //         $user->update(['name' => $request->input('name')]);
-    //         $user->name = $request->input('name');
-    //         $user->save();
-
-    //         // Return a success response
-    //         return response()->json(['message' => 'Name updated successfully'], 200);
-    //     } catch (ValidationException $e) {
-    //         // Return a validation error response
-    //         return response()->json(['errors' => $e->errors()], 422);
-    //     } catch (\Exception $e) {
-    //         // Return a generic error response
-    //         return response()->json(['message' => 'An error occurred'], 500);
-    //     }
-    // }
-
     public function update(Request $request)
     {
-        // if ($request->hasFile('photo')) {
-        //     return 1;
-        //     $photo = $request->file('photo');
-        //     $photoPath = $photo->store('photos', 'public');
-        // }
-        // return 0;
         try {
-            // // Return a success response
-            // return response()->json([
-            //     'requestt' =>  $request->input('name')
-            //     // 'requestt' => $request->file('photo')
-            // ], 200);
             $user = $request->user();
 
             // Validate the request data
@@ -120,12 +69,6 @@ class UserController extends Controller
             if ($request->filled('password')) {
                 $validatedData['password'] = Hash::make($request->input('password'));
             }
-
-            // if ($request->hasFile('photo')) {
-            //     return 1;
-            //     $photo = $request->file('photo');
-            //     $photoPath = $photo->store('photos', 'public');
-            // }
 
             //Handle photo upload
             if ($request->hasFile('photo')) {
@@ -169,68 +112,12 @@ class UserController extends Controller
         }
     }
 
-    // public function update(Request $request)
-    // {
-    //     // return response()->json([
-    //     //     'message' => 'Hello',
-    //     //     'request' => $request
-    //     // ], 200);
-    //     try {
-    //         $user = $request->user();
-
-    //         // Validate the request data
-    //         $validatedData = [];
-
-    //         if ($request->filled('name')) {
-    //             $validatedData['name'] = $request->input('name');
-    //         }
-
-    //         if ($request->filled('email')) {
-    //             $validatedData['email'] = $request->input('email');
-    //         }
-
-    //         if ($request->filled('password')) {
-    //             $validatedData['password'] = Hash::make($request->input('password'));
-    //         }
-
-    //         // Handle photo upload
-    //         if ($request->hasFile('photo')) {
-    //             $photo = $request->file('photo');
-    //             $photoPath = $photo->store('photos', 'public');
-    //             $validatedData['photo'] = $photoPath ?? null;
-    //         }
-
-    //         $validator = Validator::make($validatedData, [
-    //             'name' => 'sometimes|required|string|max:255',
-    //             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-    //             'password' => 'sometimes|required|min:8',
-    //             'photo' => 'sometimes|required|image|max:2048',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return response()->json(['errors' => $validator->errors()], 422);
-    //         }
-
-    //         // Update the user's properties
-    //         $user->update($validatedData);
-
-    //         // Return a success response
-    //         return response()->json([
-    //             'message' => 'User information updated successfully',
-    //             'user' => $user
-    //         ], 200);
-    //     } catch (\Exception $e) {
-    //         // Return a generic error response
-    //         return response()->json(['message' => 'An error occurred'], 500);
-    //     }
-    // }
-
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $this->setStatus($id, 0);
     }
 
     public function setStatus($userId, $value = 0): Response

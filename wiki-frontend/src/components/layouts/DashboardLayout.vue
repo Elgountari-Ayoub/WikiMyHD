@@ -127,7 +127,7 @@
                     </RouterLink>
                 </li>
                 <li v-if="user.role === 'admin'">
-                    <RouterLink :to="{ name: 'spaces' }"
+                    <RouterLink :to="{ name: 'users' }"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -265,8 +265,8 @@ const getImageUrl = (photo) => {
 const router = useRouter();
 const logout = async () => {
     try {
-        const response = await axios.post('http://localhost:8000/logout');
         userStore.clearUser();
+        const response = await axios.post('http://localhost:8000/logout');
         // Get CSRF token from Laravel
         const csrf = await axios.get('http://localhost:8000/sanctum/csrf-cookie');
         console.log('Done !');
@@ -274,6 +274,13 @@ const logout = async () => {
 
 
     } catch (err) {
+        try {
+            const response = await axios.post('http://localhost:8000/api/user');
+            console.log('the user not logged in !!');
+        } catch (error) {
+            console.log('another error', err);
+            
+        }
         console.log('en error occured: ==> ', err);
     }
 }

@@ -71,6 +71,8 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
 
 
     //USER MANAGEMENT
+    // -- Get users
+    Route::get('/users', [UserController::class, 'index'])->middleware('admin');
     // -- Approvement
     Route::post('/approve', [UserController::class, 'setStatus'])->middleware('admin');
     // -- Delete => Soft delete [status = 0]

@@ -11,6 +11,8 @@ import ManualIndex from "../views/manual/Index.vue";
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
 
+import UsersIndex from '../views/users/Index.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,11 +58,17 @@ const router = createRouter({
       name: "spaces",
       component: SpaceIndex,
     },
-    // Manual Spaces
+    // Manual route
     {
       path: "/manuals",
       name: "manuals",
       component: ManualIndex,
+    },
+    // Users management route
+    {
+      path: "/users",
+      name: "users",
+      component: UsersIndex,
     },
 
   ],

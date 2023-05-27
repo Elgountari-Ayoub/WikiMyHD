@@ -2,9 +2,8 @@
 <template>
     <RouterView />
     <div>
-
         <DashboardLayout>
-            <LoadingAnimation v-if="manuals.length == 0"/>
+            <LoadingAnimation v-if="manuals.length == 0" />
             <div v-else>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
@@ -101,13 +100,13 @@
                             :style="{ backgroundColor: manual.color }">
                             {{
                                 manual.title[0] }}</p>
-                        <div class="flex justify-between p-4 items-center">
+                        <div class="flex justify-center p-4 items-center">
                             <p class="">{{ manual.title.slice(0, 20) }}</p>
                             <!-- <p class="font-bold text-4xl">:</p> -->
 
 
                             <!-- Modal  Edit/Delete Manual Buttons-->
-                            <Dropdown v-if='userStore.isAdmin'>
+                            <Dropdown class="ml-auto"  v-if='manual.id_user == userStore.id'>
                                 <template #trigger>
                                     <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
                                         class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
@@ -248,7 +247,7 @@ const submitForm = async () => {
             position: 'top-end',
             icon: 'success',
             width: '25rem',
-            title: 'le manuel mis à jour avec succès',
+            title: 'le manuel ajouté avec succès',
             showConfirmButton: false,
             timer: 1500,
         })
@@ -293,7 +292,7 @@ const editManual = async () => {
             position: 'top-end',
             icon: 'success',
             width: '25rem',
-            title: 'le manuel ajouté avec succès',
+            title: 'le manuel mis à jour avec succès',
             showConfirmButton: false,
             timer: 1500,
         })
