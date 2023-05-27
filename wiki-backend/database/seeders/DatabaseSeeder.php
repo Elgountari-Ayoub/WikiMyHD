@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Manual;
 use App\Models\Space;
 use Illuminate\Database\Seeder;
 
@@ -38,5 +40,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Space::factory()->count(10)->create();
+        Manual::factory()->count(5)->create();
     }
 }

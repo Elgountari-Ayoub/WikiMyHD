@@ -159,9 +159,8 @@
       </div>
 
     </div>
-    <div v-else class="container mx-auto p-4">
-      Loading...
-    </div>
+
+    <LoadingAnimation v-else />
   </DashboardLayout>
 </template>
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ManualController;
 use App\Http\Controllers\SpaceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -33,6 +34,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/spaces/search/{title}', [SpaceController::class, 'search']);
 
 
+
+    // SPACE ROUTES 
+    // -- Consultation
+    Route::get('/manuals', [ManualController::class, 'index']);
+    // -- Show 
+    Route::get('/manuals/{id}', [ManualController::class, 'show']);
+    // -- Search
+    Route::get('/manuals/search/{title}', [ManualController::class, 'search']);
+    // --Add 
+    Route::post('/manuals', [ManualController::class, 'store']);
+    // --Update
+    Route::put('/manuals/{id}', [ManualController::class, 'update']);
+    // --Delete
+    Route::delete('/manuals/{id}', [ManualController::class, 'destroy']);
+
+
     // USER
     // -- update profile 
     Route::put('/user', [UserController::class, 'update']);
@@ -50,6 +67,7 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
     // --Delete
     Route::delete('/spaces/{id}', [SpaceController::class, 'destroy'])->middleware('admin');
+
 
 
     //USER MANAGEMENT
