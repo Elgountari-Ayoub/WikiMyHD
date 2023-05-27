@@ -20,28 +20,45 @@ use Illuminate\Support\Facades\Route;
 // Route::resource('products', ProductController::class);
 
 // Public routes
-// Route::post('/register', [AuthController::class, 'register']);
-// Route::post('/login', [AuthController::class, 'login']);
-Route::get('/spaces', [SpaceController::class, 'index']);
-Route::get('/spaces/{id}', [SpaceController::class, 'show']);
-Route::get('/spaces/search/{title}', [SpaceController::class, 'search']);
 
-Route::post('spaces', [SpaceController::class, 'store']);
-
-// Protected routes
+// ANY AUTH USER
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    // Route::put('/spaces/{id}', [SpaceController::class, 'update']);
-    // Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
-    // Route::post('/approve', [UserController::class, 'setStatus']);
-    Route::post('/spaces', [SpaceController::class, 'store'])->middleware('admin');
-    Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
-    Route::delete('/spaces/{id}', [SpaceController::class, 'destroy'])->middleware('admin');
-    Route::post('/approve', [UserController::class, 'setStatus'])->middleware('admin');
-    
-    Route::post('/logout', [AuthController::class, 'logout']);
 
-    // user 
+    // SPACE ROUTES 
+    // -- Consultation
+    Route::get('/spaces', [SpaceController::class, 'index']);
+    // -- Show 
+    Route::get('/spaces/{id}', [SpaceController::class, 'show']);
+    // -- Search
+    Route::get('/spaces/search/{title}', [SpaceController::class, 'search']);
+
+
+    // USER
+    // -- update profile 
     Route::put('/user', [UserController::class, 'update']);
+
+    // --logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+// Admin Routes
+Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
+    // SPACE ROUTES 
+    // --Add 
+    Route::post('/spaces', [SpaceController::class, 'store'])->middleware('admin');
+    // --Update
+    Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
+    // --Delete
+    Route::delete('/spaces/{id}', [SpaceController::class, 'destroy'])->middleware('admin');
+
+
+    //USER MANAGEMENT
+    // -- Approvement
+    Route::post('/approve', [UserController::class, 'setStatus'])->middleware('admin');
+    // -- Delete => Soft delete [status = 0]
+    Route::post('/delete', [UserController::class, 'setStatus'])->middleware('admin');
+    // update his data
+    Route::post('/delete', [UserController::class, 'setStatus'])->middleware('admin');
 });
 
 
@@ -50,7 +67,6 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     $user = $request->user();
     $user->makeVisible('password');
     return response()->json(['user' => $user]);
-
 });
 
 

@@ -92,6 +92,12 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
+        // if ($request->hasFile('photo')) {
+        //     return 1;
+        //     $photo = $request->file('photo');
+        //     $photoPath = $photo->store('photos', 'public');
+        // }
+        // return 0;
         try {
             // // Return a success response
             // return response()->json([
@@ -115,12 +121,24 @@ class UserController extends Controller
                 $validatedData['password'] = Hash::make($request->input('password'));
             }
 
-            
+            // if ($request->hasFile('photo')) {
+            //     return 1;
+            //     $photo = $request->file('photo');
+            //     $photoPath = $photo->store('photos', 'public');
+            // }
+
+            //Handle photo upload
+            if ($request->hasFile('photo')) {
+                $photo = $request->file('photo');
+                $photoPath = $photo->store('images/users', 'public');
+                $validatedData['photo'] = $photoPath ?? null;
+            }
+
             if ($request->filled('role')) {
                 $validatedData['role'] = $request->input('role');
             }
 
-            
+
             if ($request->filled('post')) {
                 $validatedData['post'] = $request->input('post');
             }

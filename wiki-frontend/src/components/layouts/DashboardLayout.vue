@@ -1,4 +1,5 @@
 <template>
+    <RouterView />
     <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
             <div class="flex items-center justify-between">
@@ -14,9 +15,9 @@
                             </path>
                         </svg>
                     </button>
-                    <RouterLink to="spaces">
+                    <RouterLink to='/spaces'>
                         <span
-                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">WikiMyHD</span>
+                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">WikiMy-HD</span>
                     </RouterLink>
                 </div>
 
@@ -24,37 +25,52 @@
                 <div class="flex items-center">
                     <div class="flex items-center ml-3">
                         <div>
-                            <button type="button"
+                            <button type="button" @click="toggleMenu"
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                 <span class="sr-only">Open user menu</span>
-                                <img class="w-8 h-8 rounded-full"
-                                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                                <img v-if="userStore.photo" class="w-8 rounded-full" :src="getImageUrl(userStore.photo)"
+                                    alt="">
+
+                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                                    </path>
+                                </svg>
                             </button>
                         </div>
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                        <div v-if="isMenuOpen && userStore.id"
+                            class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
                             id="dropdown-user">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
-                                    Neil Sims
+                                    {{ userStore.name }}
                                 </p>
                                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                                    neil.sims@flowbite.com
+                                    {{ userStore.email }}
                                 </p>
                             </div>
                             <ul class="py-1" role="none">
                                 <li>
-                                    <a href="#"
+                                    <!-- <RouterLink :to="{name : account}" -->
+                                    <RouterLink to="/account/profile"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Dashboard</a>
+                                        role="menuitem">Profile
+                                    </RouterLink>
                                 </li>
                                 <li>
-                                    <a href="#"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Sign out</a>
+                                    <button @click="logout" class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
+                                                                dark:hover:bg-gray-600 dark:hover:text-white"
+                                        role="menuitem">Sign
+                                        out
+                                    </button>
+
                                 </li>
                             </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -107,6 +123,35 @@
                             </path>
                         </svg>
                         <span class="flex-1 ml-3 whitespace-nowrap">Articles</span>
+                        <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ml-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
+                    </RouterLink>
+                </li>
+                <li v-if="user.role === 'admin'">
+                    <RouterLink :to="{ name: 'spaces' }"
+                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                            class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z">
+                            </path>
+                        </svg>
+                        <span class="flex-1 ml-3 whitespace-nowrap">Gestion des utilisateurs</span>
+                        <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ml-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
+                    </RouterLink>
+                </li>
+                <li v-if="user.role === 'admin'">
+                    <RouterLink :to="{ name: 'spaces' }"
+                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+                            class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z">
+                            </path>
+                        </svg>
+
+                        <span class="flex-1 ml-3 whitespace-nowrap">Gestion des articles</span>
                         <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ml-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
                     </RouterLink>
                 </li>
@@ -168,13 +213,70 @@
     </aside>
 
     <div class="p-4 sm:ml-64">
-        <slot />
+        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14 dark:border-gray-700">
+
+            <slot />
+        </div>
     </div>
 </template>
 
 <script setup>
 
 import { RouterLink } from 'vue-router';
+import { useUserStore } from '../../stores/user-store';
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore()
+const user = ref({
+    name: '',
+    email: '',
+    role: '',
+    photo: null,
+})
+
+let isLoggedIn = ref(null);
+onMounted(() => {
+    isLoggedIn = userStore.id !== null ? true : false;
+    // isLoggedIn = userStore.id ;
+
+}
+)
+userStore.fetchUser();
+user.value.name = userStore.name || null
+user.value.email = userStore.email || null
+user.value.role = userStore.role || null
+user.value.photo = userStore.photo || null;
+
+
+let isMenuOpen = ref('false');
+function toggleMenu() {
+    isMenuOpen = !isMenuOpen;
+}
+
+
+const getImageUrl = (photo) => {
+    const baseUrl = "http://localhost:8000/storage/";
+    return baseUrl + photo; // Concatenating the base URL and the photo variable
+}
+
+
+const router = useRouter();
+const logout = async () => {
+    try {
+        const response = await axios.post('http://localhost:8000/logout');
+        userStore.clearUser();
+        // Get CSRF token from Laravel
+        const csrf = await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+        console.log('Done !');
+        router.push({ name: 'login' })
+
+
+    } catch (err) {
+        console.log('en error occured: ==> ', err);
+    }
+}
 </script>
 
 <style lang="scss" scoped></style>

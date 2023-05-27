@@ -24,21 +24,13 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            // 'photo' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'post' => 'required|string'
         ]);
-
-        // Handle photo upload
-        // if ($request->hasFile('photo')) {
-        //     $photo = $request->file('photo');
-        //     $photoPath = $photo->store('photos', 'public');
-        // }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            // 'photo' => $photoPath ?? null,
             'post' => $request->input('post'),
         ]);
 

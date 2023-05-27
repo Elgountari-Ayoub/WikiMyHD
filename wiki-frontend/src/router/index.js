@@ -11,6 +11,8 @@ import editSpaceView from "../views/space/Edit.vue";
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
 
+import image from "../views/Image.vue";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -64,6 +66,11 @@ const router = createRouter({
       path: "/spaces/edit",
       name: "editSpace",
       component: editSpaceView,
+    },
+    {
+      path: "/image",
+      name: "image",
+      component: image,
     },
   ],
 });

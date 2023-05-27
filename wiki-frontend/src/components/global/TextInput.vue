@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, toRefs, computed } from 'vue'
+import { toRefs, computed } from 'vue'
 
 const emit = defineEmits(['update:input'])
 
@@ -25,7 +25,7 @@ const props = defineProps({
     input: String,
     placeholder: { type: String, default: '' },
     inputType: String,
-    error: {type: String, default: 'This is a error test message'}
+    error: {type: String, default: ''}
 })
 
 const { label, labelColor, input, placeholder, error } = toRefs(props)

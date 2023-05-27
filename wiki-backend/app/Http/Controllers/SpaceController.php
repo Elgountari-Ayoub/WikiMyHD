@@ -57,7 +57,12 @@ class SpaceController extends Controller
      */
     public function destroy($id)
     {
-        return Space::destroy($id);
+        return $id;
+        try {
+            return Space::destroy($id);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**

@@ -27,6 +27,16 @@ class DatabaseSeeder extends Seeder
             'status' => 1,
         ]);
 
+        $password = Hash::make('ayoub');
+        \App\Models\User::factory()->create([
+            'name' => 'Ayoub',
+            'email' => 'ayoub@gmail.com',
+            'post' => 'Web developer',
+            'password' => $password,
+            'role' => 'user',
+            'status' => 1,
+        ]);
+
         Space::factory()->count(10)->create();
     }
 }

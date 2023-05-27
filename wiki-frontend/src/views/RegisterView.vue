@@ -6,25 +6,26 @@
       <form @submit.prevent="register">
 
         <div class="mb-4">
-          <TextInput label="Nom"  placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
-            error="This name error" />
+          <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
+            :error="errors.name ? errors.name[0] : ''" />
         </div>
-        
+
         <div class="mb-4">
-          <TextInput label="Email"  placeholder="elgountariayoub22@gmai.com" v-model:input="email"
-            inputType="email" error="This is email error" />
-        </div>
-        <div class="mb-4">
-          <TextInput label="Mot de passe"  v-model:input="password" inputType="password"
-            error="This is mot de passe error " />
+          <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email" inputType="email"
+            :error="errors.email ? errors.email[0] : ''" />
         </div>
         <div class="mb-4">
-          <TextInput label="Confiramtion de mot de passe"  v-model:input="password_confirmation"
-            inputType="text" error="This is confirmations mot de passe error" />
+          <TextInput label="Mot de passe" v-model:input="password" inputType="password"
+            :error="errors.password ? errors.password[0] : ''" />
         </div>
         <div class="mb-4">
-          <TextInput label="Post"  placeholder="Web Developer" v-model:input="post"
-            inputType="text" error="This is post error" />
+          <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation" inputType="password"
+            :error="errors.password ? errors.password[0] : ''" />
+
+        </div>
+        <div class="mb-4">
+          <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
+            :error="errors.post ? errors.post[0] : ''" />
         </div>
         <div>
           <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
@@ -44,6 +45,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import TextInput from '../components/global/TextInput.vue';
+import { useUserStore } from '../stores/user-store'
 
 
 axios.defaults.withCredentials = true;
@@ -54,6 +56,9 @@ const password = ref(null)
 const password_confirmation = ref(null)
 const post = ref(null)
 
+const errors = ref([]);
+const userStore = useUserStore();
+
 
 const router = useRouter()
 async function register() {
@@ -61,7 +66,10 @@ async function register() {
     // Get CSRF token from Laravel
     const csrf = await axios.get('http://localhost:8000/sanctum/csrf-cookie');
 
-    const response = await axios.post('http://localhost:8000/register', {
+    errors.value = [];
+    console.log("this is the empty errors array\n", errors.value);
+
+    const res = await axios.post('http://localhost:8000/register', {
       name: name.value,
       email: email.value,
       password: password.value,
@@ -69,7 +77,12 @@ async function register() {
       post: post.value,
     });
 
-    console.log('Registration successful:', response.data);
+
+    // I'll not save his data cuz the register is a request to join the website, so we need to wait the approvment from the admin first
+    // save it in a store
+    {
+      // userStore.setUserDetails(res);
+    }
 
     // Clear form fields
     name.value = null;
@@ -79,6 +92,7 @@ async function register() {
     post.value = null;
 
     // Show Success Message
+    console.log('Registration successful:', res.data);
     Swal.fire({
       position: 'top-end',
       icon: 'success',
@@ -87,17 +101,23 @@ async function register() {
       timer: 1500
     })
 
+    // empty the errors array
+    errors.value = [];
+
     // send a notification to the admin to approve this new user
     // code ...
 
-    
-  } catch (error) {
-    console.error('Registration failed:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Quelque chose s\'est mal passé !',
-    })
+  } catch (err) {
+    errors.value = err.response.data.errors;
+    console.error('Registration failed:', err);
+    if (errors.lenght === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Quelque chose s\'est mal passé !',
+      })
+    }
+
   }
 };
 
@@ -107,6 +127,5 @@ async function register() {
 // }
 </script>
   
-<style>
-</style>
+<style></style>
   
