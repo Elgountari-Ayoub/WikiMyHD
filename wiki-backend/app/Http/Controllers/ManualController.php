@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manual;
+use App\Models\Space;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -12,9 +13,22 @@ class ManualController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($space_id = 1)
     {
-        return Manual::latest()->get();
+        try {
+            $space = Space::find($space_id);
+            $manuals = $space->manuals()->get();
+            foreach ($manuals as $manual) {
+                $manual['space'] = $space;
+            }
+            return response()->json([
+                'manuals' => $manuals,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'FAIL TO GET THE MANUALS',
+            ], 404);
+        }
     }
 
 
@@ -53,7 +67,7 @@ class ManualController extends Controller
      */
     public function show(Manual $manual)
     {
-        //
+        return Manual::find($manual);
     }
 
 
@@ -77,5 +91,19 @@ class ManualController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
+
+
+    /**
+     * Search for a name
+     *
+     * @param  str  $name
+     * @return \Illuminate\Http\Response
+     */
+    public function search($title)
+    {
+        $manual = Manual::where('title', 'like', '%' . $title . '%')->get();
+        
+        return response()->json($manual ?? null);
     }
 }

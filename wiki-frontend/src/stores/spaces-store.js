@@ -1,39 +1,32 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 
-export const useUserStore = defineStore("user", {
-  // arrow function recommended for full type inference
+export const useSpacesStore = defineStore("spaces", {
   state: () => ({
-    // all these properties will have their type inferred automatically
-    id: null,
-    id_user: null,
-    title: null,
-    description: null,
+    spaces: [], // Array to store multiple spaces
   }),
   actions: {
-    async setUserDetails(res) {
-      this.$state.id = res.data.id;
-      this.$state.id_user = res.data.id_user;
-      this.$state.title = res.data.title;
-      this.$state.description = res.data.description;
+    async setSpacesDetails(spaces) {
+      this.$state.spaces = spaces.map((space) => ({
+        id: space.id,
+        id_user: space.id_user,
+        title: space.title,
+        description: space.description,
+        color: "#" + Math.floor(Math.random() * 16777215).toString(16),
+      }));
     },
-    async fetchUser() {
+    async fetchSpaces() {
       try {
+        this.clearSpaces();
         const res = await axios.get("http://localhost:8000/api/spaces");
-        this.$state.id = res.data.id;
-        this.$state.id_user = res.data.id_user;
-        this.$state.title = res.data.title;
-        this.$state.description = res.data.description;
-
+        this.setSpacesDetails(res.data.spaces);
+        console.log("STORED SPACES \n\n", this.$state.spaces);
       } catch (error) {
         console.log(error);
       }
     },
-    clearUser() {
-      this.$state.id = null;
-      this.$state.id_user = null;
-      this.$state.title = null;
-      this.$state.description = null;
+    clearSpaces() {
+      this.$state.spaces = [];
     },
   },
   persist: true,

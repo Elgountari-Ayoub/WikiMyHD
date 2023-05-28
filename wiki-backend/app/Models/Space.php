@@ -17,7 +17,7 @@ class Space extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function spaces()
+    public function manuals()
     {
         return $this->hasMany(Manual::class, 'id_space');
     }

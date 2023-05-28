@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Route;
 
 // Route::resource('products', ProductController::class);
 
-// Public routes
+// Public routes for testing
+Route::get('/manuals', [ManualController::class, 'index']);
 
 // ANY AUTH USER
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -37,7 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // SPACE ROUTES 
     // -- Consultation
-    Route::get('/manuals', [ManualController::class, 'index']);
+    // Route::get('/manuals', [ManualController::class, 'index']);
     // -- Show 
     Route::get('/manuals/{id}', [ManualController::class, 'show']);
     // -- Search
@@ -72,13 +73,13 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
 
     //USER MANAGEMENT
     // -- Get users
-    Route::get('/users', [UserController::class, 'index'])->middleware('admin');
+    Route::get('/users', [UserController::class, 'index']);
     // -- Approvement
-    Route::post('/approve', [UserController::class, 'setStatus'])->middleware('admin');
+    Route::post('/approve', [UserController::class, 'setStatus']);
     // -- Delete => Soft delete [status = 0]
-    Route::post('/delete', [UserController::class, 'setStatus'])->middleware('admin');
+    Route::post('/delete', [UserController::class, 'setStatus']);
     // update his data
-    Route::post('/delete', [UserController::class, 'setStatus'])->middleware('admin');
+    Route::post('/delete', [UserController::class, 'setStatus']);
 });
 
 

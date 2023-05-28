@@ -15,7 +15,18 @@ class SpaceController extends Controller
      */
     public function index()
     {
-        return Space::latest()->get();
+        $authRole = Auth::user()->role;
+        if ($authRole == 'admin'){
+            $spaces =  Space::latest()->get();
+            return response()->json([
+                'spaces' => $spaces,
+            ], 200);
+        }else {
+            $spaces = Space::where('id_user', Auth::user()->id)->latest()->get();
+            return response()->json([
+                'spaces' => $spaces,
+            ], 200);
+        }
     }
 
     /**
@@ -72,19 +83,11 @@ class SpaceController extends Controller
      */
     public function search($title)
     {
-        // return response()->json($title);
-        // $spaces = Space::latest()->filter(request('search'))->get();
-        // if (!isEmpty($title)) {
         $spaces = Space::where('title', 'like', '%' . $title . '%')->get();
+
+        // if (count($spaces) == 0) {
+        //     $spaces = Space::latest()->get();
         // }
-        // else {
-        // $spaces = Space::latest()->get();
-        // }
-        if (count($spaces) == 0) {
-            $spaces = Space::latest()->get();
-        }
         return response()->json($spaces);
-        // return Space::latest()->filter(request(['search']))->get();
-        // return Space::where('title', 'like', '%'.$title.'%')->get();
     }
 }

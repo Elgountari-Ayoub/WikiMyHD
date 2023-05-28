@@ -16,8 +16,9 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->user() && $request->user()->role !== 'admin') {
-            // User is not an admin, perform desired action (e.g., redirect)
-            return redirect()->route('home')->with('error', 'Access denied.');
+            return response()->json([
+                'message' => 'You are not authorized to access this page.',
+            ], 401);
         }
     
         return $next($request);

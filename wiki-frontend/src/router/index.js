@@ -11,8 +11,8 @@ import ManualIndex from "../views/manual/Index.vue";
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
 
-import UsersIndex from '../views/users/Index.vue'
-
+import UsersIndex from "../views/users/Index.vue";
+import { useUserStore } from "../stores/user-store";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,12 +57,25 @@ const router = createRouter({
       path: "/spaces",
       name: "spaces",
       component: SpaceIndex,
+      beforeEnter: (to, from, next) => {
+        const userStore = useUserStore();
+
+        // Check if the user is logged in
+        if (userStore.id) {
+          // Proceed to the route
+          next();
+        } else {
+          // Redirect to the login page or another route
+          next({ name: "login" });
+        }
+      },
     },
     // Manual route
     {
       path: "/manuals",
       name: "manuals",
       component: ManualIndex,
+      props: true,
     },
     // Users management route
     {
@@ -70,8 +83,29 @@ const router = createRouter({
       name: "users",
       component: UsersIndex,
     },
-
   ],
+
+  // Portect the routes
+  // const success = await userStore.fetchUser();
+  // if (success && userStore.isAdmin) {
+});
+
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+  const requiresAuth = !["home", "register", "login"].includes(to.name);
+  const requiresAuthoriz = ["users"].includes(to.name);
+  const isAuthenticated = await userStore.fetchUser();
+  const isAuthorized = userStore.role == "admin" ? true : false;
+
+  if (requiresAuth && !isAuthenticated) {
+    next({ name: "login" });
+  }
+  else if (requiresAuthoriz && (!isAuthorized || !isAuthenticated)) {
+    next({ name: "spaces" });
+  }
+  else {
+    next();
+  }
 });
 
 export default router;

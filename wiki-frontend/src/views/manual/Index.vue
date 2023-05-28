@@ -3,7 +3,7 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <LoadingAnimation v-if="manuals.length == 0" />
+            <LoadingAnimation v-if="manualsStore.manuals.length == 0" />
             <div v-else>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
@@ -44,7 +44,7 @@
                     @click.self="closeModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
                         <h1 class="mb-4 text-2xl font-semibold">Ajouter un manual</h1>
-                        <form @submit.prevent="submitForm" class="space-y-4 ">
+                        <form @submit.prevent="addManual" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
                                 <input v-model="form.title" type="text" id="title" name="title"
@@ -94,7 +94,7 @@
 
                 <!-- Manuals -->
                 <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                    <div v-for="manual in manuals" :key="manual.id"
+                    <div v-for="manual in manualsStore.manuals" :key="manual.id"
                         class="flex flex-col  justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
                         <p class="px-4 py-3 text-black border rounded-full m-auto w-fit"
                             :style="{ backgroundColor: manual.color }">
@@ -106,7 +106,7 @@
 
 
                             <!-- Modal  Edit/Delete Manual Buttons-->
-                            <Dropdown class="ml-auto"  v-if='manual.id_user == userStore.id'>
+                            <Dropdown class="ml-auto" v-if='manual.id_user == userStore.id || userStore.isAdmin'>
                                 <template #trigger>
                                     <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
                                         class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
@@ -134,8 +134,6 @@
                     </div>
                 </div>
             </div>
-
-
         </DashboardLayout>
     </div>
 </template>
@@ -146,13 +144,28 @@ import DashboardLayout from '../../components/layouts/DashboardLayout.vue';
 import SearchInput from '../../components/Partials/SearchInput.vue';
 import Swal from 'sweetalert2';
 import Dropdown from '../../components/global/Dropdown.vue';
-import { useUserStore } from '../../stores/user-store';
 import LoadingAnimation from '../../components/global/LoadingAnimation.vue'
 
 import { ref, watchEffect, onMounted } from 'vue';
 import axios from 'axios';
 import { RouterView } from 'vue-router';
+// Store [pinia]
+import { useUserStore } from '../../stores/user-store';
+import { useUsersStore } from '../../stores/users-store';
+import { useSpacesStore } from '../../stores/spaces-store';
+import { useManualsStore } from '../../stores/manuals-store';
 
+const userStore = useUserStore();
+const spacesStore = useSpacesStore();
+const manualsStore = useManualsStore();
+const usersStore = useUsersStore();
+
+onMounted(async () => {
+    userStore.fetchUser();
+    spacesStore.fetchSpaces();
+    manualsStore.fetchManuals();
+    usersStore.fetchUsers();
+});
 
 
 const props = defineProps({
@@ -164,7 +177,6 @@ const props = defineProps({
 
 axios.defaults.withCredentials = true;
 
-const userStore = useUserStore();
 
 const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
@@ -185,8 +197,6 @@ const closeModal = () => {
     form.value.description = '';
 };
 
-
-
 // Edit Manual Modal
 const openEditManualModal = (manualId, manualTitle, manualDescription) => {
     form.value.id = manualId;
@@ -198,45 +208,25 @@ const closeEditManualModal = () => {
     isEditManualModalOpen.value = false;
 };
 
-
 const form = ref({
     id: null,
     title: null,
     description: null,
 })
 
-const manuals = ref([]);
 const getManuals = onMounted(async () => {
-    try {
-        const response = await axios.get('http://localhost:8000/api/manuals');
 
-        console.log('ha l jawab', response);
-        // return;
-        manuals.value = response.data;
-
-        // give the 1st letter a color
-        manuals.value.forEach(element => {
-            element['color'] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        });
-
-    } catch (error) {
-        console.error(error);
-    }
 });
 
 
 // Add Manual
-const submitForm = async () => {
+const addManual = async () => {
     try {
         const response = await axios.post('http://localhost:8000/api/manuals', {
             id_space: props.spaceId,
             title: form.value.title,
             description: form.value.description
         });
-
-        // Handle the response here if needed
-        console.log(response.data);
-
         // Reset form fields after successful submission
         form.value.is = '';
         form.value.title = '';
@@ -269,18 +259,12 @@ const submitForm = async () => {
 
 // Edit Manual
 const editManual = async () => {
-    console.log(form.value.id);
-    console.log(form.value.title);
-    console.log(form.value.description);
     try {
         const response = await axios.post(`http://localhost:8000/api/manuals/${form.value.id}`, {
             _method: 'PUT',
             title: form.value.title,
             description: form.value.description
         });
-
-        // Handle the response here if needed
-        console.log(response.data);
 
         // Reset form fields after successful submission
         form.value.is = '';
@@ -323,7 +307,6 @@ const editManual = async () => {
 const deleteManual = async (manualId) => {
     // show a sweet alert for the confirmation
     try {
-        console.log(manualId);
         const response = await axios.delete(`/manuals/${manualId}`);
         getManuals();
 
@@ -337,7 +320,6 @@ const deleteManual = async (manualId) => {
         })
 
     } catch (err) {
-        console.log(err);
         Swal.fire({
             position: 'top-end',
             icon: 'warning',
@@ -372,27 +354,26 @@ function getRandomColor() {
     return colors[randomIndex];
 }
 // Search
+const searchResult = ref([]);
 const searchInput = ref(null)
 const search = async () => {
     try {
-        if (searchInput.value === null) {
+        if (!searchInput.value) {
+            console.log('empty');
+            manualsStore.fetchManuals();
             return;
         }
         const response = await axios.get(`http://localhost:8000/api/manuals/search/${searchInput.value}`);
-
         // Handle the response here if needed
-        console.log(response.data);
-        manuals.value = response.data;
+        if (response.data.length > 0) {
+            manualsStore.manuals = response.data
+            manualsStore.manuals.forEach(element => {
+                element.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            })
+            return;
+        }
+        manualsStore.manuals = [];
 
-        // give the 1st letter a color
-        manuals.value.forEach(element => {
-            element['color'] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        });
-        // Reset form fields after successful submission
-        // searchInput.value = null;
-
-        // getManuals();
-        // Close the modal after form submission
     } catch (error) {
         // Handle the error here if needed
         console.error(error);

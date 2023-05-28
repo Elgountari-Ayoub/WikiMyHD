@@ -3,20 +3,19 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <LoadingAnimation v-if="spaces.length == 0" />
+            <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
             <div v-else>
-
-
                 <!-- Add btn and search -->
-                <div class="flex items-center mb-4 gap-4" >
+                <div class="flex items-center mb-4 gap-4">
                     <!-- <RouterLink :to="{ name: 'createSpace' }"> -->
-                    <button  v-if='userStore.isAdmin' @click="openModal" type="submit"
+                    <button v-if='userStore.isAdmin' @click="openModal" type="submit"
                         class="px-4 py-2 w-40 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Espace
                     </button>
                     <!-- </RouterLink> -->
                     <!-- <SearchInput /> -->
-                    <form class="relative z-10 flex items-center md:px-16 lg:px-24 xlg:px-32 2xl:px-40 sm:px-2  w-full m-auto"
+                    <form
+                        class="relative z-10 flex items-center md:px-16 lg:px-24 xlg:px-32 2xl:px-40 sm:px-2  w-full m-auto"
                         @submit.prevent="search">
                         <!-- <form class="relative z-10 flex items-center m-auto px-52" @submit.prevent="submit"> -->
                         <div class="relative w-full m-auto">
@@ -49,7 +48,7 @@
                     @click.self="closeModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
                         <h1 class="mb-4 text-2xl font-semibold">Ajouter un espace</h1>
-                        <form @submit.prevent="submitForm" class="space-y-4 ">
+                        <form @submit.prevent="addSpace" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
                                 <input v-model="form.title" type="text" id="title" name="title"
@@ -95,22 +94,27 @@
                         </form>
                     </div>
                 </div>
-
-
                 <!-- spaces -->
                 <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                    <div v-for="space in spaces" :key="space.id"
-                        class="flex flex-col  rounded-md justify-between gap-2 rounded h-52 bg-gray-100 dark:bg-gray-800">
-                        <p class="px-4 py-3 text-black border rounded-full m-auto w-fit"
-                            :style="{ backgroundColor: space.color }">{{
-                                space.title[0] }}</p>
-                        <div class="flex justify-center px-8 py-2 items-center">
-                            <p class="">{{ space.title.slice(0, 20) }}</p>
-                            <!-- <p class="font-bold text-4xl">:</p> -->
 
+                    <div v-for="space in spacesStore.spaces" :key="space.id"
+                        class="flex flex-col  rounded-md justify-between gap-2 rounded h-52 bg-gray-100 dark:bg-gray-800">
+                        <RouterLink :to="{
+                            name: 'manuals'
+                        }" class="px-4 py-3 text-black border rounded-full m-auto w-fit"
+                            :style="{ backgroundColor: space.color }">{{
+                                space.title[0] }}
+                        </RouterLink>
+
+                        <div class="flex justify-center px-8 py-2 items-center">
+
+                            <RouterLink :to="{
+                                name: 'manuals'
+                            }" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
+                            </RouterLink>
 
                             <!-- Modal  Edit/Delete Space Buttons-->
-                            <Dropdown class="ml-auto" v-if='userStore.isAdmin'>
+                            <Dropdown class="ml-auto cursor-pointer" v-if='userStore.isAdmin'>
                                 <template #trigger>
                                     <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
                                         class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
@@ -136,6 +140,7 @@
 
                         </div>
                     </div>
+
                 </div>
 
             </div>
@@ -155,16 +160,26 @@ import { ref, watchEffect, onMounted } from 'vue';
 import axios from 'axios';
 import { RouterView } from 'vue-router';
 import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
+import { useSpacesStore } from '../../stores/spaces-store';
+import { useManualsStore } from '../../stores/manuals-store';
 
 
 axios.defaults.withCredentials = true;
 
 const userStore = useUserStore();
+const spacesStore = useSpacesStore();
+const manualsStore = useManualsStore();
+onMounted(async () => {
+    userStore.fetchUser();
+    spacesStore.fetchSpaces();
+    manualsStore.fetchManuals();
+});
+
+
+
 
 const isModalOpen = ref(false);
 const isEditSpaceModalOpen = ref(false);
-
-
 const modalRef = ref(null);
 
 // Add space model
@@ -180,8 +195,6 @@ const closeModal = () => {
     form.value.description = '';
 };
 
-
-
 // Edit Space Modal
 const openEditSpaceModal = (spaceId, spaceTitle, spaceDescription) => {
     form.value.id = spaceId;
@@ -193,7 +206,6 @@ const closeEditSpaceModal = () => {
     isEditSpaceModalOpen.value = false;
 };
 
-
 const form = ref({
     id: null,
     title: null,
@@ -203,30 +215,26 @@ const form = ref({
 const spaces = ref([]);
 const getSpaces = onMounted(async () => {
     try {
-        const response = await axios.get('http://localhost:8000/api/spaces');
-        spaces.value = response.data;
-
+        // const response = await axios.get('http://localhost:8000/api/spaces');
+        // spaces.value = response.data.spaces;
+        // spacesStore.setSpacesDetails(response.data.spaces);
         // give the 1st letter a color
-        spaces.value.forEach(element => {
-            element['color'] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        });
+
+
+        // spaces.value = spacesStore.spaces
 
     } catch (error) {
         console.error(error);
     }
 });
 
-
 // Add Space
-const submitForm = async () => {
+const addSpace = async () => {
     try {
         const response = await axios.post('http://localhost:8000/api/spaces', {
             title: form.value.title,
             description: form.value.description
         });
-
-        // Handle the response here if needed
-        console.log(response.data);
 
         // Reset form fields after successful submission
         form.value.is = '';
@@ -259,12 +267,7 @@ const submitForm = async () => {
 };
 
 // Edit Space
-
-
 const editSpace = async () => {
-    console.log(form.value.id);
-    console.log(form.value.title);
-    console.log(form.value.description);
     try {
         const response = await axios.post(`http://localhost:8000/api/spaces/${form.value.id}`, {
             _method: 'PUT',
@@ -310,7 +313,6 @@ const editSpace = async () => {
     //send an update request like the add, but with put request
     // make sure u set the api route
 }
-
 
 // delete Space
 const deleteSpace = async (spaceId) => {
@@ -358,30 +360,17 @@ watchEffect(() => {
     };
 });
 
-
 function getRandomColor() {
     const colors = ['#FF0000', '#00FF00', '#0000FF']; // Array of colors excluding white and gray
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
 }
 
-
-
 function toggleOptions(space) {
     space.showOptions = !space.showOptions;
 };
-// function editSpace(space) {
-//     // Handle edit functionality for the space
-//     console.log('Edit:', space);
-// };
-// function deleteSpace(space) {
-//     // Handle delete functionality for the space
-//     console.log('Delete:', space);
-// }
 
 // Search
-
-
 const searchInput = ref(null)
 const search = async () => {
     try {
@@ -401,7 +390,6 @@ const search = async () => {
         // Reset form fields after successful submission
         // searchInput.value = null;
 
-        // getSpaces();
         // Close the modal after form submission
     } catch (error) {
         // Handle the error here if needed

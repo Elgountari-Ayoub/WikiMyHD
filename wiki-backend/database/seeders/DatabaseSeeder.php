@@ -40,6 +40,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Space::factory()->count(10)->create();
+        Space::factory()->count(5)->create([
+            'id_user' => 2 
+        ]);
         Manual::factory()->count(5)->create();
+        Manual::factory()->count(3)->create([
+            'id_space' => 2,
+            'id_user' => 2
+        ]);
     }
 }

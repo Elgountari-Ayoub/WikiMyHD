@@ -16,7 +16,7 @@ class Manual extends Model
     }
     public function space()
     {
-        return $this->belongsTo(User::class, 'id_space');
+        return $this->belongsTo(Space::class, 'id_space');
     }
 
 

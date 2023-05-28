@@ -43,7 +43,7 @@ const search = async () => {
         console.log(response.data);
         spaces.value = response.data;
         // Reset form fields after successful submission
-        form.value.search = null;
+        // form.value.search = null;
 
         // getSpaces();
         // Close the modal after form submission

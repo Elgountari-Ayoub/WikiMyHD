@@ -30,17 +30,18 @@ import Nav from '../components/Nav.vue';
 import TextInput from '../components/global/TextInput.vue';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '../stores/user-store'
-
+import { useUserStore } from '../stores/user-store';
+import { useSpacesStore } from '../stores/spaces-store';
+import { useManualsStore } from '../stores/manuals-store';
 
 axios.defaults.withCredentials = true;
 
 const userStore = useUserStore();
+const spacesStore = useSpacesStore();
+const manualsStore = useManualsStore();
 
 const email = ref(null);
 const password = ref(null);
-const user = ref();
-
 
 const errors = ref([]);
 
@@ -58,11 +59,28 @@ async function login() {
         });
 
         if (response.data.status === 1) {
-            // save it in a store
-            {
-                userStore.setUserDetails(response);
+            // save the logged user data in the userStore
+            userStore.setUserDetails(response);
+            // get his spcaes
+            try {
+                const spacesRes = await axios.get('http://localhost:8000/api/spaces');
+                // spaceStore.
+                spacesStore.setSpacesDetails(spacesRes.data.spaces);
+            } catch (err) {
+                console.log('ERROR IN FETCHIGN SPACES\n\n', err);
             }
-            
+            // get his manuals
+            try {
+                const manualsRes = await axios.get('http://localhost:8000/api/manuals')
+                manualsStore.setManualsDetails(manualsRes.data.manuals)
+            } catch (err) {
+                console.log('ERROR IN FETCHIGN MANUALS\n\n', err);
+
+            }
+            // if he is an admin
+            // -- get the users data
+
+
             // Show Success Message
             Swal.fire({
                 position: 'top-end',
@@ -71,12 +89,12 @@ async function login() {
                 showConfirmButton: false,
                 timer: 1000
             })
-            router.push({ name: 'profileSection' }) 
+            router.push({ name: 'profileSection' })
         }
         else {
+            await axios.post('http://localhost:8000/logout');
             Swal.fire({
                 icon: 'warning',
-                // title: 'connexion réussie',
                 text: 'Votre candidature n\'a pas encore été approuvée',
                 showConfirmButton: false,
                 timer: 3000
@@ -85,8 +103,10 @@ async function login() {
 
         // check if the authnticated user has the right to visiti the website
     } catch (err) {
+        // await axios.post('http://localhost:8000/logout');
         errors.value = err.response.data.errors;
         console.error('login failed:', errors.value);
+        console.error('login failed:', err);
         if (errors.lenght === 0) {
             Swal.fire({
                 icon: 'error',

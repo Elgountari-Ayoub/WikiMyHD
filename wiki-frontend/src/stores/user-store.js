@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import axios from "axios";
 
 export const useUserStore = defineStore("user", {
-  // arrow function recommended for full type inference
   state: () => ({
     // all these properties will have their type inferred automatically
     id: null,
@@ -43,8 +42,9 @@ export const useUserStore = defineStore("user", {
         this.$state.post = res.data.user.post;
 
         this.$state.isAdmin = res.data.user.role === "admin" ? true : false;
+        return true;
       } catch (error) {
-        console.log(error);
+        return false;
       }
     },
     clearUser() {
