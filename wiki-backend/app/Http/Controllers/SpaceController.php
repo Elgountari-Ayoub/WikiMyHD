@@ -49,7 +49,15 @@ class SpaceController extends Controller
      */
     public function show($id)
     {
-        return Space::find($id);
+        try {
+            return response()->json([
+                'space' => Space::find($id),
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'space' => [],
+            ], 404);
+        }
     }
 
 
@@ -83,11 +91,10 @@ class SpaceController extends Controller
      */
     public function search($title)
     {
+        
         $spaces = Space::where('title', 'like', '%' . $title . '%')->get();
 
-        // if (count($spaces) == 0) {
-        //     $spaces = Space::latest()->get();
-        // }
-        return response()->json($spaces);
+        return response()->json($spaces ?? null);
+
     }
 }

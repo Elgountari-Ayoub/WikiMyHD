@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Manual;
+use App\Models\User;
 use App\Models\Space;
+use App\Models\Manual;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +14,27 @@ class ManualController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($space_id = 1)
+    public function index()
+    {
+        try {
+            $authRole = Auth::user()->role;
+            if ($authRole == 'admin') {
+                return response()->json([
+                    'manuals' => Manual::latest()->get()
+                ], 200);
+            } else {
+                $manuals = Manual::where('id_user', Auth::user()->id)->latest()->get();
+                return response()->json([
+                    'manuals' => $manuals,
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'FAIL TO GET THE MANUALS',
+            ], 404);
+        }
+    }
+    public function manualsBySpace($space_id)
     {
         try {
             $space = Space::find($space_id);
@@ -26,7 +47,7 @@ class ManualController extends Controller
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'FAIL TO GET THE MANUALS',
+                'message' => 'FAIL TO GET THE MANUALS BY THE SPACE',
             ], 404);
         }
     }
@@ -103,7 +124,7 @@ class ManualController extends Controller
     public function search($title)
     {
         $manual = Manual::where('title', 'like', '%' . $title . '%')->get();
-        
+
         return response()->json($manual ?? null);
     }
 }

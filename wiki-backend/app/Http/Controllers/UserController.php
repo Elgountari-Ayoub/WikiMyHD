@@ -18,8 +18,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        // return 111;
-        return User::latest()->get();
+        return response()->json([
+            'users' => User::latest()->get()
+        ], 200);
     }
 
     /**
@@ -121,15 +122,32 @@ class UserController extends Controller
         $this->setStatus($id, 0);
     }
 
-    public function setStatus($userId, $value = 0): Response
+    public function setStatus(Request $request)
     {
-        $user = User::find($userId);
+        try {
+            $request->validate(
+                [
+                    'id_user' => 'required',
+                    'status' => 'required',
+                ]
+            );
 
-        if ($user) {
-            $user->status = $value;
-            $user->save();
-        } else {
+            User::whereIn('id', [$request->id_user])
+            ->update([
+                'status' => $request->status,
+            ]);
+            
+            $user = User::find($request->id_user);
+            // Return a success response
+            return response()->json([
+                'message' => 'User status updated successfully',
+                'user' => $user
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'error in updating user status',
+                'user' => $user
+            ], 404);
         }
-        return response()->noContent();
     }
 }

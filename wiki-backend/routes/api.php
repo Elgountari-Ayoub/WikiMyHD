@@ -21,7 +21,9 @@ use Illuminate\Support\Facades\Route;
 // Route::resource('products', ProductController::class);
 
 // Public routes for testing
-Route::get('/manuals', [ManualController::class, 'index']);
+// Route::get('/manuals', [ManualController::class, 'index']);
+// Route::get('/manuals/{id}', [ManualController::class, 'manualsBySpace']);
+
 
 // ANY AUTH USER
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -38,9 +40,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // SPACE ROUTES 
     // -- Consultation
-    // Route::get('/manuals', [ManualController::class, 'index']);
+    Route::get('/manuals', [ManualController::class, 'index']);
+
+    // get manual by space
+    Route::get('/manuals/{id}', [ManualController::class, 'manualsBySpace']);
     // -- Show 
-    Route::get('/manuals/{id}', [ManualController::class, 'show']);
+    Route::get('/manuals/{id}/show', [ManualController::class, 'show']);
     // -- Search
     Route::get('/manuals/search/{title}', [ManualController::class, 'search']);
     // --Add 
@@ -59,11 +64,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+// -----------------------------------   ADMIN   ---------------------------
 // Admin Routes
 Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     // SPACE ROUTES 
     // --Add 
     Route::post('/spaces', [SpaceController::class, 'store'])->middleware('admin');
+    // --Show
+    // Route::get('/spaces/{id}', [SpaceController::class, 'show'])->middleware('admin');
     // --Update
     Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
     // --Delete
