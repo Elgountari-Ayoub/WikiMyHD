@@ -9,7 +9,8 @@ export const useSpacesStore = defineStore("spaces", {
   actions: {
     async setSpacesDetails(res) {
       try {
-        console.log('ress => ', res);
+        console.log('ress => ', res
+        );
         let spaces = res.data.spaces;
         if (!Array.isArray(spaces)) {
           console.log(spaces, " => not an array");
