@@ -71,7 +71,7 @@ async function login() {
                     const spacesRes = await axios.get('http://localhost:8000/api/spaces');
                     console.log('the user psaces fetched with success:\n', spacesRes);
 
-                    spacesStore.setSpacesDetails(spacesRes.data.spaces);
+                    spacesStore.setSpacesDetails(spacesRes);
                     console.log('the user psaces saved with success:\n');
                 } catch (err) {
                     console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', err);
@@ -81,7 +81,7 @@ async function login() {
                     const manualsRes = await axios.get('http://localhost:8000/api/manuals')
                     console.log('the user manuals fetched with success:\n');
 
-                    manualsStore.setManualsDetails(manualsRes.data.manuals)
+                    manualsStore.setManualsDetails(manualsRes)
                     console.log('the user manuals saved with success:\n\n');
                 } catch (err) {
                     console.log('ERROR IN FETCHIGN MANUALS\n\n', err);

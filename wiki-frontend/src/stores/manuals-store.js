@@ -19,22 +19,28 @@ export const useManualsStore = defineStore("manuals", {
     async setManualsDetails(res) {
       try {
         let manuals = res.data.manuals;
-        if (Array.isArray(manuals)) {
-          this.$state.manuals = manuals.map((manual) => ({
-            id: manual.id,
-            id_user: manual.id_user,
-            id_space: manual.id_space,
-            title: manual.title,
-            description: manual.description,
-            space: manual.space,
-            color: "#" + Math.floor(Math.random() * 16777215).toString(16),
-            space: manual.space,
-          }));
-          return true;
-        } else {
-          console.log("manual not an array\nMANUAL => ", manuals);
+        if (!Array.isArray(manuals)) {
+          console.log(spaces, " => not an array");
           return false;
         }
+        if (manuals.length === 0) {
+          console.log(
+            "manuals array are empty\n manuals array length = ",
+            manuals.length
+          );
+          return false;
+        }
+        this.$state.manuals = manuals.map((manual) => ({
+          id: manual.id,
+          id_user: manual.id_user,
+          id_space: manual.id_space,
+          title: manual.title,
+          description: manual.description,
+          space: manual.space,
+          color: "#" + Math.floor(Math.random() * 16777215).toString(16),
+          space: manual.space,
+        }));
+        return true;
       } catch (error) {
         console.log("ERROR IN SETTING MANUALS DEATIALS");
       }
@@ -54,7 +60,7 @@ export const useManualsStore = defineStore("manuals", {
 
     // Fetch Manual By Space id
     async fetchManualsBySpace(spaceId) {
-      console.log('ha response => ',  spaceId);
+      console.log("ha response => ", spaceId);
       if (spaceId) {
         await axios
           .get(`http://localhost:8000/api/manuals/${spaceId}`)

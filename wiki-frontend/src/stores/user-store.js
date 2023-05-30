@@ -30,19 +30,31 @@ export const useUserStore = defineStore("user", {
     },
     async fetchUser() {
       try {
-        const res = await axios.get("http://localhost:8000/api/user");
-        this.$state.id = res.data.user.id;
-        this.$state.name = res.data.user.name;
-        this.$state.email = res.data.user.email;
-        this.$state.password = res.data.user.password;
-        this.$state.photo = res.data.user.photo;
-        this.$state.user_name = res.data.user.user_name;
-        this.$state.status = res.data.user.status;
-        this.$state.role = res.data.user.role;
-        this.$state.post = res.data.user.post;
+        const res = await axios
+          .get("http://localhost:8000/api/user")
+          .then((respnose) => {
+            this.$state.id = respnose.data.user.id;
+            this.$state.name = respnose.data.user.name;
+            this.$state.email = respnose.data.user.email;
+            this.$state.password = respnose.data.user.password;
+            this.$state.photo = respnose.data.user.photo;
+            this.$state.user_name = respnose.data.user.user_name;
+            this.$state.status = respnose.data.user.status;
+            this.$state.role = respnose.data.user.role;
+            this.$state.post = respnose.data.user.post;
 
-        this.$state.isAdmin = res.data.user.role === "admin" ? true : false;
-        return true;
+            this.$state.isAdmin =
+              respnose.data.user.role === "admin" ? true : false;
+
+            return true;
+          })
+          .catch((error) => {
+            console.log(
+              "FAILED IN GETTING THE USER!,\nERROR MESSAGE => ",
+              error.message
+            );
+            return false;
+          });
       } catch (error) {
         return false;
       }
