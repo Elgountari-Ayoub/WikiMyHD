@@ -3,12 +3,11 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <LoadingAnimation v-if="manualsStore.manuals.length == 0" />
-            <div v-else>
+            <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
-                    <button @click="openModal" type="submit"
-                        class="px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 sm:text-sm md:text-base">
+                    <button @click="openModal" type="submit" v-if="spaceIdStore.spaceId"
+                        class="px-4 py-2 w-40 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Manual
                     </button>
                     <!-- <SearchInput /> -->
@@ -39,6 +38,11 @@
                         </button>
                     </form>
                 </div>
+
+                <div v-if="spaceIdStore.spaceId" class="text-center text-2xl py-2 px-8 ">
+                    {{ spacesStore.spaces[0].description }}
+                </div>
+
                 <!-- Modal  Add Manual form-->
                 <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
                     @click.self="closeModal">
@@ -90,12 +94,16 @@
                         </form>
                     </div>
                 </div>
-
-
                 <!-- Manuals -->
-                <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <pre>
+                    </pre>
+                <LoadingAnimation v-if="manualsStore.manuals.length == 0" />
+
+                <div v-else class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                     <div v-for="manual in manualsStore.manuals" :key="manual.id"
                         class="flex flex-col  justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
+                        <span v-if="!spaceIdStore.spaceId" class="font-blod p-2 border-b "
+                            :style="{ color: manual.color }">{{ spacesStore.spaces[0].title }}</span>
                         <p class="px-4 py-3 text-black border rounded-full m-auto w-fit"
                             :style="{ backgroundColor: manual.color }">
                             {{
@@ -103,7 +111,6 @@
                         <div class="flex justify-center p-4 items-center">
                             <p class="">{{ manual.title.slice(0, 20) }}</p>
                             <!-- <p class="font-bold text-4xl">:</p> -->
-
 
                             <!-- Modal  Edit/Delete Manual Buttons-->
                             <Dropdown class="ml-auto" v-if='manual.id_user == userStore.id || userStore.isAdmin'>
@@ -154,28 +161,34 @@ import { useUserStore } from '../../stores/user-store';
 import { useUsersStore } from '../../stores/users-store';
 import { useSpacesStore } from '../../stores/spaces-store';
 import { useManualsStore } from '../../stores/manuals-store';
+import { useSpaceIdStore } from '../../stores/space-id-store';
 
 const userStore = useUserStore();
 const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
 const usersStore = useUsersStore();
 
-onMounted(async () => {
-    userStore.fetchUser();
-    spacesStore.fetchSpaces();
-    manualsStore.fetchManuals();
-    usersStore.fetchUsers();
-});
-
-
-const props = defineProps({
-    spaceId: {
-        type: Number,
-        default: 1,
-    },
-});
+const spaceIdStore = useSpaceIdStore();
 
 axios.defaults.withCredentials = true;
+
+onMounted(async () => {
+
+    userStore.fetchUser();
+    usersStore.fetchUsers();
+
+    if (typeof spaceIdStore.spaceId === 'undefined' || spaceIdStore.spaceId === null) {
+        manualsStore.fetchManuals();
+        spacesStore.fetchSpaces();
+    }
+    else {
+        console.log('spaceId ===> ', spaceIdStore.spaceId );
+        manualsStore.fetchManualsBySpace(spaceIdStore.spaceId);
+        spacesStore.fetchSpaceById(spaceIdStore.spaceId);
+    }
+});
+
+
 
 
 const isModalOpen = ref(false);
@@ -214,16 +227,11 @@ const form = ref({
     description: null,
 })
 
-const getManuals = onMounted(async () => {
-
-});
-
-
 // Add Manual
 const addManual = async () => {
     try {
         const response = await axios.post('http://localhost:8000/api/manuals', {
-            id_space: props.spaceId,
+            id_space: spaceIdStore.spaceId,
             title: form.value.title,
             description: form.value.description
         });
@@ -241,7 +249,12 @@ const addManual = async () => {
             showConfirmButton: false,
             timer: 1500,
         })
-        getManuals();
+        if (typeof spaceIdStore.spaceId === 'undefined' || spaceIdStore.spaceId === null) {
+            manualsStore.fetchManuals();
+        }
+        else {
+            manualsStore.fetchManualsBySpace(spaceIdStore.spaceId);
+        }
         // Close the modal after form submission
         closeModal();
     } catch (error) {
@@ -271,7 +284,6 @@ const editManual = async () => {
         form.value.title = '';
         form.value.description = '';
 
-
         Swal.fire({
             position: 'top-end',
             icon: 'success',
@@ -280,7 +292,8 @@ const editManual = async () => {
             showConfirmButton: false,
             timer: 1500,
         })
-        getManuals();
+
+        manualsStore.fetchManuals();
         // Close the modal after form submission
         closeEditManualModal();
     } catch (error) {
@@ -308,7 +321,7 @@ const deleteManual = async (manualId) => {
     // show a sweet alert for the confirmation
     try {
         const response = await axios.delete(`/manuals/${manualId}`);
-        getManuals();
+        manualsStore.fetchManuals();
 
         Swal.fire({
             position: 'top-end',
@@ -348,23 +361,18 @@ watchEffect(() => {
 });
 
 
-function getRandomColor() {
-    const colors = ['#FF0000', '#00FF00', '#0000FF']; // Array of colors excluding white and gray
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    return colors[randomIndex];
-}
 // Search
-const searchResult = ref([]);
 const searchInput = ref(null)
 const search = async () => {
     try {
         if (!searchInput.value) {
             console.log('empty');
-            manualsStore.fetchManuals();
+            if (manualsStore.manuals.length === 0) {
+                manualsStore.fetchManuals();
+            }
             return;
         }
         const response = await axios.get(`http://localhost:8000/api/manuals/search/${searchInput.value}`);
-        // Handle the response here if needed
         if (response.data.length > 0) {
             manualsStore.manuals = response.data
             manualsStore.manuals.forEach(element => {

@@ -138,6 +138,11 @@ class UserController extends Controller
             ]);
             
             $user = User::find($request->id_user);
+
+            // send a register confirmed mail
+            // RegisterConfirmedMailController
+            $mail = new RegisterConfirmedMailController();
+            $mail->sendMail();
             // Return a success response
             return response()->json([
                 'message' => 'User status updated successfully',

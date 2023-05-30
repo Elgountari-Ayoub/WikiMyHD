@@ -3,16 +3,14 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
-            <div v-else>
+            
+            <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
-                    <!-- <RouterLink :to="{ name: 'createSpace' }"> -->
                     <button v-if='userStore.isAdmin' @click="openModal" type="submit"
                         class="px-4 py-2 w-40 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Espace
                     </button>
-                    <!-- </RouterLink> -->
                     <!-- <SearchInput /> -->
                     <form
                         class="relative z-10 flex items-center md:px-16 lg:px-24 xlg:px-32 2xl:px-40 sm:px-2  w-full m-auto"
@@ -95,23 +93,23 @@
                     </div>
                 </div>
                 <!-- spaces -->
-                <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
+                <div v-else class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
 
                     <div v-for="space in spacesStore.spaces" :key="space.id"
-                        class="flex flex-col  rounded-md justify-between gap-2 rounded h-52 bg-gray-100 dark:bg-gray-800">
-                        <RouterLink :to="{
-                            name: 'manuals'
-                        }" class="px-4 py-3 text-black border rounded-full m-auto w-fit"
+                        class="flex flex-col  rounded-md justify-between gap-2 rounded h-52 bg-gray-50 shadow dark:bg-gray-800">
+
+                        <button @click="getManuals(space.id)"
+                            class="px-4 py-3 text-black border rounded-full m-auto w-fit"
                             :style="{ backgroundColor: space.color }">{{
                                 space.title[0] }}
-                        </RouterLink>
+
+                        </button>
 
                         <div class="flex justify-center px-8 py-2 items-center">
 
-                            <RouterLink :to="{
-                                name: 'manuals'
-                            }" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
-                            </RouterLink>
+                            <button @click="getManuals(space.id)" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
+                            </button>
 
                             <!-- Modal  Edit/Delete Space Buttons-->
                             <Dropdown class="ml-auto cursor-pointer" v-if='userStore.isAdmin'>
@@ -158,13 +156,16 @@ import { useUserStore } from '../../stores/user-store';
 
 import { ref, watchEffect, onMounted } from 'vue';
 import axios from 'axios';
-import { RouterView } from 'vue-router';
+import { RouterView, useRouter } from 'vue-router';
 import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
 import { useSpacesStore } from '../../stores/spaces-store';
 import { useManualsStore } from '../../stores/manuals-store';
+import { useSpaceIdStore } from '../../stores/space-id-store';
 
 
 axios.defaults.withCredentials = true;
+
+const spaceIdStore = useSpaceIdStore();
 
 const userStore = useUserStore();
 const spacesStore = useSpacesStore();
@@ -172,11 +173,9 @@ const manualsStore = useManualsStore();
 onMounted(async () => {
     userStore.fetchUser();
     spacesStore.fetchSpaces();
+    spaceIdStore.spaceId = null;
     manualsStore.fetchManuals();
 });
-
-
-
 
 const isModalOpen = ref(false);
 const isEditSpaceModalOpen = ref(false);
@@ -213,20 +212,6 @@ const form = ref({
 })
 
 const spaces = ref([]);
-const getSpaces = onMounted(async () => {
-    try {
-        // const response = await axios.get('http://localhost:8000/api/spaces');
-        // spaces.value = response.data.spaces;
-        // spacesStore.setSpacesDetails(response.data.spaces);
-        // give the 1st letter a color
-
-
-        // spaces.value = spacesStore.spaces
-
-    } catch (error) {
-        console.error(error);
-    }
-});
 
 // Add Space
 const addSpace = async () => {
@@ -250,7 +235,7 @@ const addSpace = async () => {
             showConfirmButton: false,
             timer: 1500,
         })
-        getSpaces();
+        spacesStore.fetchSpaces();
         // Close the modal after form submission
         closeModal();
     } catch (error) {
@@ -292,7 +277,7 @@ const editSpace = async () => {
             showConfirmButton: false,
             timer: 1500,
         })
-        getSpaces();
+        spacesStore.fetchSpaces();
         // Close the modal after form submission
         closeEditSpaceModal();
     } catch (error) {
@@ -320,7 +305,7 @@ const deleteSpace = async (spaceId) => {
     try {
         console.log(spaceId);
         const response = await axios.delete(`/spaces/${spaceId}`);
-        getSpaces();
+        spacesStore.fetchSpaces();
 
         Swal.fire({
             position: 'top-end',
@@ -343,6 +328,18 @@ const deleteSpace = async (spaceId) => {
     }
 }
 
+// getManuals
+const router = useRouter();
+const getManuals = async (spaceId) => {
+    try {
+        spaceIdStore.spaceId = spaceId;
+        router.push({ name: 'manuals' })
+    } catch (error) {
+        console.log('ERR\N\N', error);
+    }
+}
+
+
 // Close modal when clicking outside
 watchEffect(() => {
     const handleClickOutside = (event) => {
@@ -360,15 +357,6 @@ watchEffect(() => {
     };
 });
 
-function getRandomColor() {
-    const colors = ['#FF0000', '#00FF00', '#0000FF']; // Array of colors excluding white and gray
-    const randomIndex = Math.floor(Math.random() * colors.length);
-    return colors[randomIndex];
-}
-
-function toggleOptions(space) {
-    space.showOptions = !space.showOptions;
-};
 
 // Search
 const searchInput = ref(null)

@@ -33,12 +33,15 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user-store';
 import { useSpacesStore } from '../stores/spaces-store';
 import { useManualsStore } from '../stores/manuals-store';
+import { useUsersStore } from '../stores/users-store';
+
 
 axios.defaults.withCredentials = true;
 
 const userStore = useUserStore();
 const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
+const usersStore = useUsersStore();
 
 const email = ref(null);
 const password = ref(null);
@@ -52,67 +55,96 @@ async function login() {
         errors.value = []
         // Get CSRF token from Laravel
         await axios.get('http://localhost:8000/sanctum/csrf-cookie');
-
+        // console.log(email.value, '\n', password.value.length);
         const response = await axios.post('http://localhost:8000/login', {
             email: email.value,
             password: password.value,
-        });
+        }).then(async (response) => {
+            console.log('user logged in success!, response:\n', response.data.user);
+            // check if the user status == 1 wich means the user has the access to our wikimyhd website
+            if (response.data.user.status === 1) {
+                console.log('user has been approved, Great!\n');
+                // save the logged user data in the userStore
+                userStore.setUserDetails(response);
+                console.log('the user data saved with success:\n', response);
+                try {
+                    const spacesRes = await axios.get('http://localhost:8000/api/spaces');
+                    console.log('the user psaces fetched with success:\n', spacesRes);
 
-        if (response.data.status === 1) {
-            // save the logged user data in the userStore
-            userStore.setUserDetails(response);
-            // get his spcaes
-            try {
-                const spacesRes = await axios.get('http://localhost:8000/api/spaces');
-                // spaceStore.
-                spacesStore.setSpacesDetails(spacesRes.data.spaces);
-            } catch (err) {
-                console.log('ERROR IN FETCHIGN SPACES\n\n', err);
+                    spacesStore.setSpacesDetails(spacesRes.data.spaces);
+                    console.log('the user psaces saved with success:\n');
+                } catch (err) {
+                    console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', err);
+                }
+                try {
+                    // get his manuals
+                    const manualsRes = await axios.get('http://localhost:8000/api/manuals')
+                    console.log('the user manuals fetched with success:\n');
+
+                    manualsStore.setManualsDetails(manualsRes.data.manuals)
+                    console.log('the user manuals saved with success:\n\n');
+                } catch (err) {
+                    console.log('ERROR IN FETCHIGN MANUALS\n\n', err);
+
+                }
+                // get the users data if the logged in user is an admin
+                if (userStore.role === 'admin') {
+                    try {
+                        console.log('the users data saved with success:\n');
+                        console.log('the users data saved with success:\n');
+                        const usersRES = await axios.get('http://localhost:8000/api/users')
+                        console.log(usersRES);
+                        usersStore.setUsersDetails(usersRES.data.users)
+                    } catch (err) {
+                        console.log('ERROR IN FETCHIGN USERS\n\n', err);
+
+                    }
+                }
+
+                // Show Success Message
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'connexion réussie',
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+                router.push({ name: 'profileSection' })
             }
-            // get his manuals
-            try {
-                const manualsRes = await axios.get('http://localhost:8000/api/manuals')
-                manualsStore.setManualsDetails(manualsRes.data.manuals)
-            } catch (err) {
-                console.log('ERROR IN FETCHIGN MANUALS\n\n', err);
+            else {
+                // errors.value = err.response.data.errors;
+                try {
+                    await axios.post('http://localhost:8000/logout');
 
+                } catch (error) {
+
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Votre candidature n\'a pas encore été approuvée',
+                    showConfirmButton: false,
+                    timer: 3000
+                })
             }
-            // if he is an admin
-            // -- get the users data
+        }).catch(err => {
+            console.log('ERROOOOOR', err);
+        }
+        );
 
 
-            // Show Success Message
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'connexion réussie',
-                showConfirmButton: false,
-                timer: 1000
-            })
-            router.push({ name: 'profileSection' })
-        }
-        else {
-            await axios.post('http://localhost:8000/logout');
-            Swal.fire({
-                icon: 'warning',
-                text: 'Votre candidature n\'a pas encore été approuvée',
-                showConfirmButton: false,
-                timer: 3000
-            })
-        }
 
         // check if the authnticated user has the right to visiti the website
     } catch (err) {
-        // await axios.post('http://localhost:8000/logout');
-        errors.value = err.response.data.errors;
-        console.error('login failed:', errors.value);
         console.error('login failed:', err);
-        if (errors.lenght === 0) {
+        if (errors.length === 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Quelque chose s\'est mal passé !',
             })
+        } else {
+            errors.value = err.response.data.errors;
+
         }
     }
 }

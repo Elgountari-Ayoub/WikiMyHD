@@ -23,15 +23,14 @@
 
 
                 <div class="flex items-center">
-                    <div class="flex items-center ml-3">
+                    <div class="flex flex-col items-center ml-3">
                         <div>
-                            <button type="button"
+                            <button type="button" @click="menuOpen = !menuOpen"
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown="user-dropdown">
                                 <span class="sr-only">Open user menu</span>
                                 <img v-if="userStore.photo" class="w-8 rounded-full" :src="getImageUrl(userStore.photo)"
                                     alt="">
-
                                 <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                                     class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -41,8 +40,8 @@
                                 </svg>
                             </button>
                         </div>
-                        <div v-if="userStore.id"
-                            class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                        <div v-if="userStore.id && menuOpen" 
+                            class="z-50 absolute right-10 top-14 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
                             id="dropdown-user">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
@@ -95,7 +94,7 @@
 
                 </li>
                 <li>
-                    <RouterLink :to="{ name: 'manuals' }"
+                    <RouterLink :to="{ name: 'manuals' }" @click="spaceIdStore.spaceId = null"
                         class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -173,12 +172,17 @@ import Swal from 'sweetalert2';
 import { useSpacesStore } from '../../stores/spaces-store';
 import { useManualsStore } from '../../stores/manuals-store';
 import { useUsersStore } from '../../stores/users-store';
+import { useSpaceIdStore } from '../../stores/space-id-store';
 
 const router = useRouter();
 const userStore = useUserStore();
 const usersStore = useUsersStore();
 const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
+
+const spaceIdStore = useSpaceIdStore();
+
+let menuOpen = ref(false)
 
 const getImageUrl = (photo) => {
     const baseUrl = "http://localhost:8000/storage/";
