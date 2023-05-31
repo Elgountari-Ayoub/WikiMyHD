@@ -8,8 +8,8 @@ export const useSpacesStore = defineStore("spaces", {
   }),
   actions: {
     async setSpacesDetails(res) {
+      this.$state.spaces = [];
       try {
-        console.log('ress => ', res);
         let spaces = res.data.spaces;
         if (!Array.isArray(spaces)) {
           console.log(spaces, " => not an array");
@@ -17,7 +17,7 @@ export const useSpacesStore = defineStore("spaces", {
         }
         if (spaces.length === 0) {
           console.log(
-            "spaces array are empty\n spaces array length = ",
+            "spaces array length = ",
             spaces.length
           );
           return false;

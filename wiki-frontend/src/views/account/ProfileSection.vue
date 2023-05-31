@@ -2,7 +2,7 @@
   <DashboardLayout>
     <div class="container mx-auto p-4" v-if="user">
       <div class="flex flex-col gap-4 w-52 items-center">
-        <img v-if="user.photo" class="w-52 h-52 rounded-full mr-auto" :src="getImageUrl(user.photo)" alt="">
+        <img v-if="user.photo" class="w-52 h-52 rounded-full mr-auto" :src="getImageUrl(userStore.photo)" alt="">
         <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="w-52 h-52 rounded-full mr-auto
                 flex-shrink-0  bg-white  text-gray-500 transition d
                 uration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -142,8 +142,7 @@
                 </div>
               </form>
               <span v-else class="flex-grow flex items-center justify-between ">
-                <!-- <img src="" alt="user profile"> -->
-                <img class="h-16 rounded-lg" :src="getImageUrl(user.photo)" alt="">
+                <img class="h-16 rounded-lg" :src="getImageUrl(userStore.photo)" alt="">
                 <span class="flex-shrink-0 ml-4">
                   <button type="button" @click="photoEditing = true"
                     class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
@@ -267,8 +266,11 @@ async function handlePhotoChange(event) {
 
 
 function getImageUrl(photo) {
-  const baseUrl = "http://localhost:8000/storage/";
-  return baseUrl + photo; // Concatenating the base URL and the photo variable
+  if (photo) {
+    const baseUrl = "http://localhost:8000/storage/";
+    return baseUrl + photo; 
+  }
+  return ' ';
 }
 
 </script>

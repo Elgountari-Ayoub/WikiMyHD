@@ -24,13 +24,11 @@ class AuthenticatedSessionController extends Controller
         if ($user->status === 1) {
             return response()->json([
                 'user' => $user,
-                'status' => 1
             ]);
         }
         Auth::logout($user);
         return response()->json([
             'user' => null,
-            'status' => 0,
         ]);
         return response()->noContent();
     }

@@ -13,19 +13,21 @@ export const useManualsStore = defineStore("manuals", {
       space: null,
       color: null,
       space: null,
+      user: null,
     },
   }),
   actions: {
     async setManualsDetails(res) {
+      this.$state.manuals = [];
       try {
         let manuals = res.data.manuals;
         if (!Array.isArray(manuals)) {
-          console.log(spaces, " => not an array");
+          console.log(manuals, " => not an array");
           return false;
         }
         if (manuals.length === 0) {
           console.log(
-            "manuals array are empty\n manuals array length = ",
+            "manuals array length = ",
             manuals.length
           );
           return false;
@@ -39,6 +41,7 @@ export const useManualsStore = defineStore("manuals", {
           space: manual.space,
           color: "#" + Math.floor(Math.random() * 16777215).toString(16),
           space: manual.space,
+          user: manual.user,
         }));
         return true;
       } catch (error) {
@@ -54,21 +57,23 @@ export const useManualsStore = defineStore("manuals", {
           this.setManualsDetails(response);
         })
         .catch((error) => {
+          console.log("error man", error);
           console.log("ERROR IN FETCHING MANUALS", error);
         });
     },
 
     // Fetch Manual By Space id
     async fetchManualsBySpace(spaceId) {
-      console.log("ha response => ", spaceId);
       if (spaceId) {
         await axios
           .get(`http://localhost:8000/api/manuals/${spaceId}`)
           .then((response) => {
             this.setManualsDetails(response);
+            console.log("ers", res);
             return true;
           })
           .catch((error) => {
+            console.log("err", error);
             console.log("ERROR IN FETCHING MANUALS BY SPACE", error);
           });
       } else {

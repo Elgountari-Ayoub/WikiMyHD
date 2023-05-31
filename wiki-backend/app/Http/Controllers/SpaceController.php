@@ -77,7 +77,12 @@ class SpaceController extends Controller
     public function destroy($id)
     {
         try {
-            return Space::destroy($id);
+
+            Space::destroy($id);
+            $space = Space::find($id)->first();
+            return response()->json([
+                'spaces' => $space,
+            ]);
         } catch (\Throwable $th) {
             //throw $th;
         }

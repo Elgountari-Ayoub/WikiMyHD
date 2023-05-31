@@ -3,18 +3,16 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            
-            <div>
+
+            <div class="mt-6">
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <button v-if='userStore.isAdmin' @click="openModal" type="submit"
-                        class="px-4 py-2 w-40 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
+                        class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Espace
                     </button>
                     <!-- <SearchInput /> -->
-                    <form
-                        class="relative z-10 flex items-center md:px-16 lg:px-24 xlg:px-32 2xl:px-40 sm:px-2  w-full m-auto"
-                        @submit.prevent="search">
+                    <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
                         <!-- <form class="relative z-10 flex items-center m-auto px-52" @submit.prevent="submit"> -->
                         <div class="relative w-full m-auto">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -93,17 +91,19 @@
                     </div>
                 </div>
                 <!-- spaces -->
+
+            <!-- <div class="text-center p-4 pb-8 text-2xl">
+                    {{ spaceIdStore.spaceId ?? 'Les Espaces' }}
+                    </div> -->
                 <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
                 <div v-else class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
 
                     <div v-for="space in spacesStore.spaces" :key="space.id"
-                        class="flex flex-col  rounded-md justify-between gap-2 rounded h-52 bg-gray-50 shadow dark:bg-gray-800">
+                        class="flex flex-col rounded-md justify-between gap-2 rounded h-52 bg-gray-50 shadow dark:bg-gray-800">
 
-                        <button @click="getManuals(space.id)"
-                            class="px-4 py-3 text-black border rounded-full m-auto w-fit"
+                        <button @click="getManuals(space.id)" class="text-black border rounded-full m-auto w-14 h-14"
                             :style="{ backgroundColor: space.color }">{{
                                 space.title[0] }}
-
                         </button>
 
                         <div class="flex justify-center px-8 py-2 items-center">
@@ -128,6 +128,7 @@
                                             class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
                                             Editer
                                         </button>
+                                        <!-- {{ space.id }} -->
                                         <button @click="deleteSpace(space.id)"
                                             class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
                                             Supprimer
@@ -171,10 +172,7 @@ const userStore = useUserStore();
 const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
 onMounted(async () => {
-    userStore.fetchUser();
-    spacesStore.fetchSpaces();
     spaceIdStore.spaceId = null;
-    manualsStore.fetchManuals();
 });
 
 const isModalOpen = ref(false);
@@ -225,19 +223,21 @@ const addSpace = async () => {
         form.value.is = '';
         form.value.title = '';
         form.value.description = '';
-
-
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            width: '25rem',
-            title: 'l\'espace ajouté avec succès',
-            showConfirmButton: false,
-            timer: 1500,
-        })
-        spacesStore.fetchSpaces();
-        // Close the modal after form submission
         closeModal();
+
+        // Swal.fire({
+        //     position: 'top-end',
+        //     icon: 'success',
+        //     width: '25rem',
+        //     title: 'l\'espace ajouté avec succès',
+        //     showConfirmButton: false,
+        //     timer: 1500,
+        // })
+
+        await spacesStore.fetchSpaces();
+        await manualsStore.fetchManuals();
+        await userStore.fetchUser();
+        console.log(manualsStore.manuals);
     } catch (error) {
         // Handle the error here if needed
         Swal.fire({
@@ -260,26 +260,24 @@ const editSpace = async () => {
             description: form.value.description
         });
 
-        // Handle the response here if needed
-        console.log(response.data);
-
         // Reset form fields after successful submission
         form.value.is = '';
         form.value.title = '';
         form.value.description = '';
-
-
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            width: '25rem',
-            title: 'l\'espace mis à jour avec succès',
-            showConfirmButton: false,
-            timer: 1500,
-        })
-        spacesStore.fetchSpaces();
-        // Close the modal after form submission
         closeEditSpaceModal();
+
+        // Swal.fire({
+        //     position: 'top-end',
+        //     icon: 'success',
+        //     width: '25rem',
+        //     title: 'l\'espace mis à jour avec succès',
+        //     showConfirmButton: false,
+        //     timer: 1500,
+        // })
+        spacesStore.fetchSpaces();
+        manualsStore.fetchManuals();
+        userStore.fetchUser();
+        // Close the modal after form submission
     } catch (error) {
         // Handle the error here if needed
         Swal.fire({
@@ -305,16 +303,20 @@ const deleteSpace = async (spaceId) => {
     try {
         console.log(spaceId);
         const response = await axios.delete(`/spaces/${spaceId}`);
-        spacesStore.fetchSpaces();
+        console.log('response => ', response);
+        await spacesStore.fetchSpaces();
+        console.log('fetchSpaces => ', spacesStore.spaces);
+        manualsStore.fetchManuals();
+        userStore.fetchUser();
 
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'L\'espace a été supprimé avec succès',
-            showConfirmButton: false,
-            timer: 1500
+        // Swal.fire({
+        //     position: 'top-end',
+        //     icon: 'success',
+        //     title: 'L\'espace a été supprimé avec succès',
+        //     showConfirmButton: false,
+        //     timer: 1500
 
-        })
+        // })
 
     } catch (err) {
         console.log(err);

@@ -7,6 +7,7 @@ use App\Models\Space;
 use App\Models\Manual;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ManualController extends Controller
@@ -14,16 +15,33 @@ class ManualController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
         try {
             $authRole = Auth::user()->role;
+
             if ($authRole == 'admin') {
+                $manuals = Manual::latest()->get();
+                // get the space of each manual
+                foreach ($manuals as $manual) {
+                    $manual['space'] = $manual->space()->first();
+                    $manual['user'] = $manual->user()->first();
+                }
+
+                Log::info("\nmanualController/index/admin:\n\t manuals => $manuals\n\n");
+
                 return response()->json([
-                    'manuals' => Manual::latest()->get()
+                    'manuals' => $manuals
                 ], 200);
             } else {
                 $manuals = Manual::where('id_user', Auth::user()->id)->latest()->get();
+                foreach ($manuals as $manual) {
+                    $manual['space'] = $manual->space()->first();
+                    $manual['user'] = $manual->user()->first();
+                }
+
+                Log::info("\nmanualController/index/user:\n\t manuals => $manuals\n\n");
                 return response()->json([
                     'manuals' => $manuals,
                 ], 200);
@@ -66,12 +84,6 @@ class ManualController extends Controller
                 'id_space' => 'required'
             ]);
             $request['id_user'] = $userId;
-            // return response()->json([
-            //     'message' => 'u have pass the validation',
-            //     'req' => $request->all()
-            // ]);
-
-            $manual = new Manual();
 
             return Manual::create($request->all());
         } catch (\Throwable $th) {

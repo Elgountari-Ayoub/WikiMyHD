@@ -94,20 +94,13 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
-  const isAuthenticated = await userStore.fetchUser();
+  const isAuthenticated = userStore.id;
   const isAuthorized = userStore.role == "admin" ? true : false;
-  console.log('to => ', to);
-  console.log('from => ', from);
-  console.log('next => ', next);
-  console.log('requiresAuth',requiresAuth)
-  console.log('!isAuthenticated',!isAuthenticated)
   if (requiresAuth && !isAuthenticated) {
     next({ name: "login" });
-  }
-  else if (requiresAuthoriz && (!isAuthorized || !isAuthenticated)) {
+  } else if (requiresAuthoriz && (!isAuthorized || !isAuthenticated)) {
     next({ name: "spaces" });
-  }
-  else {
+  } else {
     next();
   }
 });

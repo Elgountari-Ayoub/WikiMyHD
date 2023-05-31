@@ -64,7 +64,8 @@ export const useUserStore = defineStore("user", {
       this.$state.name = null;
       this.$state.email = null;
       this.$state.password = null;
-      (this.$state.photo = null), (this.$state.user_name = null);
+      this.$state.photo = null;
+      this.$state.user_name = null;
       this.$state.status = null;
       this.$state.role = null;
       this.$state.post = null;

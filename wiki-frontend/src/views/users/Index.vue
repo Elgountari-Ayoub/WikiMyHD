@@ -2,7 +2,7 @@
     <div id="AccountView">
         <RouterView />
         <DashboardLayout>
-            <div v-if="usersStore.users.length !== 0 && userStore.isAdmin">
+            <div v-if="usersStore.users  && userStore.isAdmin">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -130,7 +130,7 @@ const userStore = useUserStore();
 const usersStore = useUsersStore();
 
 onMounted(async () => {
-    usersStore.fetchUsers();
+    // usersStore.fetchUsers();
 });
 
 const openAffectSpacesModal = async (userId, status) => {
@@ -139,7 +139,7 @@ const openAffectSpacesModal = async (userId, status) => {
             id_user: userId,
             status: status
         })
-        usersStore.fetchUsers();
+        // usersStore.fetchUsers();
     } catch (error) {
         console.log('ERROR IN APPROVING');
     }
@@ -154,7 +154,7 @@ const cancel = async (userId, status) => {
             id_user: userId,
             status: status
         })
-        usersStore.fetchUsers();
+        // usersStore.fetchUsers();
     } catch (error) {
         console.log('ERROR IN APPROVING');
     }

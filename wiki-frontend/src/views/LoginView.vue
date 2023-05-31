@@ -1,6 +1,5 @@
 <template>
     <Nav />
-
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
         <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow ms:px-16">
             <!-- {{ user }} -->
@@ -35,7 +34,6 @@ import { useSpacesStore } from '../stores/spaces-store';
 import { useManualsStore } from '../stores/manuals-store';
 import { useUsersStore } from '../stores/users-store';
 
-
 axios.defaults.withCredentials = true;
 
 const userStore = useUserStore();
@@ -51,102 +49,101 @@ const errors = ref([]);
 const router = useRouter();
 
 async function login() {
-    try {
-        errors.value = []
-        // Get CSRF token from Laravel
-        await axios.get('http://localhost:8000/sanctum/csrf-cookie');
-        // console.log(email.value, '\n', password.value.length);
-        const response = await axios.post('http://localhost:8000/login', {
-            email: email.value,
-            password: password.value,
-        }).then(async (response) => {
-            console.log('user logged in success!, response:\n', response.data.user);
-            // check if the user status == 1 wich means the user has the access to our wikimyhd website
-            if (response.data.user.status === 1) {
-                console.log('user has been approved, Great!\n');
-                // save the logged user data in the userStore
-                userStore.setUserDetails(response);
-                console.log('the user data saved with success:\n', response);
-                try {
-                    const spacesRes = await axios.get('http://localhost:8000/api/spaces');
-                    console.log('the user psaces fetched with success:\n', spacesRes);
+    errors.value = []
+    // Get CSRF token from Laravel
+    await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+    // console.log(email.value, '\n', password.value.length);
+    await axios.post('http://localhost:8000/login', {
+        email: email.value,
+        password: password.value,
+    }).then(async (response) => {
+        console.log('user logged in success!, response:\n', response.data.user ?? 'the user not approved');
+        // after the logged in, let's check if the user has been approved
+        if (response.data.user) {
+            console.log('user has been approved, Great!\n');
+            // save the logged user data in the userStore
+            userStore.setUserDetails(response);
+            console.log('the user data saved with success:\n', userStore);
 
-                    spacesStore.setSpacesDetails(spacesRes);
-                    console.log('the user psaces saved with success:\n');
-                } catch (err) {
-                    console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', err);
-                }
-                try {
-                    // get his manuals
-                    const manualsRes = await axios.get('http://localhost:8000/api/manuals')
-                    console.log('the user manuals fetched with success:\n');
+            // get spaces
+            try {
+                const spacesRes = await axios.get('http://localhost:8000/api/spaces');
+                console.log('the user spaces fetched with success!\n');
 
-                    manualsStore.setManualsDetails(manualsRes)
-                    console.log('the user manuals saved with success:\n\n');
-                } catch (err) {
-                    console.log('ERROR IN FETCHIGN MANUALS\n\n', err);
-
-                }
-                // get the users data if the logged in user is an admin
-                if (userStore.role === 'admin') {
-                    try {
-                        console.log('the users data saved with success:\n');
-                        console.log('the users data saved with success:\n');
-                        const usersRES = await axios.get('http://localhost:8000/api/users')
-                        console.log(usersRES);
-                        usersStore.setUsersDetails(usersRES.data.users)
-                    } catch (err) {
-                        console.log('ERROR IN FETCHIGN USERS\n\n', err);
-
-                    }
-                }
-
-                // Show Success Message
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'connexion réussie',
-                    showConfirmButton: false,
-                    timer: 1000
-                })
-                router.push({ name: 'profileSection' })
+                spacesStore.setSpacesDetails(spacesRes);
+                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
+            } catch (err) {
+                console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', err);
             }
-            else {
-                // errors.value = err.response.data.errors;
-                try {
-                    await axios.post('http://localhost:8000/logout');
 
-                } catch (error) {
+            // GET THE LOGGED SPACES
+            await axios.get('http://localhost:8000/api/spaces').then(response => {
+                console.log('the user spaces fetched with success!\n');
+                spacesStore.setSpacesDetails(response);
+                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
+            }).catch(error => {
+                console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', error);
+            });
 
-                }
+
+            // GET THE LOGGED USER MANUALS
+            await axios.get('http://localhost:8000/api/manuals').then(response => {
+                console.log('the user manuals fetched with success:\n',);
+                manualsStore.setManualsDetails(response)
+                console.log('the user manuals saved with success!\n\n', response);
+            }).catch(error => {
+                console.log('ERROR IN FETCHIGN MANUALS\n\n', error);
+            })
+
+            // GET THE USERS DATA IF THE LOGGED IN USER IS AN ADMIN
+            if (userStore.isAdmin) {
+                await axios.get('http://localhost:8000/api/users').then(response => {
+                    console.log('the users data fetched with success:\n');
+                    usersStore.setUsersDetails(response.data.users)
+                    console.log('the users data saved with success:\n', usersStore);
+                }).catch(error => {
+                    console.log('ERROR IN FETCHIGN USERS\n\n', error);
+                })
+            }
+
+            // Show Success Message
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'connexion réussie',
+                showConfirmButton: false,
+                timer: 1000
+            })
+            router.push({ name: 'profileSection' })
+        }
+        // if not approved
+        else {
+            await axios.post('http://localhost:8000/logout').then(response => {
                 Swal.fire({
                     icon: 'warning',
                     text: 'Votre candidature n\'a pas encore été approuvée',
                     showConfirmButton: false,
                     timer: 3000
                 })
-            }
-        }).catch(err => {
-            console.log('ERROOOOOR', err);
+            }).catch(error => {
+                console.log('ERROR IN LOGOUT\n\n', error);
+            });
         }
-        );
-
-
-
-        // check if the authnticated user has the right to visiti the website
-    } catch (err) {
-        console.error('login failed:', err);
+    }).catch(error => {
+        console.log('error in login', error);
         if (errors.length === 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'Quelque chose s\'est mal passé !',
+                text: 'Quelque chose s\'est mal passé!',
             })
         } else {
-            errors.value = err.response.data.errors;
-
+            errors.value = error.response.data.errors;
         }
+
     }
+    );
+
 }
 </script>
 

@@ -22,7 +22,6 @@ export const useUsersStore = defineStore("users", {
     async fetchUsers() {
       try {
         const res = await axios.get("http://localhost:8000/api/users");
-
         this.setUsersDetails(res.data.users);
         return true;
       } catch (error) {

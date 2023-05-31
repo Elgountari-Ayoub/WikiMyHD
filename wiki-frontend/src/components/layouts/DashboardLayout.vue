@@ -27,7 +27,7 @@
                         <div>
                             <button type="button" @click="menuOpen = !menuOpen"
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                                aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown="user-dropdown">
+                                aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                 <span class="sr-only">Open user menu</span>
                                 <img v-if="userStore.photo" class="w-8 rounded-full" :src="getImageUrl(userStore.photo)"
                                     alt="">
@@ -40,7 +40,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <div v-if="userStore.id && menuOpen" 
+                        <div v-if="userStore.id && menuOpen"
                             class="z-50 absolute right-10 top-14 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
                             id="dropdown-user">
                             <div class="px-4 py-3" role="none">
@@ -61,7 +61,7 @@
                                 <li>
                                     <button @click="logout"
                                         class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
-                                                                                                                    dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                                                                                                dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Sign
                                         out
                                     </button>
@@ -78,14 +78,14 @@
     <aside id="logo-sidebar"
         class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Sidebar">
-        <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-            <ul class="space-y-2 font-medium">
+        <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800 flex items-center" >
+            <ul class="space-y-2 font-medium flex  justify-center flex-col gap-1">
                 <li>
-                    <RouterLink :to="{ name: 'spaces' }"
-                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
+                        class="spaces-color flex hover:bg-gray-100 items-center p-2 text-gray-900 rounded-lg dark:text-white  dark:hover:bg-gray-700">
                         <svg aria-hidden="true"
                             class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            fill="white" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                             <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                         </svg>
@@ -95,24 +95,24 @@
                 </li>
                 <li>
                     <RouterLink :to="{ name: 'manuals' }" @click="spaceIdStore.spaceId = null"
-                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                        class="manuals-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            fill="white" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                             </path>
                         </svg>
-                        <span class="flex-1 ml-3 whitespace-nowrap">Manuals</span>
+                        <span class="manual-color flex-1 ml-3 whitespace-nowrap">Manuals</span>
                         <!-- <span class="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
                     </RouterLink>
                 </li>
                 <li>
-                    <RouterLink :to="{ name: 'spaces' }"
-                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
+                        class="articles-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            fill="white" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z">
                             </path>
@@ -124,9 +124,9 @@
                         <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ml-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
                     </RouterLink>
                 </li>
-                <li v-if="userStore.role === 'admin'">
-                    <RouterLink :to="{ name: 'users' }"
-                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                <li v-if="userStore.isAdmin">
+                    <RouterLink :to="{ name: 'users' }" @click="spaceIdStore.spaceId = null"
+                        class="users-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg fill="currentColor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -137,9 +137,9 @@
                         <span class="flex-1 ml-3 whitespace-nowrap">Gestion des utilisateurs</span>
                     </RouterLink>
                 </li>
-                <li v-if="userStore.role === 'admin'">
-                    <RouterLink :to="{ name: 'spaces' }"
-                        class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                <li v-if="userStore.isAdmin">
+                    <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
+                        class="users-management-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white">
@@ -184,24 +184,23 @@ const spaceIdStore = useSpaceIdStore();
 
 let menuOpen = ref(false)
 
-const getImageUrl = (photo) => {
-    const baseUrl = "http://localhost:8000/storage/";
-    return baseUrl + photo; // Concatenating the base URL and the photo variable
-}
-
 const logout = async () => {
-    try {
-        const response = await axios.post('http://localhost:8000/logout').then(res => {
+    await axios.post('http://localhost:8000/logout')
+        .then(response => {
             userStore.clearUser();
             console.log('User Store Cleard :>', userStore);
+
             spacesStore.clearSpaces();
             console.log('Space Store Cleard :>', userStore);
+
             manualsStore.clearManuals();
             console.log('Manual Store Cleard :>', userStore);
+
             usersStore.clearUsers();
             console.log('Users Store Cleard :>', usersStore);
-            console.log('DONE !', res);
+            console.log('logout success');
 
+            router.push({ name: 'login' })
             // Show Success Message
             Swal.fire({
                 position: 'top-end',
@@ -210,9 +209,8 @@ const logout = async () => {
                 showConfirmButton: false,
                 timer: 1000
             })
-            router.push({ name: 'login' })
-        }).catch(err => {
-            // Show Success Message
+        }).catch(error => {
+            // Show Faild Message
             Swal.fire({
                 position: 'top-end',
                 icon: 'warning',
@@ -220,15 +218,42 @@ const logout = async () => {
                 showConfirmButton: false,
                 timer: 1000
             })
-            console.log('THE ERROR', err);
+            console.log('THE ERROR', error);
         });
-        await axios.get('http://localhost:8000/sanctum/csrf-cookie');
-    } catch (err) {
-        console.log('AN ERROR OCCURED: ==> ', err);
-    }
+}
+
+
+const getImageUrl = (photo) => {
+    const baseUrl = "http://localhost:8000/storage/";
+    return baseUrl + photo; // Concatenating the base URL and the photo variable
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="css" scoped>
+.spaces-color {
+    color: white;
+    background-color: #663399;
+}
+
+.manuals-color {
+    color: white;
+    background-color: #ff7f50;
+}
+
+.articles-color {
+    color: white;
+    background-color: #ff4162;
+}
+
+.users-color {
+
+}
+
+.users-management-color {
+
+}
+
+
+</style>
 
 
