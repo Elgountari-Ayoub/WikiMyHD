@@ -2,7 +2,7 @@
   <Nav />
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow">
-      <h1 class="mb-6 text-3xl font-bold">Register</h1>
+      <h1 class="mb-6 text-3xl font-bold">Enregistrer</h1>
       <form @submit.prevent="register">
 
         <div class="mb-4">
@@ -64,12 +64,12 @@ const router = useRouter()
 async function register() {
   try {
     // Get CSRF token from Laravel
-    const csrf = await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+    const csrf = await axios.get('/sanctum/csrf-cookie');
 
     errors.value = [];
     console.log("this is the empty errors array\n", errors.value);
 
-    const res = await axios.post('http://localhost:8000/register', {
+    const res = await axios.post('/register', {
       name: name.value,
       email: email.value,
       password: password.value,
@@ -81,7 +81,7 @@ async function register() {
     // I'll not save his data cuz the register is a request to join the website, so we need to wait the approvment from the admin first
     // save it in a store
     {
-      // userStore.setUserDetails(res);
+      // userStore.setUser(res);
     }
 
     // Clear form fields

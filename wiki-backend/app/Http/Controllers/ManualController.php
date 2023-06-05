@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Space;
 use App\Models\Manual;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -22,50 +23,21 @@ class ManualController extends Controller
             $authRole = Auth::user()->role;
 
             if ($authRole == 'admin') {
-                $manuals = Manual::latest()->get();
-                // get the space of each manual
-                foreach ($manuals as $manual) {
-                    $manual['space'] = $manual->space()->first();
-                    $manual['user'] = $manual->user()->first();
-                }
-
-                Log::info("\nmanualController/index/admin:\n\t manuals => $manuals\n\n");
-
+                $manuals =  Manual::with('users', 'space')->orderBy('id', 'desc')->get();
                 return response()->json([
                     'manuals' => $manuals
                 ], 200);
             } else {
-                $manuals = Manual::where('id_user', Auth::user()->id)->latest()->get();
-                foreach ($manuals as $manual) {
-                    $manual['space'] = $manual->space()->first();
-                    $manual['user'] = $manual->user()->first();
-                }
-
-                Log::info("\nmanualController/index/user:\n\t manuals => $manuals\n\n");
+                $user = User::findOrFail(Auth::id());
+                $manuals = $user->manuals()->with('users', 'space')->latest()->get();
                 return response()->json([
                     'manuals' => $manuals,
                 ], 200);
             }
-        } catch (\Throwable $th) {
+        } catch (Exception $e) {
             return response()->json([
-                'message' => 'FAIL TO GET THE MANUALS',
-            ], 404);
-        }
-    }
-    public function manualsBySpace($space_id)
-    {
-        try {
-            $space = Space::find($space_id);
-            $manuals = $space->manuals()->get();
-            foreach ($manuals as $manual) {
-                $manual['space'] = $space;
-            }
-            return response()->json([
-                'manuals' => $manuals,
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'FAIL TO GET THE MANUALS BY THE SPACE',
+                'spaces' => null,
+                'message' => $e->getMessage()
             ], 404);
         }
     }
@@ -77,31 +49,92 @@ class ManualController extends Controller
     public function store(Request $request)
     {
         try {
-            $userId = Auth::id();
+            // VALIDATE REQUEST
             $request->validate([
+                'space_id' => 'required',
                 'title' => 'required',
-                'description' => 'required',
-                'id_space' => 'required'
+                'description' => 'required'
             ]);
-            $request['id_user'] = $userId;
+            $manual = new Manual();
+            $manual->space_id = $request->space_id;
+            $manual->title = $request->title;
+            $manual->description = $request->description;
+            $manual->save();
 
-            return Manual::create($request->all());
-        } catch (\Throwable $th) {
-            //throw $th;
+            $creator_id = Auth::id();
+            $pivotData = [
+                'is_creator' => true,
+            ];
+            $manual->users()->syncWithoutDetaching([$creator_id => $pivotData]);
+
+            $manual = Manual::with('users', 'space')->findOrFail($manual->id);
+
             return response()->json([
-                'message' => 'Bro, w9a3 chi blan f l\'insertion dyal manual',
-                'your fucking rquest' => $request
-            ]);
+                'manual' => $manual
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'manual' => null,
+                'message' => $e->getMessage()
+            ], 401);
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Manual $manual)
+
+    public function show($id)
     {
-        return Manual::find($manual);
+        try {
+            if (Auth::user()->role == 'admin') {
+                // GET THE SPACE AND HIS USERS, MANUALS DATA
+                $manual = Manual::with('users', 'space')->findOrFail($id);
+
+                return response()->json([
+                    'manual' => $manual
+                ], 200);
+            } else {
+                $user = User::findOrFail(Auth::id());
+                $manual = $user->manuals()->with('users', 'space')->findOrFail($id);
+
+                return response()->json([
+                    'manual' => $manual
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'manual' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
     }
+
+    public function getManualsBySpaceId($spaceId)
+    {
+        try {
+            if (Auth::user()->role == 'admin') {
+                $manuals = Manual::with('users', 'space')->where('space_id', $spaceId)->get();
+
+                return response()->json([
+                    'manuals' => $manuals
+                ], 200);
+            } else {
+                $user = User::findOrFail(Auth::id());
+                $manuals = $user->manuals()->where('space_id', $spaceId)->with('users', 'space')->get();
+                
+                return response()->json([
+                    'manuals' => $manuals
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'manual' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+
 
 
     /**
@@ -109,9 +142,28 @@ class ManualController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $space = Manual::find($id);
-        $space->update($request->all());
-        return $space;
+        try {
+            // VALIDATE REQUEST
+            $request->validate([
+                'title' => 'required',
+                'description' => 'required'
+            ]);
+
+            $manual = Manual::findOrFail($id);
+            $manual->title = $request->title;
+            $manual->description = $request->description;
+            $manual->save();
+
+            $manual = Manual::with('users', 'space')->find($manual->id);
+            return response()->json([
+                'manual' => $manual
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'manual' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
     }
 
     /**
@@ -120,9 +172,20 @@ class ManualController extends Controller
     public function destroy($id)
     {
         try {
-            return Manual::destroy($id);
-        } catch (\Throwable $th) {
-            //throw $th;
+
+            // DELETE THE SPACE
+            $manual = Manual::with('users', 'space')->findOrFail($id);
+            $manual->delete();
+
+            // GET THE SPACE AND HIS USERS, MANUALS DATA
+            return response()->json([
+                'manual' => $manual
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'manual' => null,
+                'message' => $e->getMessage()
+            ], 402);
         }
     }
 
@@ -135,8 +198,26 @@ class ManualController extends Controller
      */
     public function search($title)
     {
-        $manual = Manual::where('title', 'like', '%' . $title . '%')->get();
+        try {
+            if (Auth::user()->role == 'admin') {
+                $manuals = Manual::where('title', 'like', '%' . $title . '%')->with('users', 'space')->get();
 
-        return response()->json($manual ?? null);
+                return response()->json([
+                    'manuals' => $manuals
+                ], 200);
+            } else {
+                $user = User::findOrFail(Auth::id());
+                $manuals = $user->manuals()->where('title', 'like', '%' . $title . '%')->with('users', 'space')->get();
+
+                return response()->json([
+                    'manuals' => $manuals ?? null
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'manuals' => null,
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 }

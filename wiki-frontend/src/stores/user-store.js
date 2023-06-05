@@ -14,9 +14,12 @@ export const useUserStore = defineStore("user", {
     role: null,
     post: null,
     isAdmin: false,
+    spaces: null,
+    manuals: null,
   }),
   actions: {
-    async setUserDetails(res) {
+    async setUser(res) {
+      console.log(res.data.user);
       this.$state.id = res.data.user.id;
       this.$state.name = res.data.user.name;
       this.$state.email = res.data.user.email;
@@ -26,13 +29,17 @@ export const useUserStore = defineStore("user", {
       this.$state.status = res.data.user.status;
       this.$state.role = res.data.user.role;
       this.$state.post = res.data.user.post;
+      this.$state.spaces = res.data.user.spaces;
+      this.$state.manuals = res.data.user.manuals;
       this.$state.isAdmin = res.data.user.role === "admin" ? true : false;
     },
-    async fetchUser() {
+    async getUser() {
       try {
         const res = await axios
-          .get("http://localhost:8000/api/user")
+          .get("/api/users/getauth")
           .then((respnose) => {
+            console.log(respnose.data.user);
+
             this.$state.id = respnose.data.user.id;
             this.$state.name = respnose.data.user.name;
             this.$state.email = respnose.data.user.email;
@@ -42,6 +49,8 @@ export const useUserStore = defineStore("user", {
             this.$state.status = respnose.data.user.status;
             this.$state.role = respnose.data.user.role;
             this.$state.post = respnose.data.user.post;
+            this.$state.spaces = respnose.data.user.spaces;
+            this.$state.manuals = respnose.data.user.manuals;
 
             this.$state.isAdmin =
               respnose.data.user.role === "admin" ? true : false;
@@ -50,7 +59,7 @@ export const useUserStore = defineStore("user", {
           })
           .catch((error) => {
             console.log(
-              "FAILED IN GETTING THE USER!,\nERROR MESSAGE => ",
+              "FAILED IN GETTING THE USER!,The ERROR MESSAGE => ",
               error.message
             );
             return false;
@@ -69,6 +78,8 @@ export const useUserStore = defineStore("user", {
       this.$state.status = null;
       this.$state.role = null;
       this.$state.post = null;
+      this.$state.spaces = null;
+      this.$state.manuals = null;
       this.$state.isAdmin = false;
     },
   },

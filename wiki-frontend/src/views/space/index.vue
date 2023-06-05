@@ -23,7 +23,7 @@
                                         clip-rule="evenodd"></path>
                                 </svg>
                             </div>
-                            <input v-model="searchInput" name="search" type="text" id="simple-search"
+                            <input @change="search" v-model="searchInput" name="search" type="text" id="simple-search"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
                                 placeholder="Search">
                         </div>
@@ -38,6 +38,74 @@
                         </button>
                     </form>
                 </div>
+                <!-- spaces -->
+            <!-- <div class="text-center p-4 pb-8 text-2xl">
+                    {{ spaceIdStore.spaceId ?? 'Les Espaces' }}
+                                                                                                                                                    </div> -->
+                <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
+                <div v-else class="grid 
+                sm:grid-cols-1 
+                md:grid-cols-2  
+                lg:grid-cols-3
+                xl-custom-grid-cols-4
+                xl:grid-cols-4
+                gap-4 mb-4">
+
+                    <div v-for="space in spacesStore.spaces" :key="space.id"
+                        class="flex flex-col rounded-md justify-between gap-2 rounded h-52 bg-gray-50 shadow dark:bg-gray-800">
+
+                        <!-- class="flex items-center justify-center w-16 h-16  text-center text-white  rounded-full m-auto " -->
+                        <!-- class="flex items-center justify-cente w-16 h-16 text-lg text-white rounded-full m-auto " -->
+
+                        <button @click="getManuals(space.id)"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: space.color }">
+                            <span class="text-2xl ">{{
+                                space.title[0].toUpperCase() }}</span>
+                        </button>
+
+                    <!-- <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-500 m-auto text-white">
+                            <span class="text-lg font-bold">S</span>
+                                                                                                            </div> -->
+
+                        <div class="flex justify-center px-8 py-2 items-center">
+
+                            <button @click="getManuals(space.id)" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
+                            </button>
+                            <!-- Modal  Edit/Delete Space Buttons-->
+                            <Dropdown class="ml-auto cursor-pointer" v-if='userStore.isAdmin'>
+                                <template #trigger>
+                                    <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
+                                        class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
+                                        </path>
+                                    </svg>
+                                </template>
+                                <template #content>
+                                    <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
+                                        <button @click="openEditSpaceModal(space.id, space.title, space.description)"
+                                            class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
+                                            Editer
+                                        </button>
+                                        <!-- {{ space.id }} -->
+                                        <button @click="deleteSpace(space.id)"
+                                            class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </template>
+                            </Dropdown>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
 
                 <!-- Modal  Add Space form-->
                 <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
@@ -90,57 +158,6 @@
                         </form>
                     </div>
                 </div>
-                <!-- spaces -->
-
-            <!-- <div class="text-center p-4 pb-8 text-2xl">
-                    {{ spaceIdStore.spaceId ?? 'Les Espaces' }}
-                    </div> -->
-                <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
-                <div v-else class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-
-                    <div v-for="space in spacesStore.spaces" :key="space.id"
-                        class="flex flex-col rounded-md justify-between gap-2 rounded h-52 bg-gray-50 shadow dark:bg-gray-800">
-
-                        <button @click="getManuals(space.id)" class="text-black border rounded-full m-auto w-14 h-14"
-                            :style="{ backgroundColor: space.color }">{{
-                                space.title[0] }}
-                        </button>
-
-                        <div class="flex justify-center px-8 py-2 items-center">
-
-                            <button @click="getManuals(space.id)" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
-                            </button>
-
-                            <!-- Modal  Edit/Delete Space Buttons-->
-                            <Dropdown class="ml-auto cursor-pointer" v-if='userStore.isAdmin'>
-                                <template #trigger>
-                                    <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
-                                        class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
-                                        </path>
-                                    </svg>
-                                </template>
-                                <template #content>
-                                    <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                                        <button @click="openEditSpaceModal(space.id, space.title, space.description)"
-                                            class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
-                                            Editer
-                                        </button>
-                                        <!-- {{ space.id }} -->
-                                        <button @click="deleteSpace(space.id)"
-                                            class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </template>
-                            </Dropdown>
-
-                        </div>
-                    </div>
-
-                </div>
 
             </div>
         </DashboardLayout>
@@ -155,7 +172,7 @@ import Swal from 'sweetalert2';
 import Dropdown from '../../components/global/Dropdown.vue';
 import { useUserStore } from '../../stores/user-store';
 
-import { ref, watchEffect, onMounted } from 'vue';
+import { ref, watchEffect, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { RouterView, useRouter } from 'vue-router';
 import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
@@ -173,6 +190,10 @@ const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
 onMounted(async () => {
     spaceIdStore.spaceId = null;
+
+    if (spacesStore.spaces.length == 0) {
+        await spacesStore.getSpaces();
+    }
 });
 
 const isModalOpen = ref(false);
@@ -209,22 +230,21 @@ const form = ref({
     description: null,
 })
 
-const spaces = ref([]);
 
 // Add Space
 const addSpace = async () => {
-    try {
-        const response = await axios.post('http://localhost:8000/api/spaces', {
-            title: form.value.title,
-            description: form.value.description
-        });
-
+    await axios.post('/api/spaces', {
+        title: form.value.title,
+        description: form.value.description
+    }).then(async (response) => {
+        console.log('response gg', response);
         // Reset form fields after successful submission
-        form.value.is = '';
+        closeModal();
+        form.value.id = '';
         form.value.title = '';
         form.value.description = '';
-        closeModal();
-
+        // spacesStore.setSpaces(response);
+        await spacesStore.getSpaces();
         // Swal.fire({
         //     position: 'top-end',
         //     icon: 'success',
@@ -233,13 +253,7 @@ const addSpace = async () => {
         //     showConfirmButton: false,
         //     timer: 1500,
         // })
-
-        await spacesStore.fetchSpaces();
-        await manualsStore.fetchManuals();
-        await userStore.fetchUser();
-        console.log(manualsStore.manuals);
-    } catch (error) {
-        // Handle the error here if needed
+    }).catch(error => {
         Swal.fire({
             position: 'top-end',
             icon: 'warning',
@@ -248,23 +262,22 @@ const addSpace = async () => {
             timer: 1500
         })
         console.error(error);
-    }
+    });
 };
 
 // Edit Space
 const editSpace = async () => {
-    try {
-        const response = await axios.post(`http://localhost:8000/api/spaces/${form.value.id}`, {
-            _method: 'PUT',
-            title: form.value.title,
-            description: form.value.description
-        });
-
+    await axios.post(`/api/spaces/${form.value.id}`, {
+        _method: 'PUT',
+        title: form.value.title,
+        description: form.value.description
+    }).then(async (response) => {
         // Reset form fields after successful submission
+        closeEditSpaceModal();
         form.value.is = '';
         form.value.title = '';
         form.value.description = '';
-        closeEditSpaceModal();
+        await spacesStore.getSpaces();
 
         // Swal.fire({
         //     position: 'top-end',
@@ -274,12 +287,7 @@ const editSpace = async () => {
         //     showConfirmButton: false,
         //     timer: 1500,
         // })
-        spacesStore.fetchSpaces();
-        manualsStore.fetchManuals();
-        userStore.fetchUser();
-        // Close the modal after form submission
-    } catch (error) {
-        // Handle the error here if needed
+    }).catch(error => {
         Swal.fire({
             position: 'top-end',
             icon: 'warning',
@@ -288,46 +296,37 @@ const editSpace = async () => {
             timer: 1500
         })
         console.error(error);
-    }
-
-
-    // Show the Edit form
-    // store the new space data into  a from just like the add
-    //send an update request like the add, but with put request
-    // make sure u set the api route
+    });
 }
 
 // delete Space
 const deleteSpace = async (spaceId) => {
     // show a sweet alert for the confirmation
-    try {
-        console.log(spaceId);
-        const response = await axios.delete(`/spaces/${spaceId}`);
-        console.log('response => ', response);
-        await spacesStore.fetchSpaces();
-        console.log('fetchSpaces => ', spacesStore.spaces);
-        manualsStore.fetchManuals();
-        userStore.fetchUser();
+    console.log(spaceId);
+    await axios.delete(`/api/spaces/${spaceId}`)
+        .then(async (response) => {
+            await spacesStore.getSpaces();
 
-        // Swal.fire({
-        //     position: 'top-end',
-        //     icon: 'success',
-        //     title: 'L\'espace a été supprimé avec succès',
-        //     showConfirmButton: false,
-        //     timer: 1500
+        }).catch(error => {
+            console.log(error);
+            Swal.fire({
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Échec de la suppression, actualisez la page et réessayez',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+        );
+    // Swal.fire({
+    //     position: 'top-end',
+    //     icon: 'success',
+    //     title: 'L\'espace a été supprimé avec succès',
+    //     showConfirmButton: false,
+    //     timer: 1500
 
-        // })
+    // })
 
-    } catch (err) {
-        console.log(err);
-        Swal.fire({
-            position: 'top-end',
-            icon: 'warning',
-            title: 'Échec de la suppression, actualisez la page et réessayez',
-            showConfirmButton: false,
-            timer: 1500
-        })
-    }
 }
 
 // getManuals
@@ -359,24 +358,30 @@ watchEffect(() => {
     };
 });
 
-
 // Search
 const searchInput = ref(null)
+watch(searchInput, () => {
+    setTimeout(search, 1000);
+
+});
+const spaces = ref([]);
 const search = async () => {
     try {
-        if (searchInput.value === null) {
-            return;
+        let isEmpty = /^\s*$/.test(searchInput.value);
+        if (isEmpty) {
+            spacesStore.getSpaces();
+            console.log();
         }
-        const response = await axios.get(`http://localhost:8000/api/spaces/search/${searchInput.value}`);
+        const response = await axios.get(`/api/spaces/search/${searchInput.value}`);
 
         // Handle the response here if needed
-        console.log(response.data);
-        spaces.value = response.data;
+        console.log(response.data.spaces);
+        spacesStore.setSpaces(response);
 
         // give the 1st letter a color
-        spaces.value.forEach(element => {
-            element['color'] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        });
+        // spaces.value.forEach(element => {
+        //     element['color'] = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        // });
         // Reset form fields after successful submission
         // searchInput.value = null;
 
@@ -386,6 +391,13 @@ const search = async () => {
         console.error(error);
     }
 };
+
 </script>
 
-<style></style>
+<style>
+@media (min-width: 1280px) {
+    .xl-custom-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+}
+</style>

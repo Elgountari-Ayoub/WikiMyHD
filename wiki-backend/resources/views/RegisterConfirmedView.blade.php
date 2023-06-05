@@ -7,22 +7,25 @@
 @endslot
 
 {{-- Body --}}
-# Congratulations, your sign-up request has been approved!
+# Félicitations, votre demande d'inscription a été approuvée !
 
-Hello {{ $userName}},
+Bonjour {{ $userName }},
 
-We are delighted to inform you that your sign-up request has been approved. You can now access the following spaces:
+Nous sommes ravis de vous informer que votre demande d'inscription a été approuvée. Vous pouvez maintenant accéder aux espaces suivants :
 
 @component('mail::panel')
 @foreach ($spaces as $space)
-- {{ $space['name'] }}
+* {{ $space['title'] }}
+@foreach ($space['manuals'] as $manual)
+    * {{ $manual['title'] }}
+@endforeach
 @endforeach
 @endcomponent
 
-To get started, please click the button below to visit the login page:
+Pour commencer, veuillez cliquer sur le bouton ci-dessous pour accéder à la page de connexion :
 
 @component('mail::button', ['url' => $loginUrl, 'color' => 'primary'])
-Go to Login Page
+Accéder à la page de connexion
 @endcomponent
 
 {{-- Logo--}}
@@ -32,13 +35,12 @@ Go to Login Page
 
 </div>
 
-
-If you have any questions or need assistance, please feel free to contact our support team.
+Si vous avez des questions ou avez besoin d'aide, n'hésitez pas à contacter notre équipe d'assistance.
 
 {{-- Footer --}}
 @slot('footer')
 @component('mail::footer')
-&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+&copy; {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.
 @endcomponent
 @endslot
 @endcomponent

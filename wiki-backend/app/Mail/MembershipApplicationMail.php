@@ -9,30 +9,34 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class RegisterConfirmedMail extends Mailable
+class MembershipApplicationMail extends Mailable
 {
     use Queueable, SerializesModels;
+
     public $userName;
-    public $spaces;
-    public $loginUrl;
-    public $logoUrl;
+    public $userEmail;
+    public $userPoste;
+
+    public $demandesUrl;
+
     /**
      * Create a new message instance.
      */
-    public function __construct($userName, $spaces, $loginUrl, $logoUrl)
+    public function __construct($name, $email, $poste, $demandesUrl)
     {
-        $this->userName = $userName;
-        $this->spaces = $spaces;
-        $this->loginUrl = $loginUrl;
-        $this->logoUrl = $logoUrl;
+        $this->userName = $name;
+        $this->userEmail = $email;
+        $this->userPoste = $poste;
+        $this->demandesUrl = $demandesUrl;
     }
+
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Demande d\'adhésion à WikiMyHD approuvée',
+            subject: 'Demande d\'adhésion à WikiMyHD',
         );
     }
 
@@ -42,7 +46,7 @@ class RegisterConfirmedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'RegisterConfirmedView',
+            markdown: 'MembershipApplicationView',
         );
     }
 

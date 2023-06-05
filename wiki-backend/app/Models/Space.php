@@ -12,14 +12,14 @@ class Space extends Model
 
     protected $guarded = [];
 
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsToMany(User::class)->withPivot('is_creator');
     }
 
     public function manuals()
     {
-        return $this->hasMany(Manual::class, 'id_space');
+        return $this->hasMany(Manual::class, 'space_id');
     }
 
     

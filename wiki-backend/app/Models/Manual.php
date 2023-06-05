@@ -10,13 +10,14 @@ class Manual extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsToMany(User::class)->withPivot('is_creator');;
     }
+    
     public function space()
     {
-        return $this->belongsTo(Space::class, 'id_space');
+        return $this->belongsTo(Space::class);
     }
 
 

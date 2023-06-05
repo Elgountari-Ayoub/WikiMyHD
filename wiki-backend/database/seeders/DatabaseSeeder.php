@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Manual;
 use App\Models\Space;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 use Illuminate\Support\Facades\Hash;
@@ -21,16 +22,16 @@ class DatabaseSeeder extends Seeder
 
         $password = Hash::make('admin');
         \App\Models\User::factory()->create([
-            'name' => 'Data Science',
-            'email' => 'karjane@havetdigital.fr',
-            'post' => 'Data scientist',
+            'name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'post' => 'director',
             'password' => $password,
             'role' => 'admin',
             'status' => 1,
         ]);
 
         $password = Hash::make('ayoub');
-        \App\Models\User::factory()->create([
+        User::factory()->create([
             'name' => 'Ayoub',
             'email' => 'ayoub@gmail.com',
             'post' => 'Web developer',
@@ -39,14 +40,68 @@ class DatabaseSeeder extends Seeder
             'status' => 1,
         ]);
 
-        // Space::factory()->count(10)->create();
-        // Space::factory()->count(5)->create([
-        //     'id_user' => 2 
+        $password = Hash::make('hamid');
+        User::factory()->create([
+            'name' => 'Hamid',
+            'email' => 'hamid@gmail.com',
+            'post' => 'Builder',
+            'password' => $password,
+            'role' => 'user',
+            'status' => 0,
+        ]);
+
+        // for ($i = 65; $i <= 90; $i++) {
+        //     $letter = chr($i);
+        //     Space::factory()->create([
+        //         'title' => "$letter" . PHP_EOL,
+        //         'description' => 'space description'
+        //     ]);
+        // }
+
+
+        // $admin = User::find(1);
+        // $admin->spaces()->syncWithoutDetaching([1 => ['is_creator' => true]]);
+
+        // $ayoub = User::find(2);
+        // $ayoub->spaces()->syncWithoutDetaching([1]);
+
+
+        // Space::factory()->create([
+        //     'title' => 'space 2',
+        //     'description' => 'space 2 description'
         // ]);
-        // Manual::factory()->count(5)->create();
-        // Manual::factory()->count(3)->create([
-        //     'id_space' => 2,
-        //     'id_user' => 2
+
+        // $admin = User::find(1);
+        // $admin->spaces()->syncWithoutDetaching([2 => ['is_creator' => false]]);
+
+
+        // Manual::factory()->create([
+        //     'space_id' => 1,
+        //     'title' => 'manual 1',
+        //     'description' => 'manual 2 description'
+        // ]);
+
+        // $admin = User::find(1);
+        // $admin->manuals()->syncWithoutDetaching([1 => ['is_creator' => true]]);
+
+        // $admin = User::find(1);
+        // $admin->manuals()->syncWithoutDetaching([1 => ['is_creator' => true]]);
+
+        // Manual::factory()->create([
+            // 'space_id' => 1,
+            // 'title' => 'manual 2',
+            // 'description' => 'manual 2 description'
+        // ]);
+
+        // Manual::factory()->create([
+            // 'space_id' => 2,
+            // 'title' => 'manual 3',
+            // 'description' => 'manual 2 description'
+        // ]);
+        // Manual::factory()->create([
+            // 'space_id' => 2,
+            // 'title' => 'manual 4',
+            // 'description' => 'manual 2 description'
         // ]);
     }
 }

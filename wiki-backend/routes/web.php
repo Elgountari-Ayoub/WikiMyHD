@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\RegisterConfirmedMailController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+// Route::get('/getUser', [UserController::class, 'show']);
 Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });

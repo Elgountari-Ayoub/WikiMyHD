@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Manual;
+use App\Models\Space;
 use Exception;
 use App\Models\User;
+use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -18,36 +22,65 @@ class UserController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'users' => User::latest()->get()
-        ], 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        try {
+            // GET THE USERS AND HIS SPACES, MANUALS DATA
+            $users = User::with('spaces', 'manuals')->get();
+            return response()->json([
+                'users' => $users
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'users' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         try {
-            $user = User::findOrFail($id);
+            // GET THE USERS AND HIS SPACES, MANUALS DATA
+            $user = User::with('spaces', 'manuals')->findOrFail($id);
             return response()->json([
                 'user' => $user
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'something went wrong',
-                'error' => $e->getMessage()
-            ]);
+                'user' => null,
+                'message' => $e->getMessage()
+            ], 402);
         }
     }
+
+    /**
+     * DISPLAY THE AUTH USER
+     */
+    public function getAuth()
+    {
+        try {
+            $id = Auth::id();
+            // GET THE USERS AND HIS SPACES, MANUALS DATA
+            $user = User::with('spaces', 'manuals')->findOrFail($id);
+            // $spaces = $user->spaces()->with('users', 'manuals')->latest();
+            // $user->spaces = $user->spaces()->with('users', 'manuals')->latest();
+            // $user->manuals = $user->manuals()->with('users', 'space')->latest();
+
+
+            return response()->json([
+                'user' => $user
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'user' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -119,40 +152,153 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $this->setStatus($id, 0);
+        $this->updateStatus($id, 0);
     }
 
-    public function setStatus(Request $request)
+    /**
+     * Update the specified resource from storage
+     */
+    public function updateStatus(Request $request)
     {
         try {
             $request->validate(
                 [
-                    'id_user' => 'required',
+                    'user_id' => 'required',
                     'status' => 'required',
                 ]
             );
 
-            User::whereIn('id', [$request->id_user])
-            ->update([
-                'status' => $request->status,
-            ]);
-            
-            $user = User::find($request->id_user);
+            User::whereIn('id', [$request->user_id])
+                ->update([
+                    'status' => $request->status,
+                ]);
+
+            $user = User::find($request->user_id);
+            $spaces = $user->spaces()->with('manuals')->get();
+
+            // $spaces = $user->manuals()->where('space_id', $spaceId)->with('users', 'space')->get();
+            // $spaces = $user->spaces->where('user_id', $user->id)->with('users', 'space')->get();
+
+
+            $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
+                $query->whereHas('users', function ($query) use ($user) {
+                    $query->where('users.id', $user->id);
+                });
+            }])->get();
+
+
+
+
+            Log::info("$spaces");
 
             // send a register confirmed mail
-            // RegisterConfirmedMailController
-            $mail = new RegisterConfirmedMailController();
+            $mail = new RegisterConfirmedMailController($user->name, $spaces);
             $mail->sendMail();
             // Return a success response
             return response()->json([
                 'message' => 'User status updated successfully',
-                'user' => $user
+                'user' => $user,
+                'spaces' => $spaces,
             ], 200);
-        } catch (\Throwable $th) {
+        } catch (Exception $e) {
             return response()->json([
-                'message' => 'error in updating user status',
-                'user' => $user
+                'error' => $e->getMessage(),
+                'user' => null
             ], 404);
+        }
+    }
+
+
+    public function getAuthStatus()
+    {
+        $user = Auth::user() ?? null;
+        return response()->json([
+            'res' => $user === null ? false : true
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            // VALIDATE REQUEST
+            $request->validate([
+                'title' => 'required',
+                'description' => 'required'
+            ]);
+            $space = new Space();
+            $space->title = $request->title;
+            $space->description = $request->description;
+            $space->save();
+
+
+            // ADD SPACE USER
+            $creator_id = Auth::id();
+            $pivotData = [
+                'is_creator' => true, //tHE REQUEST PROTECTED BY THE IS_ADMIN MIDDLEWARE !!
+            ];
+            $space->users()->syncWithoutDetaching([$creator_id => $pivotData]);
+
+            // GET THE SPACE WITH HIS USERS, MANUAL DATA
+            $space = Space::with('users', 'manuals')->find($space->id);
+            return response()->json([
+                'space' => $space
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'space' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+
+    public function assignSpace(Request $request)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required',
+                'spaces' => 'required|array'
+            ]);
+
+            $user = User::findOrFail($request->user_id);
+
+            $spaces = Space::whereIn('id', $request->spaces)->get();
+
+            $user->spaces()->syncWithoutDetaching($spaces->pluck('id')->toArray());
+
+            return response()->json([
+                'user' => $user,
+                'space assigned' => true
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'space assigned' => false,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+    public function assignManual(Request $request)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required',
+                'manuals' => 'required|array'
+            ]);
+
+            $user = User::findOrFail($request->user_id);
+
+            $manuals = Manual::whereIn('id', $request->manuals)->get();
+
+            $user->manuals()->syncWithoutDetaching($manuals->pluck('id')->toArray());
+
+            return response()->json([
+                'user' => $user,
+                'manual assigned' => true
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'manual assigned' => false,
+                'message' => $e->getMessage()
+            ], 402);
         }
     }
 }

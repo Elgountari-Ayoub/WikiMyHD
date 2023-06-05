@@ -12,7 +12,7 @@ import { useUserStore } from './stores/user-store';
 import { useSpacesStore } from './stores/spaces-store';
 import { useManualsStore } from './stores/manuals-store';
 
-axios.defaults.baseURL = 'http://localhost:8000/api'
+axios.defaults.baseURL = 'http://localhost:8000'
 axios.defaults.withCredentials = true;
 
 </script>

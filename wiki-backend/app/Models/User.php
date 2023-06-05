@@ -55,13 +55,17 @@ class User extends Authenticatable
 
     public function has()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
 
     
     public function spaces()
     {
-        return $this->hasMany(Space::class, 'id_user');
+        return $this->belongsToMany(Space::class)->withPivot('is_creator');
+    }
+    public function manuals()
+    {
+        return $this->belongsToMany(Manual::class)->withPivot('is_creator');
     }
 }

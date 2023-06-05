@@ -17,11 +17,9 @@ class ManualFactory extends Factory
      */
     public function definition(): array
     {
-        $email = 'ayoub@gmail.com';
-        $user = User::where('email', $email)->first();
+
         return [
-            'id_user' => $user->id,
-            'id_space' => 1,
+            'space_id' => 1,
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
         ];

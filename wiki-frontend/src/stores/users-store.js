@@ -6,7 +6,9 @@ export const useUsersStore = defineStore("users", {
     users: [], // Array to store multiple users
   }),
   actions: {
-    async setUsersDetails(users) {
+    async setUsers(res) {
+      console.log('users res', res);
+      let users = res.data.users
       this.$state.users = users.map((user) => ({
         id: user.id,
         name: user.name,
@@ -19,10 +21,10 @@ export const useUsersStore = defineStore("users", {
         post: user.post,
       }));
     },
-    async fetchUsers() {
+    async getUsers() {
       try {
-        const res = await axios.get("http://localhost:8000/api/users");
-        this.setUsersDetails(res.data.users);
+        const res = await axios.get("/api/users");
+        this.setUsers(res);
         return true;
       } catch (error) {
         return false;

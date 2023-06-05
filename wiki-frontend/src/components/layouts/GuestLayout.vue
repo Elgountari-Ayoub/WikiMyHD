@@ -60,7 +60,7 @@
                                 <li>
                                     <a href="#"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Sign out</a>
+                                        role="menuitem">Se déconnecter</a>
                                 </li>
                             </ul>
                         </div>
@@ -69,7 +69,7 @@
             </div>
         </div>
     </nav>
-
+    
     <aside id="logo-sidebar"
         class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Sidebar">
@@ -228,7 +228,6 @@
 <script setup>
 import Footer from '../Footer.vue';
 import Nav from '../Nav.vue';
-
 
 </script>
 

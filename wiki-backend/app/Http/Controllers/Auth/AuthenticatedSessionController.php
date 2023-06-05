@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\UserController;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -17,20 +20,30 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request) //: Response
     {
-        // return redirect('/');
-        $request->authenticate();
-        $request->session()->regenerate();
-        $user = Auth::user();
-        if ($user->status === 1) {
+        try {
+            $request->authenticate();
+            $request->session()->regenerate();
+            $id = Auth::id();
+            $user = User::findOrFail($id);
+            if ($user->status === 1) {
+                return response()->json([
+                    'user' => $user,
+                    'approved' => true
+                ], 200);
+            } else {
+                Auth::logout($user);
+                return response()->json([
+                    'user' => $user,
+                    'approved' => false
+                ], 200);
+            }
+        } catch (Exception $e) {
+            Auth::logout($user);
             return response()->json([
-                'user' => $user,
-            ]);
+                'user' => null,
+                'error message' => $e->getMessage()
+            ], 404);
         }
-        Auth::logout($user);
-        return response()->json([
-            'user' => null,
-        ]);
-        return response()->noContent();
     }
 
     /**

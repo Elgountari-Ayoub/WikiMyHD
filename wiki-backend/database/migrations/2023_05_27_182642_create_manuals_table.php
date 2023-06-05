@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('manuals', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_user');
-            $table->unsignedBigInteger('id_space');
+            $table->unsignedBigInteger('space_id');
             $table->string('title');
             $table->longText('description');
             $table->timestamps();
+            
+            $table->foreign('space_id')->references('id')->on('spaces')->onDelete('cascade');;
 
-            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('id_space')->references('id')->on('spaces')->onDelete('cascade');
         });
     }
 

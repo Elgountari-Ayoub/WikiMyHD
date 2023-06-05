@@ -3,7 +3,7 @@
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
         <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow ms:px-16">
             <!-- {{ user }} -->
-            <h1 class="mb-6 text-3xl font-bold">Login</h1>
+            <h1 class="mb-6 text-3xl font-bold">Connexion</h1>
             <form @submit.prevent="login">
                 <div class="mb-4">
                     <TextInput label="Email" inputType="email" placeholder="elgountariayoub22@gmai.com"
@@ -51,60 +51,20 @@ const router = useRouter();
 async function login() {
     errors.value = []
     // Get CSRF token from Laravel
-    await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+    await axios.get('/sanctum/csrf-cookie');
     // console.log(email.value, '\n', password.value.length);
-    await axios.post('http://localhost:8000/login', {
+    await axios.post('/login', {
         email: email.value,
         password: password.value,
     }).then(async (response) => {
-        console.log('user logged in success!, response:\n', response.data.user ?? 'the user not approved');
+        console.log('user logged in success!, response:\n', response);
+
         // after the logged in, let's check if the user has been approved
-        if (response.data.user) {
+        if (response.data.user.status === 1) {
             console.log('user has been approved, Great!\n');
             // save the logged user data in the userStore
-            userStore.setUserDetails(response);
+            await userStore.getUser();
             console.log('the user data saved with success:\n', userStore);
-
-            // get spaces
-            try {
-                const spacesRes = await axios.get('http://localhost:8000/api/spaces');
-                console.log('the user spaces fetched with success!\n');
-
-                spacesStore.setSpacesDetails(spacesRes);
-                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
-            } catch (err) {
-                console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', err);
-            }
-
-            // GET THE LOGGED SPACES
-            await axios.get('http://localhost:8000/api/spaces').then(response => {
-                console.log('the user spaces fetched with success!\n');
-                spacesStore.setSpacesDetails(response);
-                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
-            }).catch(error => {
-                console.log('ERROR IN FETCHIGN/SAVING SPACES\n\n', error);
-            });
-
-
-            // GET THE LOGGED USER MANUALS
-            await axios.get('http://localhost:8000/api/manuals').then(response => {
-                console.log('the user manuals fetched with success:\n',);
-                manualsStore.setManualsDetails(response)
-                console.log('the user manuals saved with success!\n\n', response);
-            }).catch(error => {
-                console.log('ERROR IN FETCHIGN MANUALS\n\n', error);
-            })
-
-            // GET THE USERS DATA IF THE LOGGED IN USER IS AN ADMIN
-            if (userStore.isAdmin) {
-                await axios.get('http://localhost:8000/api/users').then(response => {
-                    console.log('the users data fetched with success:\n');
-                    usersStore.setUsersDetails(response.data.users)
-                    console.log('the users data saved with success:\n', usersStore);
-                }).catch(error => {
-                    console.log('ERROR IN FETCHIGN USERS\n\n', error);
-                })
-            }
 
             // Show Success Message
             Swal.fire({
@@ -114,31 +74,74 @@ async function login() {
                 showConfirmButton: false,
                 timer: 1000
             })
+
             router.push({ name: 'profileSection' })
+
+            return;
+            // get spaces
+            try {
+                const spacesRes = await axios.get('/api/spaces');
+                console.log('the user spaces geted with success!\n');
+
+                spacesStore.setSpaces(spacesRes);
+                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
+            } catch (err) {
+                console.log('ERROR IN getIGN/SAVING SPACES\n\n', err);
+            }
+
+            // GET THE LOGGED SPACES
+            await axios.get('/api/spaces').then(response => {
+                console.log('the user spaces geted with success!\n');
+                spacesStore.setSpaces(response);
+                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
+            }).catch(error => {
+                console.log('ERROR IN getIGN/SAVING SPACES\n\n', error);
+            });
+
+
+            // GET THE LOGGED USER MANUALS
+            await axios.get('/api/manuals').then(response => {
+                console.log('the user manuals geted with success:\n',);
+                manualsStore.setManuals(response)
+                console.log('the user manuals saved with success!\n\n', response);
+            }).catch(error => {
+                console.log('ERROR IN getIGN MANUALS\n\n', error);
+            })
+
+            // GET THE USERS DATA IF THE LOGGED IN USER IS AN ADMIN
+            if (userStore.isAdmin) {
+                await axios.get('/api/users').then(response => {
+                    console.log('the users data geted with success:\n');
+                    usersStore.setUsers(response.data.users)
+                    console.log('the users data saved with success:\n', usersStore);
+                }).catch(error => {
+                    console.log('ERROR IN getIGN USERS\n\n', error);
+                })
+            }
+
+
+
         }
         // if not approved
         else {
-            await axios.post('http://localhost:8000/logout').then(response => {
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Votre candidature n\'a pas encore été approuvée',
-                    showConfirmButton: false,
-                    timer: 3000
-                })
-            }).catch(error => {
-                console.log('ERROR IN LOGOUT\n\n', error);
+            Swal.fire({
+                icon: 'warning',
+                text: 'Votre candidature n\'a pas encore été approuvée',
+                showConfirmButton: false,
+                timer: 3000
             });
         }
     }).catch(error => {
         console.log('error in login', error);
-        if (errors.length === 0) {
+        errors.value = error.response.data.errors;
+        if (errors.value.length === 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Quelque chose s\'est mal passé!',
             })
         } else {
-            errors.value = error.response.data.errors;
+            
         }
 
     }

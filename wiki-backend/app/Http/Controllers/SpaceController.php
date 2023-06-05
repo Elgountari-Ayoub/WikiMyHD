@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Space;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Stmt\TryCatch;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -15,17 +19,28 @@ class SpaceController extends Controller
      */
     public function index()
     {
-        $authRole = Auth::user()->role;
-        if ($authRole == 'admin'){
-            $spaces =  Space::latest()->get();
+        try {
+            $authRole = Auth::user()->role;
+
+            if ($authRole == 'admin') {
+                $spaces =  Space::with('users', 'manuals')->orderBy('id', 'desc')->get();
+                return response()->json([
+                    'spaces' => $spaces,
+                ], 200);
+            } else {
+                $user = User::findOrFail(Auth::id());
+                
+                $spaces = $user->spaces()->with('users', 'manuals')->latest()->get();
+              
+                return response()->json([
+                    'spaces' => $spaces,
+                ], 200);
+            }
+        } catch (Exception $e) {
             return response()->json([
-                'spaces' => $spaces,
-            ], 200);
-        }else {
-            $spaces = Space::where('id_user', Auth::user()->id)->latest()->get();
-            return response()->json([
-                'spaces' => $spaces,
-            ], 200);
+                'spaces' => null,
+                'message' => $e->getMessage()
+            ], 404);
         }
     }
 
@@ -34,14 +49,36 @@ class SpaceController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = Auth::id();
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required'
-        ]);
-        $request['id_user'] = 1;
+        try {
+            // VALIDATE REQUEST
+            $request->validate([
+                'title' => 'required',
+                'description' => 'required'
+            ]);
+            $space = new Space();
+            $space->title = $request->title;
+            $space->description = $request->description;
+            $space->save();
 
-        return Space::create($request->all());
+
+            // ADD SPACE USER
+            $creator_id = Auth::id();
+            $pivotData = [
+                'is_creator' => true, //tHE REQUEST PROTECTED BY THE IS_ADMIN MIDDLEWARE !!
+            ];
+            $space->users()->syncWithoutDetaching([$creator_id => $pivotData]);
+
+            // GET THE SPACE WITH HIS USERS, MANUAL DATA
+            $space = Space::with('users', 'manuals')->find($space->id);
+            return response()->json([
+                'space' => $space
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'space' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
     }
 
     /**
@@ -50,13 +87,27 @@ class SpaceController extends Controller
     public function show($id)
     {
         try {
+            if (Auth::user()->role == 'admin') {
+                // GET THE SPACE AND HIS USERS, MANUALS DATA
+                $space = Space::with('users', 'manuals')->findOrFail($id);
+
+                return response()->json([
+                    'space' => $space
+                ], 200);
+            } else {
+                // GET THE SPACE AND HIS USERS, MANUALS DATA
+                $user = User::findOrFail(Auth::id());
+                $space = $user->spaces()->with('users', 'manuals')->findOrFail($id);
+
+                return response()->json([
+                    'space' => $space
+                ], 200);
+            }
+        } catch (Exception $e) {
             return response()->json([
-                'space' => Space::find($id),
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'space' => [],
-            ], 404);
+                'space' => null,
+                'message' => $e->getMessage()
+            ], 402);
         }
     }
 
@@ -66,9 +117,30 @@ class SpaceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $space = Space::find($id);
-        $space->update($request->all());
-        return $space;
+        try {
+            // VALIDATE REQUEST
+            $request->validate([
+                'title' => 'required',
+                'description' => 'required'
+            ]);
+
+            // UPDATE THE SPACE DATA OF THE AUTH USER 
+            $space = Space::findOrFail($id);
+            $space->title = $request->title;
+            $space->description = $request->description;
+            $space->save();
+
+            // GET THE SPACE AND HIS USERS, MANUALS DATA
+            $space = Space::with('users', 'manuals')->find($space->id);
+            return response()->json([
+                'space' => $space
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'space' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
     }
 
     /**
@@ -78,28 +150,50 @@ class SpaceController extends Controller
     {
         try {
 
-            Space::destroy($id);
-            $space = Space::find($id)->first();
+            // DELETE THE SPACE
+            $space = Space::with('users', 'manuals')->findOrFail($id);
+            $space->delete();
+
+            // GET THE SPACE AND HIS USERS, MANUALS DATA
             return response()->json([
-                'spaces' => $space,
-            ]);
-        } catch (\Throwable $th) {
-            //throw $th;
+                'space' => $space
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'space' => null,
+                'message' => $e->getMessage()
+            ], 402);
         }
     }
 
     /**
      * Search for a name
      *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
      */
     public function search($title)
     {
-        
-        $spaces = Space::where('title', 'like', '%' . $title . '%')->get();
+        try {
+            if (Auth::user()->role == 'admin') {
+                // GET THE SPACE AND HIS USERS, MANUALS DATA
+                $spaces = Space::where('title', 'like', '%' . $title . '%')->with('users', 'manuals')->get();
 
-        return response()->json($spaces ?? null);
+                return response()->json([
+                    'spaces' => $spaces
+                ], 200);
+            } else {
+                // GET THE SPACE AND HIS USERS, MANUALS DATA
+                $user = User::findOrFail(Auth::id());
+                $spaces = $user->spaces()->where('title', 'like', '%' . $title . '%')->with('users', 'manuals')->get();
 
+                return response()->json([
+                    'spaces' => $spaces ?? null
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'spaces' => null,
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 }

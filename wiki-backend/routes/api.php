@@ -24,26 +24,72 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/manuals', [ManualController::class, 'index']);
 // Route::get('/manuals/{id}', [ManualController::class, 'manualsBySpace']);
 
+// Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+//     $user = $request->user();
+//     $user->makeVisible('password');
+//     return response()->json(['user' => $user]);
+// });
 
-// ANY AUTH USER
+
+
+
+
+Route::get('/getUser', [UserController::class, 'getUser']);
+
+
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+// ----------------------------------PUBLIC ROUTES
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+
+// GET USER STATUS
+Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
+
+
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+// -------------------------------------ANY AUTH USER
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    // USER ROUTES
+
+    // GET AUTH USER DATA
+    Route::get('/users/getauth', [UserController::class, 'getAuth']);
+
+    // -- UPDATE AUTH USER PROFILE
+    Route::put('/update', [UserController::class, 'update']);
+
+    // --LOGOUT
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // assignspace
+    Route::post('/assignspace', [UserController::class, 'assignSpace']);
+    // assignmanual
+    Route::post('/assignmanual', [UserController::class, 'assignManual']);
+
+
+
     // SPACE ROUTES 
-    // -- Consultation
+
+    // -- GET AUTH USER SPACES
     Route::get('/spaces', [SpaceController::class, 'index']);
-    // -- Show 
+
+    // -- GET SPACE BY ID 
     Route::get('/spaces/{id}', [SpaceController::class, 'show']);
-    // -- Search
+
+    // -- SEARCH
     Route::get('/spaces/search/{title}', [SpaceController::class, 'search']);
 
 
-
-    // SPACE ROUTES 
+    // MANUAL ROUTES
     // -- Consultation
     Route::get('/manuals', [ManualController::class, 'index']);
 
-    // get manual by space
-    Route::get('/manuals/{id}', [ManualController::class, 'manualsBySpace']);
+    // -- get manuals by space id
+    Route::get('/manuals/{id}', [ManualController::class, 'getManualsBySpaceId']);
     // -- Show 
     Route::get('/manuals/{id}/show', [ManualController::class, 'show']);
     // -- Search
@@ -54,53 +100,44 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/manuals/{id}', [ManualController::class, 'update']);
     // --Delete
     Route::delete('/manuals/{id}', [ManualController::class, 'destroy']);
-
-
-    // USER
-    // -- update profile 
-    Route::put('/user', [UserController::class, 'update']);
-
-    // --logout
-    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+
+
+// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 // -----------------------------------   ADMIN   ---------------------------
+// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 // Admin Routes
 Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
-    // SPACE ROUTES 
-    // --Add 
-    Route::post('/spaces', [SpaceController::class, 'store'])->middleware('admin');
-    // --Show
-    // Route::get('/spaces/{id}', [SpaceController::class, 'show'])->middleware('admin');
-    // --Update
-    Route::put('/spaces/{id}', [SpaceController::class, 'update'])->middleware('admin');
-    // --Delete
-    Route::delete('/spaces/{id}', [SpaceController::class, 'destroy'])->middleware('admin');
-
-
 
     //USER MANAGEMENT
-    // -- Get users
+
+    // -- GET ALL USERS
     Route::get('/users', [UserController::class, 'index']);
-    // -- Approvement
-    Route::post('/approve', [UserController::class, 'setStatus']);
-    // -- Delete => Soft delete [status = 0]
-    Route::post('/delete', [UserController::class, 'setStatus']);
-    // update his data
-    Route::post('/delete', [UserController::class, 'setStatus']);
-});
+
+    // GET USER BY ID
+    Route::get('/users/{id}', [UserController::class, 'show'])
+        ->where('id', '[0-9]+');
+
+    // -- APPROVEMENT
+    Route::post('/approve', [UserController::class, 'updateStatus']);
+
+    // -- DELETE => Soft delete [status = 0]
+    Route::post('/delete', [UserController::class, 'updateStatus']);
+
+    // UPDATE USER DATA
+    Route::put('/update/{id}', [UserController::class, 'update']);
 
 
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    $user = $request->user();
-    $user->makeVisible('password');
-    return response()->json(['user' => $user]);
-});
 
-
-Route::get('/auth-status', function (Request $request) {
-    return response()->json([
-        'authenticated' => $request->user() !== null
-    ]);
+    // SPACE ROUTES 
+    // --Create
+    Route::post('/spaces', [SpaceController::class, 'store']);
+    // --Update
+    Route::put('/spaces/{id}', [SpaceController::class, 'update']);
+    // --Delete
+    Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
 });

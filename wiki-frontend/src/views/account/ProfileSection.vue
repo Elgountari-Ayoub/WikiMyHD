@@ -202,7 +202,7 @@ let postEditing = ref(false);
 
 
 onMounted(() => {
-    if (!userStore.fetchUser()) {
+    if (!userStore.getUser()) {
         router.push({ name: 'login' });
         Swal.fire({
             icon: 'warning',
@@ -228,7 +228,7 @@ onMounted(() => {
 
 const updateUser = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/api/user',
+    const response = await axios.post('/api/update',
       {
         _method: 'PUT',
         name: newName.value,
@@ -244,7 +244,7 @@ const updateUser = async () => {
     }
     );
 
-    userStore.fetchUser();
+    userStore.getUser();
 
     nameEditing.value = false;
     emailEditing.value = false;
@@ -268,6 +268,7 @@ async function handlePhotoChange(event) {
 function getImageUrl(photo) {
   if (photo) {
     const baseUrl = "http://localhost:8000/storage/";
+
     return baseUrl + photo; 
   }
   return ' ';

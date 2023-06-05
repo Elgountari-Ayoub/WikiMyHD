@@ -12,19 +12,28 @@ import Nav from '../components/Nav.vue';
 import Hero from '../components/Hero.vue';
 
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import TextInput from '../components/global/TextInput.vue';
+import { useRouter } from 'vue-router';
 
 axios.defaults.withCredentials = true;
 const isAuthenticated = ref(false);
 
+onMounted(() => {
+})
+
+
+const router = useRouter();
 async function checkAuthStatus() {
   try {
-    const response = await axios.get('http://localhost:8000/api/auth-status');
+    const response = await axios.get('/api/auth-status');
+    console.log('we have a user logged in =>', response.data.res);
     isAuthenticated.value = response.data.authenticated;
+    if(response){
+      // router.push({name : 'profileSection'})
+    }
   } catch (error) {
-    console.error('Failed to fetch authentication status:', error);
+    // console.error('Failed to get, authentication status:', error);
   }
 }
 

@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
 import DashboardLayout from "../components/layouts/DashboardLayout.vue";
+import notFoundView from '../views/notFoundView.vue'
 
 import SpaceIndex from "../views/space/Index.vue";
 
@@ -83,23 +84,29 @@ const router = createRouter({
       name: "users",
       component: UsersIndex,
     },
+
+    // Not Found
+    {
+      path: "/notFound",
+      name: "notFound",
+      component: notFoundView,
+    },
   ],
 
   // Portect the routes
-  // const success = await userStore.fetchUser();
-  // if (success && userStore.isAdmin) {
 });
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
+  const notExist = !['home', 'register', 'login', 'profileSection', 'spaces', 'manuals', 'users', 'notFound', 'dashboard', 'articles'].includes(to.name);
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
   const isAuthenticated = userStore.id;
   const isAuthorized = userStore.role == "admin" ? true : false;
   if (requiresAuth && !isAuthenticated) {
     next({ name: "login" });
-  } else if (requiresAuthoriz && (!isAuthorized || !isAuthenticated)) {
-    next({ name: "spaces" });
+  } else if (requiresAuthoriz && (!isAuthorized || !isAuthenticated) || notExist) {
+    next({ name: "notFound"});
   } else {
     next();
   }

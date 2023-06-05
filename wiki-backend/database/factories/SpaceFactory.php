@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Space>
@@ -17,10 +18,8 @@ class SpaceFactory extends Factory
      */
     public function definition(): array
     {
-        $email = 'karjane@havetdigital.fr';
-        $user = User::where('email', $email)->first();
+
         return [
-            'id_user' => $user->id,
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
         ];

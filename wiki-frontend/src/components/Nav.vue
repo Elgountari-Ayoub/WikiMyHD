@@ -22,11 +22,11 @@
                         <!-- Replace the following with your register and login buttons -->
                         <RouterLink :to="{ name: 'register' }">
                             <button
-                                class="px-3 py-2 ml-3 text-sm font-medium text-gray-700 bg-white rounded-md">Register</button>
+                                class="px-3 py-2 ml-3 text-sm font-medium text-gray-700 bg-white rounded-md">Enregistrer</button>
                         </RouterLink>
                         <RouterLink :to="{ name: 'login' }">
                             <button
-                                class="px-3 py-2 ml-3 text-sm font-medium text-gray-700 bg-white rounded-md">Login</button>
+                                class="px-3 py-2 ml-3 text-sm font-medium text-gray-700 bg-white rounded-md">Connexion</button>
                         </RouterLink>
                     </div>
                 </div>

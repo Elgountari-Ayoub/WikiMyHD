@@ -3,17 +3,18 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <div v-if="spaceIdStore.spaceId">
-                <RouterLink :to="{ name: 'spaces' }" class="hover:text-blue-500">
-                    <span>/{{ manuals(manualsStore.manuals).length !== 0 ? manuals(manualsStore.manuals)[0].space.title : ''
+        <!-- <div v-if="spaceIdStore.spaceId">
+                <RouterLink :to="{ name: 'spaces' }" class="">
+                    > <span class="hover:text-blue-500 text-base px-2 rounded">{{ manuals(manualsStore.manuals).length !== 0
+                        ? manuals(manualsStore.manuals)[0].space.title : ''
                     }}</span>
                 </RouterLink>
-            </div>
+                    </div> -->
             <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <!-- Add manual : most have the space that will have the manual-->
-                    <button @click="openModal" type="submit" 
+                    <button @click="openModal" type="submit"
                         class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Manual
                     </button>
@@ -46,6 +47,88 @@
                         </button>
                     </form>
                 </div>
+
+                <!-- {{ manualsStore.manuals ?? 10 }} -->
+
+
+                <LoadingAnimation v-if="false" />
+                <!-- If the manual array not empty -->
+                <!-- Manuals inside the selected space -->
+                <!-- <div v-else class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 "> -->
+                <div v-else class="grid 
+                                                    sm:grid-cols-1 
+                                                    md:grid-cols-2  
+                                                    lg:grid-cols-3
+                                                    xl-custom-grid-cols-4
+                                                    xl:grid-cols-4
+                                                    gap-4 mb-4">
+
+                    <!-- <div v-for="manual in manuals(manualsStore.manuals)" -->
+                    <div v-for="manual in manualsStore.manuals"
+                        class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
+
+                        <span v-if="!spaceIdStore.spaceId" class="font-blod p-2 border-b flex justify-between px-4"
+                            :style="{ color: manual.color }">
+
+                            <!-- Space title -->
+                        <!-- <span class="flex gap-4 items-center">
+                                <img v-if="manual.user.photo" class="w-8 rounded-full" :src="getImageUrl(manual.user.photo)"
+                                    alt="">
+                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                                    </path>
+                                </svg>
+                                        {{ manual.user.name }}</span> -->
+                            <span>{{ manual.space.title }}</span>
+
+                        </span>
+
+                        <!-- Manual logo [first letter] -->
+                        <button @click="getArticles(manual.id)"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: manual.color }">
+                            <span class="text-2xl ">{{ manual.title[0] }}
+                            </span>
+                        </button>
+
+                        <div class="flex justify-center p-4 items-center">
+                            <!-- Manual title -->
+                            <button @click="getArticles(manual.id)" class="hover:text-blue-500">{{ manual.title.slice(0,
+                                20) }}
+                            </button>
+
+                            <!-- Modal  Edit/Delete Manual Buttons-->
+                            <Dropdown class="ml-auto" v-if='manual.user_id == userStore.id || userStore.isAdmin'>
+                                <template #trigger>
+                                    <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
+                                        class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
+                                        </path>
+                                    </svg>
+                                </template>
+                                <template #content>
+                                    <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
+                                        <button @click="openEditManualModal(manual.id, manual.title, manual.description)"
+                                            class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
+                                            Editer
+                                        </button>
+                                        <button @click="deleteManual(manual.id)"
+                                            class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </template>
+                            </Dropdown>
+                        </div>
+                    </div>
+                </div>
+
+
 
                 <!-- Modal  Add Manual form-->
                 <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
@@ -98,76 +181,6 @@
                         </form>
                     </div>
                 </div>
-
-                <LoadingAnimation v-if="manuals(manualsStore.manuals).length == 0" />
-                <!-- If the manual array not empty -->
-                <div v-else>
-                    <!-- Manuals inside the selected space -->
-                    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 ">
-                        <div v-for="manual in manuals(manualsStore.manuals)"
-                            class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
-
-                            <span v-if="!spaceIdStore.spaceId" class="font-blod p-2 border-b flex justify-between px-4"
-                                :style="{ color: manual.color }">
-
-                                <!-- Space title -->
-                                <span class="flex gap-4 items-center">
-                                    <img v-if="manual.user.photo" class="w-8 rounded-full"
-                                        :src="getImageUrl(manual.user.photo)" alt="">
-                                    <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                        class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
-                                        </path>
-                                    </svg>
-                                    {{ manual.user.name }}</span>
-                                <span>{{ manual.space.title }}</span>
-
-                            </span>
-
-                            <!-- Manual logo [first letter] -->
-                            <p class="px-6 py-4 text-black border rounded-full m-auto w-fit"
-                                :style="{ backgroundColor: manual.color }">
-                                {{
-                                    manual.title[0] }}</p>
-
-                            <div class="flex justify-center p-4 items-center">
-                                <!-- Manual title -->
-                                <!-- <p class="">{{ manual.title.slice(0, 20) }}</p> -->
-                                <button @click="getArticles(manual.id)" class="hover:text-blue-500">{{ manual.title.slice(0,
-                                    20) }}
-                                </button>
-                                
-                                <!-- Modal  Edit/Delete Manual Buttons-->
-                                <Dropdown class="ml-auto" v-if='manual.id_user == userStore.id || userStore.isAdmin'>
-                                    <template #trigger>
-                                        <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
-                                            class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
-                                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
-                                            </path>
-                                        </svg>
-                                    </template>
-                                    <template #content>
-                                        <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                                            <button
-                                                @click="openEditManualModal(manual.id, manual.title, manual.description)"
-                                                class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
-                                                Editer
-                                            </button>
-                                            <button @click="deleteManual(manual.id)"
-                                                class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
-                                                Supprimer
-                                            </button>
-                                        </div>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </DashboardLayout>
     </div>
@@ -193,33 +206,64 @@ import { useSpaceIdStore } from '../../stores/space-id-store';
 
 const userStore = useUserStore();
 const manualsStore = useManualsStore();
-
 const spaceIdStore = useSpaceIdStore();
 
 axios.defaults.withCredentials = true;
 
+const spaceId = ref();
+// const space = ref([]);
 onMounted(async () => {
+    spaceId.value = spaceIdStore.spaceId ?? null;
+    if (spaceId.value) {
+        console.log(spaceId.value);
+        await manualsStore.getManualsBySpace(spaceId.value)
+            .then(response => {
+                // space.value = manualsStore.manuals;
+                console.log("manbyspa", manualsStore.manuals);
+            }).catch(error => {
+                console.log(error);
+            });
+    }
+    else {
+        // space.value = await manualsStore.getManuals();
+        await manualsStore.getManuals();
+    }
+
+
 
 });
 
-const manuals = (allManuals) => {
-    let filtredArr = [];
-    if (spaceIdStore.spaceId) {
-        for (let i = 0; i < allManuals.length; i++) {
-            const element = allManuals[i];
-            if (element.space.id === spaceIdStore.spaceId) {
-                filtredArr.push(element);
-            }
+// const manuals = async (allManuals) => {
+//     spaceId.value = spaceIdStore.spaceId ?? null;
+//     if (spaceId.value) {
+//         await axios.get(`/api/spaces/${spaceId.value}`).then(response => {
+//             space.value = response.data.space
+//         }).catch(error => {
+//             console.log(error);
+//         });
+//     }
+//     else {
+//         space.value = useSpacesStore.getSpaces();
+//     }
+// }
+// const manuals = (allManuals) => {
+//     let filtredArr = [];
+//     if (spaceIdStore.spaceId) {
+//         for (let i = 0; i < allManuals.length; i++) {
+//             const element = allManuals[i];
+//             if (element.space.id === spaceIdStore.spaceId) {
+//                 filtredArr.push(element);
+//             }
 
-        }
+//         }
 
-    }
-    else {
-        filtredArr = allManuals
-    }
-    return filtredArr;
-    console.log(filtredArr);
-}
+//     }
+//     else {
+//         filtredArr = allManuals
+//     }
+//     return filtredArr;
+//     console.log(filtredArr);
+// }
 
 const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
@@ -259,8 +303,8 @@ const form = ref({
 // Add Manual
 const addManual = async () => {
     try {
-        const response = await axios.post('http://localhost:8000/api/manuals', {
-            id_space: spaceIdStore.spaceId,
+        const response = await axios.post('/api/manuals', {
+            space_id: spaceIdStore.spaceId,
             title: form.value.title,
             description: form.value.description
         });
@@ -280,10 +324,10 @@ const addManual = async () => {
             timer: 1500,
         })
         // if (typeof spaceIdStore.spaceId === 'undefined' || spaceIdStore.spaceId === null) {
-        manualsStore.fetchManuals();
+        manualsStore.getManuals();
         // }
         // else {
-        // manualsStore.fetchManualsBySpace(spaceIdStore.spaceId);
+        // manualsStore.getManualsBySpace(spaceIdStore.spaceId);
         // }
         // Close the modal after form submission
     } catch (error) {
@@ -302,7 +346,7 @@ const addManual = async () => {
 // Edit Manual
 const editManual = async () => {
     try {
-        const response = await axios.post(`http://localhost:8000/api/manuals/${form.value.id}`, {
+        const response = await axios.post(`/api/manuals/${form.value.id}`, {
             _method: 'PUT',
             title: form.value.title,
             description: form.value.description
@@ -322,7 +366,7 @@ const editManual = async () => {
         //     timer: 1500,
         // })
 
-        manualsStore.fetchManuals();
+        manualsStore.getManuals();
         // Close the modal after form submission
         closeEditManualModal();
     } catch (error) {
@@ -348,8 +392,8 @@ const editManual = async () => {
 const deleteManual = async (manualId) => {
     // show a sweet alert for the confirmation
     try {
-        const response = await axios.delete(`/manuals/${manualId}`);
-        await manualsStore.fetchManuals();
+        const response = await axios.delete(`/api/manuals/${manualId}`);
+        await manualsStore.getManuals();
 
         // Swal.fire({
         //     position: 'top-end',
@@ -399,11 +443,11 @@ const search = async () => {
         if (!searchInput.value) {
             console.log('empty');
             if (manualsStore.manuals.length === 0) {
-                manualsStore.fetchManuals();
+                manualsStore.getManuals();
             }
             return;
         }
-        const response = await axios.get(`http://localhost:8000/api/manuals/search/${searchInput.value}`);
+        const response = await axios.get(`/api/manuals/search/${searchInput.value}`);
         if (response.data.length > 0) {
             manualsStore.manuals = response.data
             manualsStore.manuals.forEach(element => {

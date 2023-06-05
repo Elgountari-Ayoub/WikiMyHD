@@ -14,29 +14,22 @@ class RegisterConfirmedMailController extends Controller
     public $logoUrl;
 
 
+    public function __construct($userName, $spaces)
+    {
+        $this->userName = $userName;
+        $this->spaces = $spaces;
+    }
 
     public function sendMail()
     {
-        $userName = 'ayoub';
-        $spaces = [
-            [
-                'name' => 'IT'
-            ],
-            [
-                'name' => 'Marketing'
-            ],
-            [
-                'name' => 'Design'
-            ],
-        ];
-        $loginUrl = env('FRONTEND_URL').'/login';
-        $logoUrl = env('APP_LOGO');
+        $this->loginUrl = env('FRONTEND_URL').'/login';
+        $this->logoUrl = env('APP_LOGO');
 
         Mail::to('elgountariayoub22@gmail.com')->send(new RegisterConfirmedMail(
-            $userName = $userName,
-            $spaces = $spaces,
-            $loginUrl = $loginUrl,
-            $logoUrl = $logoUrl
+            $this->userName,
+            $this->spaces,
+            $this->loginUrl,
+            $this->logoUrl
         ));
     }
 }

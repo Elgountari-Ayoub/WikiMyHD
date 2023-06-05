@@ -37,7 +37,7 @@ const form = ref({
 const spaces = ref([]);
 const search = async () => {
     try {
-        const response = await axios.get(`http://localhost:8000/api/spaces/search/${form.value.search}`);
+        const response = await axios.get(`/api/spaces/search/${form.value.search}`);
 
         // Handle the response here if needed
         console.log(response.data);
