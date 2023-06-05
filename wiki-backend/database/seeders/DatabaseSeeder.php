@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'post' => 'Web developer',
             'password' => $password,
             'role' => 'user',
-            'status' => 1,
+            'status' => 0,
         ]);
 
         $password = Hash::make('hamid');

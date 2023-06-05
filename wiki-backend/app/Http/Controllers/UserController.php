@@ -173,32 +173,24 @@ class UserController extends Controller
                     'status' => $request->status,
                 ]);
 
-            $user = User::find($request->user_id);
-            $spaces = $user->spaces()->with('manuals')->get();
+            if ($request->status === 1) {
+                $user = User::find($request->user_id);
+                $spaces = $user->spaces()->with('manuals')->get();
 
-            // $spaces = $user->manuals()->where('space_id', $spaceId)->with('users', 'space')->get();
-            // $spaces = $user->spaces->where('user_id', $user->id)->with('users', 'space')->get();
+                $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
+                    $query->whereHas('users', function ($query) use ($user) {
+                        $query->where('users.id', $user->id);
+                    });
+                }])->get();
 
-
-            $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
-                $query->whereHas('users', function ($query) use ($user) {
-                    $query->where('users.id', $user->id);
-                });
-            }])->get();
-
-
-
-
-            Log::info("$spaces");
-
-            // send a register confirmed mail
-            $mail = new RegisterConfirmedMailController($user->name, $spaces);
-            $mail->sendMail();
+                // send a register confirmed mail
+                $mail = new RegisterConfirmedMailController($user->name, $spaces);
+                $mail->sendMail();
+            }
             // Return a success response
             return response()->json([
                 'message' => 'User status updated successfully',
                 'user' => $user,
-                'spaces' => $spaces,
             ], 200);
         } catch (Exception $e) {
             return response()->json([

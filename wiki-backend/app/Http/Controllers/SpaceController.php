@@ -29,9 +29,13 @@ class SpaceController extends Controller
                 ], 200);
             } else {
                 $user = User::findOrFail(Auth::id());
-                
-                $spaces = $user->spaces()->with('users', 'manuals')->latest()->get();
-              
+
+                $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
+                    $query->whereHas('users', function ($query) use ($user) {
+                        $query->where('users.id', $user->id);
+                    });
+                }])->get();
+
                 return response()->json([
                     'spaces' => $spaces,
                 ], 200);
