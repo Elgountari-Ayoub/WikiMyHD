@@ -61,7 +61,7 @@
                                 <li>
                                     <button @click="logout"
                                         class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
-                                                                                                                                                    dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                                                                                                                                                                            dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Se déconnecter
                                     </button>
 
@@ -80,19 +80,66 @@
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800 ">
             <ul class="space-y-2 font-medium  gap-1">
                 <li>
-                    <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
-                        class="spaces-color flex hover:bg-gray-100 items-center p-2 text-gray-900 rounded-lg dark:text-white  dark:hover:bg-gray-700">
-                        <svg aria-hidden="true"
-                            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                        </svg>
-                        <span class="ml-3">Espaces</span>
-                    </RouterLink>
-
+                    <div class="flex">
+                        <button @click="toggleSpacesList">
+                            <svg v-if="showSpacesList" aria-hidden="true"
+                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                            <svg v-else aria-hidden="true"
+                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                </path>
+                            </svg>
+                        </button>
+                        <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
+                            class="spaces-color flex hover:bg-gray-100 items-center p-2 text-gray-900 rounded-lg dark:text-white dark:hover:bg-gray-700">
+                            <svg aria-hidden="true"
+                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                            </svg>
+                            <span class="ml-3">Espaces</span>
+                        </RouterLink>
+                    </div>
+                    <transition name="fade">
+                        <ul v-if="showSpacesList" class="ml-14">
+                            <li v-for="space in spacesStore.spaces" class="cursor-pointer my-2">
+                                <div class="flex">
+                                    <button @click="toggleManualsList(space.id)">
+                                        <svg v-if="isManualsListVisible(space.id)" aria-hidden="true"
+                                            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                        <svg v-else aria-hidden="true"
+                                            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </button>
+                                    <span @click="getManuals(space.id, space.title)">{{ space.title }}</span>
+                                </div>
+                                <transition name="fade">
+                                    <ul v-if="isManualsListVisible(space.id)" class="ml-14">
+                                        <li v-for="manual in space.manuals" class="cursor-pointer">
+                                            <span @click="getManuals(space.id, space.title)">{{ manual.title }}</span>
+                                        </li>
+                                    </ul>
+                                </transition>
+                            </li>
+                        </ul>
+                    </transition>
                 </li>
-                <li>
+                <li v-if="userStore.isAdmin">
                     <RouterLink :to="{ name: 'manuals' }" @click="spaceIdStore.spaceId = null"
                         class="manuals-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg aria-hidden="true"
@@ -106,8 +153,8 @@
                         <!-- <span class="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
                     </RouterLink>
                 </li>
-                <li>
-                    <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
+                <li v-if="userStore.isAdmin">
+                    <RouterLink :to="{ name: 'articles' }" @click="spaceIdStore.spaceId = null"
                         class="articles-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -164,7 +211,7 @@
 
 import { RouterLink } from 'vue-router';
 import { useUserStore } from '../../stores/user-store';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
@@ -178,6 +225,57 @@ const userStore = useUserStore();
 const usersStore = useUsersStore();
 const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
+
+const showSpacesList = ref(false);
+const showManualsList = ref(false);
+
+const toggleSpacesList = () => {
+    showSpacesList.value = !showSpacesList.value;
+    showManualsList.value = null
+}
+
+const toggleManualsList = (spaceId) => {
+    showManualsList.value = showManualsList.value === spaceId ? null : spaceId;
+}
+
+const isManualsListVisible = (spaceId) => {
+    return showManualsList.value === spaceId;
+}
+
+const getManuals = async (spaceId, spaceTitle) => {
+    try {
+        spaceIdStore.spaceId = spaceId;
+        spaceIdStore.spaceTitle = spaceTitle;
+        router.push({ name: 'manuals' })
+    } catch (error) {
+        console.log('ERR\N\N', error);
+    }
+}
+
+// watch(() => spacesStore.spaces, (newValue, oldValue) => {
+//     refreshManuals();
+// });
+// watch(() => manualsStore.manuals, (newValue, oldValue) => {
+//     // refreshManuals();
+// });
+
+
+const spaceId = ref();
+const refreshManuals = onMounted(async () => {
+    spaceId.value = spaceIdStore.spaceId ?? null;
+    if (spaceId.value) {
+        console.log(spaceId.value);
+        await manualsStore.getManualsBySpace(spaceId.value)
+            .then(response => {
+            }).catch(error => {
+                console.log(error);
+            });
+    }
+    else {
+        await manualsStore.getManuals();
+    }
+});
+
 
 const spaceIdStore = useSpaceIdStore();
 
@@ -255,6 +353,24 @@ const getImageUrl = (photo) => {
 .users-management-color {
 
 } */
-</style>
 
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    /* transition: opacity .5s ease; */
+
+    opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+    /* transition: opacity .5s ease; */
+
+    opacity: 1;
+}
+</style>
 

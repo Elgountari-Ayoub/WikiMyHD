@@ -58,7 +58,14 @@ async function login() {
         password: password.value,
     }).then(async (response) => {
         console.log('user logged in success!, response:\n', response);
-
+        if (response.data.guest === 'false') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Déjà connecté!',
+            })
+            return;
+        }
         // after the logged in, let's check if the user has been approved
         if (response.data.user.status === 1) {
             console.log('user has been approved, Great!\n');
@@ -134,14 +141,14 @@ async function login() {
     }).catch(error => {
         console.log('error in login', error);
         errors.value = error.response.data.errors;
-        if (errors.value.length === 0) {
+        if (response.data.guest === false) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Quelque chose s\'est mal passé!',
             })
         } else {
-            
+
         }
 
     }

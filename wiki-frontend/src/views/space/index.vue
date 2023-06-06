@@ -4,7 +4,7 @@
     <div>
         <DashboardLayout>
 
-            <div class="mt-6">
+            <div class="mt-8">
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <button v-if='userStore.isAdmin' @click="openModal" type="submit"
@@ -13,7 +13,6 @@
                     </button>
                     <!-- <SearchInput /> -->
                     <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
-                        <!-- <form class="relative z-10 flex items-center m-auto px-52" @submit.prevent="submit"> -->
                         <div class="relative w-full m-auto">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
@@ -41,15 +40,10 @@
                 <!-- spaces -->
             <!-- <div class="text-center p-4 pb-8 text-2xl">
                     {{ spaceIdStore.spaceId ?? 'Les Espaces' }}
-                                                                                                                                                    </div> -->
+                                                                                                                                                        </div> -->
                 <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
-                <div v-else class="grid 
-                sm:grid-cols-1 
-                md:grid-cols-2  
-                lg:grid-cols-3
-                xl-custom-grid-cols-4
-                xl:grid-cols-4
-                gap-4 mb-4">
+                <div v-else
+                    class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
 
                     <div v-for="space in spacesStore.spaces" :key="space.id"
                         class="flex flex-col rounded-md justify-between gap-2 rounded h-52 bg-gray-50 shadow dark:bg-gray-800">
@@ -57,7 +51,7 @@
                         <!-- class="flex items-center justify-center w-16 h-16  text-center text-white  rounded-full m-auto " -->
                         <!-- class="flex items-center justify-cente w-16 h-16 text-lg text-white rounded-full m-auto " -->
 
-                        <button @click="getManuals(space.id)"
+                        <button @click="getManuals(space.id, space.title)"
                             class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
                             :style="{ backgroundColor: space.color }">
                             <span class="text-2xl ">{{
@@ -66,11 +60,11 @@
 
                     <!-- <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-500 m-auto text-white">
                             <span class="text-lg font-bold">S</span>
-                                                                                                            </div> -->
+                                                                                                                </div> -->
 
                         <div class="flex justify-center px-8 py-2 items-center">
 
-                            <button @click="getManuals(space.id)" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
+                            <button @click="getManuals(space.id, space.title)" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
                             </button>
                             <!-- Modal  Edit/Delete Space Buttons-->
                             <Dropdown class="ml-auto cursor-pointer" v-if='userStore.isAdmin'>
@@ -102,8 +96,6 @@
                     </div>
 
                 </div>
-
-
 
 
 
@@ -190,7 +182,6 @@ const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
 onMounted(async () => {
     spaceIdStore.spaceId = null;
-
     if (spacesStore.spaces.length == 0) {
         await spacesStore.getSpaces();
     }
@@ -331,9 +322,10 @@ const deleteSpace = async (spaceId) => {
 
 // getManuals
 const router = useRouter();
-const getManuals = async (spaceId) => {
+const getManuals = async (spaceId, spaceTitle) => {
     try {
         spaceIdStore.spaceId = spaceId;
+        spaceIdStore.spaceTitle = spaceTitle;
         router.push({ name: 'manuals' })
     } catch (error) {
         console.log('ERR\N\N', error);
@@ -364,6 +356,12 @@ watch(searchInput, () => {
     setTimeout(search, 1000);
 
 });
+
+
+
+// watch(() => spacesStore.spaces, (newValue, oldValue) => {
+//     getManuals();
+// });
 const spaces = ref([]);
 const search = async () => {
     try {

@@ -8,6 +8,7 @@ import notFoundView from '../views/notFoundView.vue'
 import SpaceIndex from "../views/space/Index.vue";
 
 import ManualIndex from "../views/manual/Index.vue";
+import ArticleIndex from "../views/article/Index.vue";
 
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
@@ -76,6 +77,13 @@ const router = createRouter({
       path: "/manuals",
       name: "manuals",
       component: ManualIndex,
+      props: true,
+    },
+    // Article route
+    {
+      path: "/articles",
+      name: "articles",
+      component: ArticleIndex,
       props: true,
     },
     // Users management route
