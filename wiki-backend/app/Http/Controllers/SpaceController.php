@@ -30,7 +30,7 @@ class SpaceController extends Controller
             } else {
                 $user = User::findOrFail(Auth::id());
 
-                $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
+                $spaces = $user->spaces()->with(['users','manuals' => function ($query) use ($user) {
                     $query->whereHas('users', function ($query) use ($user) {
                         $query->where('users.id', $user->id);
                     });
@@ -68,12 +68,13 @@ class SpaceController extends Controller
             // ADD SPACE USER
             $creator_id = Auth::id();
             $pivotData = [
-                'is_creator' => true, //tHE REQUEST PROTECTED BY THE IS_ADMIN MIDDLEWARE !!
+                'is_creator' => true,
             ];
             $space->users()->syncWithoutDetaching([$creator_id => $pivotData]);
 
             // GET THE SPACE WITH HIS USERS, MANUAL DATA
             $space = Space::with('users', 'manuals')->find($space->id);
+
             return response()->json([
                 'space' => $space
             ], 200);
@@ -101,7 +102,12 @@ class SpaceController extends Controller
             } else {
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
                 $user = User::findOrFail(Auth::id());
-                $space = $user->spaces()->with('users', 'manuals')->findOrFail($id);
+                // $space = $user->spaces()->with('users', 'manuals')->findOrFail($id);
+                $space = $user->spaces()->with(['users','manuals' => function ($query) use ($user) {
+                    $query->whereHas('users', function ($query) use ($user) {
+                        $query->where('users.id', $user->id);
+                    });
+                }])->findOrFail($id);
 
                 return response()->json([
                     'space' => $space
@@ -114,7 +120,6 @@ class SpaceController extends Controller
             ], 402);
         }
     }
-
 
     /**
      * Update the specified resource in storage.
