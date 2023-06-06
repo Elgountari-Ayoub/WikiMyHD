@@ -96,7 +96,7 @@
                             </svg>
                         </button>
                         <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
-                            class="spaces-color flex hover:bg-gray-100 items-center p-2 text-gray-900 rounded-lg dark:text-white dark:hover:bg-gray-700">
+                            class="spaces-color flex w-full hover:bg-gray-100 items-center p-2 text-gray-900 rounded-lg dark:text-white dark:hover:bg-gray-700">
                             <svg aria-hidden="true"
                                 class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -261,10 +261,8 @@ const getManuals = async (spaceId, spaceTitle) => {
 //     // refreshManuals();
 // });
 
-
 const spaceId = ref();
 const spaceIdStore = useSpaceIdStore();
-
 
 onMounted(async () => {
     if (spacesStore.spaces.length == 0) {
@@ -317,7 +315,6 @@ const logout = async () => {
             console.log('THE ERROR', error);
         });
 }
-
 
 const getImageUrl = (photo) => {
     const baseUrl = "http://localhost:8000/storage/";
