@@ -21,8 +21,6 @@ export const useSpaceIdStore = defineStore("spaceIdStore", {
     },
     clearSpaceId() {
       this.$state.spaceId = null;
-    },
-    clearSpaceId() {
       this.$state.spaceTitle = null;
     },
   },

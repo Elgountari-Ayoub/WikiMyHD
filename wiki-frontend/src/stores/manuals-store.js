@@ -57,7 +57,6 @@ export const useManualsStore = defineStore("manuals", {
         await axios
           .get(`/api/manuals/${spaceId}`)
           .then((response) => {
-            console.log(response);
             this.setManuals(response);
             return true;
           })

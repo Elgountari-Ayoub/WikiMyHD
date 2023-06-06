@@ -61,7 +61,7 @@
                                 <li>
                                     <button @click="logout"
                                         class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
-                                                                                                                                                                                                                            dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                                                                                                                                                                                    dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Se déconnecter
                                     </button>
 
@@ -131,6 +131,7 @@
                                 <transition name="fade">
                                     <ul v-if="isManualsListVisible(space.id)" class="ml-14">
                                         <li v-for="manual in space.manuals" class="cursor-pointer">
+                                            <!-- getArticles -->
                                             <span @click="getManuals(space.id, space.title)">{{ manual.title }}</span>
                                         </li>
                                     </ul>
@@ -242,6 +243,7 @@ const isManualsListVisible = (spaceId) => {
     return showManualsList.value === spaceId;
 }
 
+// redirectToSpaceManualsPage
 const getManuals = async (spaceId, spaceTitle) => {
     try {
         spaceIdStore.spaceId = spaceId;
@@ -261,23 +263,14 @@ const getManuals = async (spaceId, spaceTitle) => {
 
 
 const spaceId = ref();
-const refreshManuals = onMounted(async () => {
-    spaceId.value = spaceIdStore.spaceId ?? null;
-    if (spaceId.value) {
-        console.log(spaceId.value);
-        await manualsStore.getManualsBySpace(spaceId.value)
-            .then(response => {
-            }).catch(error => {
-                console.log(error);
-            });
-    }
-    else {
-        await manualsStore.getManuals();
+const spaceIdStore = useSpaceIdStore();
+
+
+onMounted(async () => {
+    if (spacesStore.spaces.length == 0) {
+        await spacesStore.getSpaces();
     }
 });
-
-
-const spaceIdStore = useSpaceIdStore();
 
 let menuOpen = ref(false)
 
@@ -291,6 +284,9 @@ const logout = async () => {
                 spacesStore.clearSpaces();
                 console.log('Space Store Cleard :>', userStore);
 
+                spaceIdStore.clearSpaceId();
+                console.log('User Store Cleard :>', spaceIdStore);
+
                 manualsStore.clearManuals();
                 console.log('Manual Store Cleard :>', userStore);
 
@@ -298,9 +294,8 @@ const logout = async () => {
                 console.log('Users Store Cleard :>', usersStore);
                 console.log('logout success');
             } catch (error) {
-
+                console.log('logout failed', error);
             }
-
             router.push({ name: 'login' })
             // Show Success Message
             Swal.fire({

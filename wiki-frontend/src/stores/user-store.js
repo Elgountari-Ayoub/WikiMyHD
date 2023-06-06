@@ -19,7 +19,6 @@ export const useUserStore = defineStore("user", {
   }),
   actions: {
     async setUser(res) {
-      console.log(res.data.user);
       this.$state.id = res.data.user.id;
       this.$state.name = res.data.user.name;
       this.$state.email = res.data.user.email;
@@ -38,8 +37,6 @@ export const useUserStore = defineStore("user", {
         const res = await axios
           .get("/api/users/getauth")
           .then((respnose) => {
-            console.log(respnose.data.user);
-
             this.$state.id = respnose.data.user.id;
             this.$state.name = respnose.data.user.name;
             this.$state.email = respnose.data.user.email;

@@ -7,7 +7,6 @@ export const useUsersStore = defineStore("users", {
   }),
   actions: {
     async setUsers(res) {
-      console.log('users res', res);
       let users = res.data.users
       this.$state.users = users.map((user) => ({
         id: user.id,

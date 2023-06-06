@@ -65,7 +65,7 @@
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
                             <!-- Space title -->
-                            <!-- <span class="flex gap-4 items-center">
+                        <!-- <span class="flex gap-4 items-center">
                                 <img v-if="manual.user.photo" class="w-8 rounded-full" :src="getImageUrl(manual.user.photo)"
                                     alt="">
                                 <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
@@ -75,7 +75,7 @@
                                         d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
                                     </path>
                                 </svg>
-                                                                                        {{ manual.user.name }}</span> -->
+                                                                                                                {{ manual.user.name }}</span> -->
                             <!-- <span>{{ manual }}</span> -->
                         </span>
 
@@ -199,6 +199,7 @@ import { useSpaceIdStore } from '../../stores/space-id-store';
 
 const userStore = useUserStore();
 const manualsStore = useManualsStore();
+const spacesStore = useSpacesStore();
 const spaceIdStore = useSpaceIdStore();
 
 axios.defaults.withCredentials = true;
@@ -209,20 +210,22 @@ watch(() => spaceIdStore.spaceId, (newValue, oldValue) => {
 
 const spaceId = ref();
 const getManuals = onMounted(async () => {
-    spaceId.value = spaceIdStore.spaceId ?? null;
-    if (spaceId.value) {
-        console.log(spaceId.value);
-        await manualsStore.getManualsBySpace(spaceId.value)
-            .then(response => {
+    if (spaceIdStore.spaceId) {
+        await manualsStore.getManualsBySpace(spaceIdStore.spaceId)
+            .then(async (response) => {
+                await spacesStore.getSpaces();
+
             }).catch(error => {
                 console.log(error);
             });
     }
     else {
-        await manualsStore.getManuals();
+        await manualsStore.getManuals().then(async (response) => {
+            await spacesStore.getSpaces();
+        });
     }
-});
 
+});
 
 const getCreatorId = (users) => {
     let creatorId = -1;
@@ -231,7 +234,6 @@ const getCreatorId = (users) => {
             creatorId = user.id;
         }
     });
-    console.log(creatorId);
     return creatorId;
 }
 
@@ -242,10 +244,8 @@ const getCreatorName = (users) => {
             creatorName = user.name;
         }
     });
-    console.log(creatorName);
     return creatorName;
 }
-
 
 const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
@@ -265,22 +265,13 @@ const closeModal = () => {
     form.value.description = '';
 };
 
-// Edit Manual Modal
-const openEditManualModal = (manualId, manualTitle, manualDescription) => {
-    form.value.id = manualId;
-    form.value.title = manualTitle;
-    form.value.description = manualDescription;
-    isEditManualModalOpen.value = true;
-};
-const closeEditManualModal = () => {
-    isEditManualModalOpen.value = false;
-};
-
 const form = ref({
     id: null,
     title: null,
     description: null,
 })
+
+// MANAUL CRUD + SEARCH
 
 // Add Manual
 const addManual = async () => {
@@ -290,28 +281,21 @@ const addManual = async () => {
             title: form.value.title,
             description: form.value.description
         });
-        console.log('added manual', response);
+        closeModal();
         // Reset form fields after successful submission
         form.value.is = '';
         form.value.title = '';
         form.value.description = '';
 
-        closeModal();
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            width: '25rem',
-            title: 'le manuel ajouté avec succès',
-            showConfirmButton: false,
-            timer: 1500,
-        })
-        // if (typeof spaceIdStore.spaceId === 'undefined' || spaceIdStore.spaceId === null) {
+        // Swal.fire({
+        //     position: 'top-end',
+        //     icon: 'success',
+        //     width: '25rem',
+        //     title: 'le manuel ajouté avec succès',
+        //     showConfirmButton: false,
+        //     timer: 1500,
+        // })
         getManuals();
-        // }
-        // else {
-        // manualsStore.getManualsBySpace(spaceIdStore.spaceId);
-        // }
-        // Close the modal after form submission
     } catch (error) {
         // Handle the error here if needed
         Swal.fire({
@@ -333,7 +317,7 @@ const editManual = async () => {
             title: form.value.title,
             description: form.value.description
         });
-
+        closeEditManualModal();
         // Reset form fields after successful submission
         form.value.is = '';
         form.value.title = '';
@@ -348,11 +332,6 @@ const editManual = async () => {
         //     timer: 1500,
         // })
         getManuals();
-
-
-        // manualsStore.getManuals();
-        // Close the modal after form submission
-        closeEditManualModal();
     } catch (error) {
         // Handle the error here if needed
         Swal.fire({
@@ -364,12 +343,6 @@ const editManual = async () => {
         })
         console.error(error);
     }
-
-
-    // Show the Edit form
-    // store the new manual data into  a from just like the add
-    //send an update request like the add, but with put request
-    // make sure u set the api route
 }
 
 // delete Manual
@@ -378,9 +351,6 @@ const deleteManual = async (manualId) => {
     try {
         const response = await axios.delete(`/api/manuals/${manualId}`);
         getManuals();
-
-        // await manualsStore.getManuals();
-
         // Swal.fire({
         //     position: 'top-end',
         //     icon: 'success',
@@ -401,27 +371,6 @@ const deleteManual = async (manualId) => {
     }
 }
 
-// Close modal when clicking outside
-watchEffect(() => {
-    const handleClickOutside = (event) => {
-        const modalElement = modalRef.value;
-
-        if (modalElement && !modalElement.contains(event.target)) {
-            closeModal();
-        }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-        document.removeEventListener('click', handleClickOutside);
-    };
-});
-
-const getImageUrl = (photo) => {
-    const baseUrl = "http://localhost:8000/storage/";
-    return baseUrl + photo; // Concatenating the base URL and the photo variable
-}
 // Search
 const searchInput = ref(null)
 const search = async () => {
@@ -448,6 +397,42 @@ const search = async () => {
         console.error(error);
     }
 };
+
+
+
+// HELPERS-------------------------
+// Edit Manual Modal
+const openEditManualModal = (manualId, manualTitle, manualDescription) => {
+    form.value.id = manualId;
+    form.value.title = manualTitle;
+    form.value.description = manualDescription;
+    isEditManualModalOpen.value = true;
+};
+const closeEditManualModal = () => {
+    isEditManualModalOpen.value = false;
+};
+// Close modal when clicking outside
+watchEffect(() => {
+    const handleClickOutside = (event) => {
+        const modalElement = modalRef.value;
+
+        if (modalElement && !modalElement.contains(event.target)) {
+            closeModal();
+        }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+        document.removeEventListener('click', handleClickOutside);
+    };
+});
+
+const getImageUrl = (photo) => {
+    const baseUrl = "http://localhost:8000/storage/";
+    return baseUrl + photo; // Concatenating the base URL and the photo variable
+}
+
 </script>
 
 <style></style>
