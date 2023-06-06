@@ -8,13 +8,16 @@ import notFoundView from '../views/notFoundView.vue'
 import SpaceIndex from "../views/space/Index.vue";
 
 import ManualIndex from "../views/manual/Index.vue";
+
 import ArticleIndex from "../views/article/Index.vue";
+import ArticleShow from "../views/article/Show.vue"
 
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
 
 import UsersIndex from "../views/users/Index.vue";
 import { useUserStore } from "../stores/user-store";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +89,12 @@ const router = createRouter({
       component: ArticleIndex,
       props: true,
     },
+    {
+      path: "/article",
+      name: "article",
+      component: ArticleShow,
+      props: true,
+    },
     // Users management route
     {
       path: "/users",
@@ -106,7 +115,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  const notExist = !['home', 'register', 'login', 'profileSection', 'spaces', 'manuals', 'users', 'notFound', 'dashboard', 'articles'].includes(to.name);
+  const notExist = !['home', 'register', 'login', 'profileSection', 'spaces', 'manuals', 'users', 'notFound', 'dashboard', 'articles', 'article'].includes(to.name);
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
   const isAuthenticated = userStore.id;

@@ -40,7 +40,7 @@
                 <!-- spaces -->
             <!-- <div class="text-center p-4 pb-8 text-2xl">
                     {{ spaceIdStore.spaceId ?? 'Les Espaces' }}
-                                                                                                                                                        </div> -->
+                                                                                                                                                                </div> -->
                 <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
@@ -60,11 +60,12 @@
 
                     <!-- <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-500 m-auto text-white">
                             <span class="text-lg font-bold">S</span>
-                                                                                                                </div> -->
+                                    </div> -->
 
                         <div class="flex justify-center px-8 py-2 items-center">
 
-                            <button @click="getManuals(space.id, space.title)" class="hover:text-blue-500">{{ space.title.slice(0, 20) }}
+                            <button @click="getManuals(space.id, space.title)" class="hover:text-blue-500">{{
+                                space.title.slice(0, 20) }}
                             </button>
                             <!-- Modal  Edit/Delete Space Buttons-->
                             <Dropdown class="ml-auto cursor-pointer" v-if='userStore.isAdmin'>
@@ -173,6 +174,7 @@ import { useManualsStore } from '../../stores/manuals-store';
 import { useSpaceIdStore } from '../../stores/space-id-store';
 
 
+
 axios.defaults.withCredentials = true;
 
 const spaceIdStore = useSpaceIdStore();
@@ -221,6 +223,7 @@ const form = ref({
     description: null,
 })
 
+// Sapce CRUD + search
 
 // Add Space
 const addSpace = async () => {
@@ -320,48 +323,13 @@ const deleteSpace = async (spaceId) => {
 
 }
 
-// getManuals
-const router = useRouter();
-const getManuals = async (spaceId, spaceTitle) => {
-    try {
-        spaceIdStore.spaceId = spaceId;
-        spaceIdStore.spaceTitle = spaceTitle;
-        router.push({ name: 'manuals' })
-    } catch (error) {
-        console.log('ERR\N\N', error);
-    }
-}
-
-
-// Close modal when clicking outside
-watchEffect(() => {
-    const handleClickOutside = (event) => {
-        const modalElement = modalRef.value;
-
-        if (modalElement && !modalElement.contains(event.target)) {
-            closeModal();
-        }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-        document.removeEventListener('click', handleClickOutside);
-    };
-});
-
 // Search
 const searchInput = ref(null)
 watch(searchInput, () => {
     setTimeout(search, 1000);
 
 });
-
-
-
-// watch(() => spacesStore.spaces, (newValue, oldValue) => {
-//     getManuals();
-// });
+// Find a space by title
 const spaces = ref([]);
 const search = async () => {
     try {
@@ -389,6 +357,43 @@ const search = async () => {
         console.error(error);
     }
 };
+
+
+// Redirect to Space Manauls View
+const router = useRouter();
+const getManuals = async (spaceId, spaceTitle) => {
+    try {
+        spaceIdStore.spaceId = spaceId;
+        spaceIdStore.spaceTitle = spaceTitle;
+        router.push({ name: 'manuals' })
+    } catch (error) {
+        console.log('ERR\N\N', error);
+    }
+}
+
+// Close modal when clicking outside
+watchEffect(() => {
+    const handleClickOutside = (event) => {
+        const modalElement = modalRef.value;
+
+        if (modalElement && !modalElement.contains(event.target)) {
+            closeModal();
+        }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+        document.removeEventListener('click', handleClickOutside);
+    };
+});
+
+
+
+// watch(() => manualsStore.manuals, async (newValue, oldValue) => {
+//     await spacesStore.getSpaces()
+// });
+
 
 </script>
 
