@@ -1,5 +1,6 @@
 import "./assets/tailwindcss.css";
 import "flowbite/dist/flowbite.css";
+import 'remixicon/fonts/remixicon.css'
 import { createApp } from "vue";
 import App from "./App.vue";
 
