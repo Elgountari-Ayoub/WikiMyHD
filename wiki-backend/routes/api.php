@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ManualController;
 use App\Http\Controllers\SpaceController;
 use App\Http\Controllers\UserController;
@@ -46,6 +47,9 @@ Route::get('/getUser', [UserController::class, 'getUser']);
 // GET USER STATUS
 Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
 
+Route::get('/articles', [ArticleController::class, 'index']);
+Route::post('/articles', [ArticleController::class, 'store']);
+
 
 // ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------
@@ -55,7 +59,6 @@ Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // USER ROUTES
-
     // GET AUTH USER DATA
     Route::get('/users/getauth', [UserController::class, 'getAuth']);
 
@@ -73,7 +76,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
     // SPACE ROUTES 
-
     // -- GET AUTH USER SPACES
     Route::get('/spaces', [SpaceController::class, 'index']);
 
@@ -100,6 +102,26 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::put('/manuals/{id}', [ManualController::class, 'update']);
     // --Delete
     Route::delete('/manuals/{id}', [ManualController::class, 'destroy']);
+
+
+    // ARTICLE ROUTES
+    // -- Consultation
+    // Route::get('/articles', [ArticleController::class, 'index']);
+
+    // -- get articles by space id
+    Route::get('/articles/{id}', [ArticleController::class, 'getArticlesBySpaceId']);
+    // -- get articles by manual id
+    Route::get('/articles/{id}', [ArticleController::class, 'getArticlesBySpaceId']);
+    // -- Show 
+    Route::get('/articles/{id}/show', [ArticleController::class, 'show']);
+    // -- Search
+    Route::get('/articles/search/{title}', [ArticleController::class, 'search']);
+    // --Add 
+    // Route::post('/articles', [ArticleController::class, 'store']);
+    // --Update
+    Route::put('/articles/{id}', [ArticleController::class, 'update']);
+    // --Delete
+    Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
 });
 
 

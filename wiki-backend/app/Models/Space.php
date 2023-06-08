@@ -21,6 +21,10 @@ class Space extends Model
     {
         return $this->hasMany(Manual::class, 'space_id');
     }
+    public function articles()
+    {
+        return $this->hasMany(Articles::class, 'space_id');
+    }
 
     
     public function scopeFilter($query, array $filters)

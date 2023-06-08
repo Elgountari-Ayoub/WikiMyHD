@@ -68,4 +68,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Manual::class)->withPivot('is_creator');
     }
+
+    public function articles()
+    {
+        return $this->hasMany(Article::class, 'user_id');
+    }
+    
 }

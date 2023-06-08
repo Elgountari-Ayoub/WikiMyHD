@@ -164,9 +164,15 @@ display: none;
 })
 
 
+
 const submitArticle = async () => {
   const contentData = editor.getHTML()
-  await axios.post('/api/articles').then(response => {
+  await axios.post('/api/articles', {
+    space_id: 1,
+    manual_id: 1,
+    title: 'Atrticle 4',
+    content: contentData
+  }).then(response => {
     console.log(response);
   }).catch(error => {
     console.log(error);
@@ -224,7 +230,7 @@ onBeforeUnmount(() => {
 <style lang="scss" >
 div.cmds {
   position: fixed;
-  z-index: 999;
+  z-index: 1;
   // box-shadow:  0px -20px 30px black;
   // width: 100rem;
   top: 3.6rem;

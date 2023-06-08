@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('space_id');
             $table->unsignedBigInteger('manual_id');
-            $table->unsignedBigInteger('user_id'); // Add the user_id column
+            $table->string('title');
+            $table->longText('content');
+
             // Add other article attributes as needed
             $table->timestamps();
         
             $table->foreign('space_id')->references('id')->on('spaces')->onDelete('cascade');
             $table->foreign('manual_id')->references('id')->on('manuals')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Add the foreign key constraint
         });
     }
 

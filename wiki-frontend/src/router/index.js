@@ -90,7 +90,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/article",
+      path: "/articles/:id",
       name: "article",
       component: ArticleShow,
       props: true,

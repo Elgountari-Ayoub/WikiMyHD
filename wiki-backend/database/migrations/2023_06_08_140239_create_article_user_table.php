@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('article_user', function (Blueprint $table) {
             $table->unsignedBigInteger('article_id');
             $table->unsignedBigInteger('user_id');
-            // Add other pivot table attributes as needed
+            $table->boolean('is_creator')->default(false);
+
             $table->timestamps();
 
             $table->primary(['article_id', 'user_id']);
