@@ -1,5 +1,4 @@
 <template>
-  <!-- <div v-if="editor" class="cmds bg-black m-auto p-2 rounded w-9/12 ml-10"> -->
   <div v-if="editor" class="cmds bg-black m-auto p-2 rounded ">
     <button title="image" @click="addImage">
       <i class="ri-image-add-line"></i>
@@ -113,7 +112,10 @@
     </button>
   </div>
 
-  <editor-content :editor="editor" class="h-[80vh] overflow-auto my-editor-content" />
+  <editor-content :editor="editor" class="h-[80vh] overflow-auto" />
+
+  <button @click="submitArticle" class="bg-green-500 text-white px-4 py-2 rounded-full m-auto w-fit mt-2">Submit
+    Article</button>
 </template>
 
 <script setup>
@@ -123,7 +125,8 @@ import Image from '@tiptap/extension-image'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
 import { Editor, EditorContent } from '@tiptap/vue-3'
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import axios from 'axios'
 
 const editor = new Editor({
   extensions: [
@@ -133,8 +136,7 @@ const editor = new Editor({
     Dropcursor,
     Link
   ],
-  content: `
-    <h2>
+  content: `<h2>
       Hi there,
     </h2>
     <p>
@@ -157,15 +159,20 @@ display: none;
     <p>
       I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
     </p>
-    <blockquote>
-      Wow, that’s amazing. Good work, boy! 👏
-      <br />
-      — Mom
-    </blockquote>
-    <img src="https://source.unsplash.com/K9QHL52rE2k/800x400" />
-      
-  `,
+
+`,
 })
+
+
+const submitArticle = async () => {
+  const contentData = editor.getHTML()
+  await axios.post('/api/articles').then(response => {
+    console.log(response);
+  }).catch(error => {
+    console.log(error);
+  })
+  console.log(contentData)
+}
 
 const toggleLink = () => {
   if (editor.isActive('link')) {
@@ -210,6 +217,7 @@ const addImage = () => {
 onBeforeUnmount(() => {
   editor.destroy()
 })
+
 
 </script>
 
@@ -268,15 +276,16 @@ div.cmds .divider {
 }
 
 ::-webkit-scrollbar-track {
-  background: white; 
+  background: white;
 }
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: black;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 
 .ProseMirror {
