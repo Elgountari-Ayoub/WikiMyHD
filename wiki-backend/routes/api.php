@@ -111,13 +111,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // -- get articles by space id
     Route::get('/articles/{id}', [ArticleController::class, 'getArticlesBySpaceId']);
     // -- get articles by manual id
-    Route::get('/articles/{id}', [ArticleController::class, 'getArticlesBySpaceId']);
+    Route::get('/articles/{id}', [ArticleController::class, 'getArticleByManualId']);
     // -- Show 
     Route::get('/articles/{id}/show', [ArticleController::class, 'show']);
     // -- Search
     Route::get('/articles/search/{title}', [ArticleController::class, 'search']);
     // --Add 
-    // Route::post('/articles', [ArticleController::class, 'store']);
+    Route::post('/articles', [ArticleController::class, 'store']);
     // --Update
     Route::put('/articles/{id}', [ArticleController::class, 'update']);
     // --Delete

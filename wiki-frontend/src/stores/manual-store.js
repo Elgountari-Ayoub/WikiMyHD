@@ -2,64 +2,64 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { useSpaceIdStore } from "./space-id-store";
 
-export const useSpacesStore = defineStore("spaces", {
+export const useManualStore = defineStore("manual", {
   state: () => ({
-    spaces: [], // Array to store multiple spaces
+    id: null,
+    title: null,
+    description: null,
+
+    users: [],
+    space: null,
+    articles: [],
+    color: null,
   }),
   actions: {
-    async setSpaces(res) {
-      this.$state.spaces = [];
+    async setManual(res) {
       try {
-        let spaces = res.data.spaces;
-        if (!Array.isArray(spaces)) {
-          return false;
-        }
-        if (spaces.length === 0) {
-          return false;
-        }
+        let manual = res.data.manual;
+        this.$state.id = manual.id;
+        this.$state.title = manual.title;
+        this.$state.description = manual.description;
 
-        this.$state.spaces = spaces.map((space) => ({
-          id: space.id,
-          title: space.title,
-          description: space.description,
+        this.$state.users = manual.users;
+        this.$state.space = manual.space;
+        this.$state.articles = manual.articles;
 
-          users: space.users,
-          manuals: space.manuals,
-          articles: space.articles,
-
-          color: this.setSpaceColor(space.title.charAt(0)),
-        }));
+        this.$state.color = this.setManualColor(manual.title.charAt(0));
       } catch (error) {
+        console.log("ERROR IN SETTING MANUALS DEATIALS");
         console.log(error);
       }
     },
-    async getSpaces() {
-      await axios
-        .get("/api/spaces")
-        .then((response) => {
-          this.setSpaces(response);
-        })
-        .catch((error) => {
-          console.log("ERROR IN getING SPACES", error);
-        });
-    },
-    async getSpaceById(spaceId) {
-      this.$state.spaces = [];
-      await axios
-        .get(`/api/spaces/${spaceId}`)
-        .then((response) => {
-          this.setSpaces(response);
-        })
-        .catch((error) => {
-          this.getSpaces();
-          console.log(error);
-        });
-    },
-    clearSpaces() {
-      this.$state.spaces = [];
-    },
 
-    setSpaceColor(letter) {
+    // get Manual By Space id
+    async getManual(manualId) {
+      if (manualId) {
+        await axios
+          .get(`/api/manuals/${manualId}/show`)
+          .then((response) => {
+            console.log('MANUAL', response);
+            this.setManual(response);
+          })
+          .catch((error) => {
+            window.location.href = "/notFound";
+            console.log("Can't get the manual", error);
+          });
+      } else {
+        console.log("spaceId has no value");
+      }
+    },
+    clearManuals() {
+      this.$state.id = null;
+      this.$state.title = null;
+      this.$state.description = null;
+      this.$state.users = [];
+      this.$state.space = null;
+      this.$state.articles = [];
+
+      this.$state.color = null;
+    },
+    setManualColor(letter) {
       let color = "";
       if (letter == "A" || letter == "a") {
         color = "#800000"; // Dark red

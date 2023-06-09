@@ -16,6 +16,7 @@ export const useUserStore = defineStore("user", {
     isAdmin: false,
     spaces: null,
     manuals: null,
+    articles: null,
   }),
   actions: {
     async setUser(res) {
@@ -30,6 +31,7 @@ export const useUserStore = defineStore("user", {
       this.$state.post = res.data.user.post;
       this.$state.spaces = res.data.user.spaces;
       this.$state.manuals = res.data.user.manuals;
+      this.$state.articles = res.data.user.articles;
       this.$state.isAdmin = res.data.user.role === "admin" ? true : false;
     },
     async getUser() {
@@ -48,6 +50,7 @@ export const useUserStore = defineStore("user", {
             this.$state.post = respnose.data.user.post;
             this.$state.spaces = respnose.data.user.spaces;
             this.$state.manuals = respnose.data.user.manuals;
+            this.$state.articles = respnose.data.user.articles;
 
             this.$state.isAdmin =
               respnose.data.user.role === "admin" ? true : false;
@@ -77,6 +80,7 @@ export const useUserStore = defineStore("user", {
       this.$state.post = null;
       this.$state.spaces = null;
       this.$state.manuals = null;
+      this.$state.articles = null;
       this.$state.isAdmin = false;
     },
   },

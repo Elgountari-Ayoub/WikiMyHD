@@ -1,62 +1,55 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import { useSpaceIdStore } from "./space-id-store";
+import { useRouter } from "vue-router";
 
-export const useSpacesStore = defineStore("spaces", {
+export const useSpaceStore = defineStore("space", {
   state: () => ({
-    spaces: [], // Array to store multiple spaces
+    id: null,
+    title: null,
+    description: null,
+    users: [],
+    manuals: [],
+    articles: [],
+
+    color: null,
   }),
   actions: {
-    async setSpaces(res) {
-      this.$state.spaces = [];
+    async setSpace(res) {
       try {
-        let spaces = res.data.spaces;
-        if (!Array.isArray(spaces)) {
-          return false;
-        }
-        if (spaces.length === 0) {
-          return false;
-        }
+        let space = res.data.space;
 
-        this.$state.spaces = spaces.map((space) => ({
-          id: space.id,
-          title: space.title,
-          description: space.description,
+        this.$state.id = space.id;
+        this.$state.title = space.title;
+        this.$state.description = space.description;
+        this.$state.users = space.users;
+        this.$state.manuals = space.manuals;
+        this.$state.articles = space.articles;
 
-          users: space.users,
-          manuals: space.manuals,
-          articles: space.articles,
-
-          color: this.setSpaceColor(space.title.charAt(0)),
-        }));
+        this.$state.color = this.setSpaceColor(space.title.charAt(0));
       } catch (error) {
         console.log(error);
       }
     },
-    async getSpaces() {
-      await axios
-        .get("/api/spaces")
-        .then((response) => {
-          this.setSpaces(response);
-        })
-        .catch((error) => {
-          console.log("ERROR IN getING SPACES", error);
-        });
-    },
-    async getSpaceById(spaceId) {
-      this.$state.spaces = [];
+    async getSpace(spaceId) {
       await axios
         .get(`/api/spaces/${spaceId}`)
         .then((response) => {
-          this.setSpaces(response);
+          this.setSpace(response);
         })
         .catch((error) => {
-          this.getSpaces();
+          window.location.href = "/notFound";
           console.log(error);
         });
     },
-    clearSpaces() {
-      this.$state.spaces = [];
+    clearSpace() {
+      this.$state.id = null;
+      this.$state.title = null;
+      this.$state.description = null;
+      this.$state.users = [];
+      this.$state.manuals = [];
+      this.$state.articles = [];
+
+      this.$state.color = null;
     },
 
     setSpaceColor(letter) {

@@ -63,29 +63,19 @@
                         <!-- <span v-if="!spaceIdStore.spaceId" class="font-blod p-2 border-b flex justify-between px-4" -->
                         <span class="font-blod p-2 border-b flex justify-between " :style="{ color: manual.color }">
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
+
                             <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
-                            <!-- Space title -->
-                        <!-- <span class="flex gap-4 items-center">
-                                <img v-if="manual.user.photo" class="w-8 rounded-full" :src="getImageUrl(manual.user.photo)"
-                                    alt="">
-                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
-                                    </path>
-                                </svg>
-                                                                                                                {{ manual.user.name }}</span> -->
-                            <!-- <span>{{ manual }}</span> -->
                         </span>
 
                         <!-- Manual logo [first letter] -->
-                        <button @click="getArticles(manual.id)"
-                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-                            :style="{ backgroundColor: manual.color }">
-                            <span class="text-2xl ">{{ manual.title[0] }}
-                            </span>
-                        </button>
+                        <RouterLink :to="{ name: 'articles', params: { id: 1 } }">
+                            <button @click="getArticles(manual.id)"
+                                class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                                :style="{ backgroundColor: manual.color }">
+                                <span class="text-2xl ">{{ manual.title[0] }}
+                                </span>
+                            </button>
+                        </RouterLink>
                         <div class="flex justify-center p-4 items-center">
                             <!-- Manual title -->
                             <button @click="getArticles(manual.id)" class="hover:text-blue-500">{{ manual.title.slice(0,
@@ -120,7 +110,6 @@
                         </div>
                     </div>
                 </div>
-
 
 
                 <!-- Modal  Add Manual form-->

@@ -23,14 +23,14 @@ class SpaceController extends Controller
             $authRole = Auth::user()->role;
 
             if ($authRole == 'admin') {
-                $spaces =  Space::with('users', 'manuals')->orderBy('id', 'desc')->get();
+                $spaces =  Space::with('users', 'manuals', 'articles')->orderBy('id', 'desc')->get();
                 return response()->json([
                     'spaces' => $spaces,
                 ], 200);
             } else {
                 $user = User::findOrFail(Auth::id());
 
-                $spaces = $user->spaces()->with(['users','manuals' => function ($query) use ($user) {
+                $spaces = $user->spaces()->with(['users', 'articles','manuals' => function ($query) use ($user) {
                     $query->whereHas('users', function ($query) use ($user) {
                         $query->where('users.id', $user->id);
                     });
@@ -73,7 +73,7 @@ class SpaceController extends Controller
             $space->users()->syncWithoutDetaching([$creator_id => $pivotData]);
 
             // GET THE SPACE WITH HIS USERS, MANUAL DATA
-            $space = Space::with('users', 'manuals')->find($space->id);
+            $space = Space::with('users', 'manuals', 'articles')->find($space->id);
 
             return response()->json([
                 'space' => $space
@@ -94,7 +94,7 @@ class SpaceController extends Controller
         try {
             if (Auth::user()->role == 'admin') {
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
-                $space = Space::with('users', 'manuals')->findOrFail($id);
+                $space = Space::with('users', 'manuals', 'articles')->findOrFail($id);
 
                 return response()->json([
                     'space' => $space
@@ -103,7 +103,7 @@ class SpaceController extends Controller
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
                 $user = User::findOrFail(Auth::id());
                 // $space = $user->spaces()->with('users', 'manuals')->findOrFail($id);
-                $space = $user->spaces()->with(['users','manuals' => function ($query) use ($user) {
+                $space = $user->spaces()->with(['users', 'articles','manuals' => function ($query) use ($user) {
                     $query->whereHas('users', function ($query) use ($user) {
                         $query->where('users.id', $user->id);
                     });
@@ -140,7 +140,7 @@ class SpaceController extends Controller
             $space->save();
 
             // GET THE SPACE AND HIS USERS, MANUALS DATA
-            $space = Space::with('users', 'manuals')->find($space->id);
+            $space = Space::with('users', 'manuals', 'articles')->find($space->id);
             return response()->json([
                 'space' => $space
             ], 200);
@@ -160,7 +160,7 @@ class SpaceController extends Controller
         try {
 
             // DELETE THE SPACE
-            $space = Space::with('users', 'manuals')->findOrFail($id);
+            $space = Space::with('users', 'manuals', 'articles')->findOrFail($id);
             $space->delete();
 
             // GET THE SPACE AND HIS USERS, MANUALS DATA
@@ -184,7 +184,7 @@ class SpaceController extends Controller
         try {
             if (Auth::user()->role == 'admin') {
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
-                $spaces = Space::where('title', 'like', '%' . $title . '%')->with('users', 'manuals')->get();
+                $spaces = Space::where('title', 'like', '%' . $title . '%')->with('users', 'manuals', 'articles')->get();
 
                 return response()->json([
                     'spaces' => $spaces
@@ -192,7 +192,7 @@ class SpaceController extends Controller
             } else {
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
                 $user = User::findOrFail(Auth::id());
-                $spaces = $user->spaces()->where('title', 'like', '%' . $title . '%')->with('users', 'manuals')->get();
+                $spaces = $user->spaces()->where('title', 'like', '%' . $title . '%')->with('users', 'manuals', 'articles')->get();
 
                 return response()->json([
                     'spaces' => $spaces ?? null

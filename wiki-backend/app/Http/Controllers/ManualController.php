@@ -89,14 +89,14 @@ class ManualController extends Controller
         try {
             if (Auth::user()->role == 'admin') {
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
-                $manual = Manual::with('users', 'space')->findOrFail($id);
+                $manual = Manual::with('users', 'space', 'articles')->findOrFail($id);
 
                 return response()->json([
                     'manual' => $manual
                 ], 200);
             } else {
                 $user = User::findOrFail(Auth::id());
-                $manual = $user->manuals()->with('users', 'space')->findOrFail($id);
+                $manual = $user->manuals()->with('users', 'space', 'articles')->findOrFail($id);
 
                 return response()->json([
                     'manual' => $manual

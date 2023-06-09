@@ -65,9 +65,7 @@ class ArticleController extends Controller
             $article->title = $request->title;
             $article->content = $request->content;
             $article->save();
-
-            // $creator_id = Auth::id();
-            $creator_id = 1;
+            $creator_id = Auth::id();
             $pivotData = [
                 'is_creator' => true,
             ];
@@ -91,6 +89,9 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
+        // return response()->json([
+        //     'articles' => []
+        // ]);
         try {
             if (Auth::user()->role == 'admin') {
                 $article = Article::with('users', 'space', 'manual')->findOrFail($id);

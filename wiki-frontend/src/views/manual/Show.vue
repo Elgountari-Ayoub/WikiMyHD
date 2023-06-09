@@ -3,29 +3,31 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <div class="flex items-center">
-                <!-- HOME => ALL SPACES PAGE -->
-                <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
-                    <svg aria-hidden="true"
-                        class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                        </path>
-                    </svg>
-                </RouterLink>
-                <!--  -->
-                <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
-                    {{ spaceIdStore.spaceTitle }}
-                </RouterLink>
-            </div>
+            <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
+                <svg aria-hidden="true"
+                    class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                    </path>
+                </svg>
+            </RouterLink>
+            <!-- <RouterLink v-if="manualsStore.manuals.length !== 0" :to="{ name: 'manuals' }" -->
+        <!-- <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
+          {{ spaceStore.title }}
+                          </RouterLink> -->
+
+            <RouterLink :to="{ name: 'space', params: { id: `${spaceStore.id}` } }"
+                class="hover:text-blue-500 text-base  rounded">
+                {{ spaceStore.title }}
+            </RouterLink>
 
             <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
-                    <!-- Add article : most have the space that will have the article-->
+                    <!-- Add manual : most have the space that will have the manual-->
                     <button @click="openModal" type="submit"
                         class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
-                        Ajouter Article
+                        Ajouter Manual
                     </button>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
@@ -54,38 +56,39 @@
                         </button>
                     </form>
                 </div>
+                <!-- {{ manual_id.value }} -->
+                <!-- {{ manualStore }} -->
 
-                <!-- {{ articlesStore.articles }} -->
-                <LoadingAnimation v-if="articlesStore.articles.length == 0" />
+                {{ manualStore.articles }}
+                <LoadingAnimation v-if=" manualStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
-
-                    <div v-for="article in articlesStore.articles"
+                    <div v-for="manual in manualStore.articles"
                         class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
-                        <!-- <span v-if="!spaceIdStore.spaceId" class="font-blod p-2 border-b flex justify-between px-4" -->
-                        <span class="font-blod p-2 border-b flex justify-between " :style="{ color: article.color }">
-                            <span v-if="!spaceIdStore.spaceId">{{ article.space.title }}</span>
-                            <span class="ml-auto">{{ getCreatorName(article.users) }}</span>
+                        <span class="font-blod p-2 border-b flex justify-between " :style="{ color: manual.color }">
+                            <span v-if="!manual_id">{{ manual.space.title }}</span>
+
+                            <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
                         </span>
 
-                        <!-- article logo [first letter] -->
-                        <RouterLink :to="{ name: 'articles', params: { id: 1 } }">
-                            <button @click="getArticles(article.id)"
-                                class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-                                :style="{ backgroundColor: article.color }">
-                                <span class="text-2xl ">{{ article.title[0] }}
-                                </span>
-                            </button>
+                        <!-- Manual logo [first letter] -->
+                        <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: manual.color }">
+                            <span class="text-2xl ">{{ manual.title[0] }}
+                            </span>
                         </RouterLink>
-                        <div class="flex justify-center p-4 items-center">
-                            <!-- article title -->
-                            <button @click="getArticles(article.id)" class="hover:text-blue-500">{{ article.title.slice(0,
-                                100) }}
-                            </button>
 
-                            <!-- Modal  Edit/Delete article Buttons-->
+                        <div class="flex justify-center p-4 items-center">
+                            <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
+                                class="hover:text-blue-500">
+                                <span >{{ manual.title.slice(0,
+                                    20) }}
+                                </span>
+                            </RouterLink>
+                            <!-- Modal  Edit/Delete Manual Buttons-->
                             <Dropdown class="ml-auto"
-                                v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
+                                v-if='getCreatorId(manual.users) == userStore.id || userStore.isAdmin'>
                                 <template #trigger>
                                     <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
                                         class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
@@ -97,11 +100,11 @@
                                 </template>
                                 <template #content>
                                     <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                                        <button @click="openEditManualModal(article.id, article.title, article.description)"
+                                        <button @click="openEditManualModal(manual.id, manual.title, manual.description)"
                                             class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
                                             Editer
                                         </button>
-                                        <button @click="deleteManual(article.id)"
+                                        <button @click="deleteManual(manual.id)"
                                             class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
                                             Supprimer
                                         </button>
@@ -112,12 +115,12 @@
                     </div>
                 </div>
 
-                <!-- Modal  Add article form-->
+                <!-- Modal  Add Manual form-->
                 <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
                     @click.self="closeModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un article</h1>
-                        <form @submit.prevent="addArticle" class="space-y-4 ">
+                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un manual</h1>
+                        <form @submit.prevent="addManual" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
                                 <input v-model="form.title" type="text" id="title" name="title"
@@ -138,11 +141,11 @@
                     </div>
                 </div>
 
-                <!-- Modal  Edit article form-->
+                <!-- Modal  Edit Manual form-->
                 <div v-if="isEditManualModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
                     @click.self="closeEditManualModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Modifier le article</h1>
+                        <h1 class="mb-4 text-2xl font-semibold">Modifier le manual</h1>
                         <form @submit.prevent="editManual" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
@@ -167,8 +170,8 @@
         </DashboardLayout>
     </div>
 </template>
-
-
+  
+  
 <script setup>
 import DashboardLayout from '../../components/layouts/DashboardLayout.vue';
 import SearchInput from '../../components/Partials/SearchInput.vue';
@@ -178,47 +181,51 @@ import LoadingAnimation from '../../components/global/LoadingAnimation.vue'
 
 import { ref, watchEffect, onMounted, watch } from 'vue';
 import axios, { Axios } from 'axios';
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 // Store [pinia]
 import { useUserStore } from '../../stores/user-store';
-import { useUsersStore } from '../../stores/users-store';
+
 import { useSpacesStore } from '../../stores/spaces-store';
+import { useSpaceStore } from '../../stores/space-store';
+
 import { useManualsStore } from '../../stores/manuals-store';
-import { useSpaceIdStore } from '../../stores/space-id-store';
+import { useManualStore } from '../../stores/manual-store';
+
 import { useArticlesSotre } from '../../stores/articles-store';
+
 
 const userStore = useUserStore();
 const manualsStore = useManualsStore();
+const manualStore = useManualStore();
+const spaceStore = useSpaceStore();
 const spacesStore = useSpacesStore();
-const spaceIdStore = useSpaceIdStore();
 const articlesStore = useArticlesSotre();
 
 axios.defaults.withCredentials = true;
 
-watch(() => spaceIdStore.spaceId, (newValue, oldValue) => {
-    getManuals();
+const route = useRoute();
+const manual_id = ref(null);
+manual_id.value = route.params.id;
+
+const router = useRouter();
+manualsStore.clearManuals();
+spaceStore.clearSpace();
+const getArticles = onMounted(async () => {
+    if (manual_id.value) {
+        manualStore.getManual(manual_id.value);
+
+        articlesStore.getArticles(); 
+        // spaceStore.getSpace(manual_id.value);
+
+        // manualsStore.getManualsBySpace(manual_id.value);
+        // spacesStore.getSpaces();
+    }
 });
 
-const spaceId = ref();
-const getManuals = onMounted(async () => {
-    await articlesStore.getArticles();
-    if (spaceIdStore.spaceId) {
-        await manualsStore.getManualsBySpace(spaceIdStore.spaceId)
-            .then(async (response) => {
-                await spacesStore.getSpaces();
-
-            }).catch(error => {
-                console.log(error);
-            });
-    }
-    else {
-        await articlesStore.getArticles();
-        await manualsStore.getManuals().then(async (response) => {
-            await spacesStore.getSpaces();
-        });
-    }
-
+watch(() => spaceStore.id, (newValue, oldValue) => {
+    getArticles();
 });
+
 
 const getCreatorId = (users) => {
     let creatorId = -1;
@@ -244,8 +251,7 @@ const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
 
 const modalRef = ref(null);
-
-// Add article model
+// Add manual model
 const openModal = () => {
     form.value.title = '';
     form.value.description = '';
@@ -266,11 +272,11 @@ const form = ref({
 
 // MANAUL CRUD + SEARCH
 
-// Add article
-const addArticle = async () => {
+// Add Manual
+const addManual = async () => {
     try {
         const response = await axios.post('/api/manuals', {
-            space_id: spaceIdStore.spaceId,
+            space_id: manual_id.value,
             title: form.value.title,
             description: form.value.description
         });
@@ -288,7 +294,7 @@ const addArticle = async () => {
         //     showConfirmButton: false,
         //     timer: 1500,
         // })
-        getManuals();
+        getArticles();
     } catch (error) {
         // Handle the error here if needed
         Swal.fire({
@@ -316,7 +322,15 @@ const editManual = async () => {
         form.value.title = '';
         form.value.description = '';
 
-        getManuals();
+        // Swal.fire({
+        //     position: 'top-end',
+        //     icon: 'success',
+        //     width: '25rem',
+        //     title: 'le manuel mis à jour avec succès',
+        //     showConfirmButton: false,
+        //     timer: 1500,
+        // })
+        getArticles();
     } catch (error) {
         // Handle the error here if needed
         Swal.fire({
@@ -335,7 +349,7 @@ const deleteManual = async (manualId) => {
     // show a sweet alert for the confirmation
     try {
         const response = await axios.delete(`/api/manuals/${manualId}`);
-        getManuals();
+        getArticles();
         // Swal.fire({
         //     position: 'top-end',
         //     icon: 'success',
@@ -361,9 +375,8 @@ const searchInput = ref(null)
 const search = async () => {
     try {
         if (!searchInput.value) {
-            console.log('empty');
             if (manualsStore.manuals.length === 0) {
-                manualsStore.getManuals();
+                manualsStore.getArticles();
             }
             return;
         }
@@ -419,5 +432,5 @@ const getImageUrl = (photo) => {
 }
 
 </script>
-
+  
 <style></style>

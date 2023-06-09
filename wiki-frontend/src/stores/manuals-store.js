@@ -21,13 +21,14 @@ export const useManualsStore = defineStore("manuals", {
         }
         this.$state.manuals = manuals.map((manual) => ({
           id: manual.id,
-          user_id: manual.user_id,
-          space_id: manual.space_id,
           title: manual.title,
           description: manual.description,
-          color: this.setManualColor(manual.title.charAt(0)),
-          space: manual.space,
+          
           users: manual.users,
+          space: manual.space,
+          articles: manual.articles,
+
+          color: this.setManualColor(manual.title.charAt(0)),
         }));
         return true;
       } catch (error) {

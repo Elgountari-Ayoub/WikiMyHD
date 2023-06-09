@@ -19,15 +19,17 @@ export const useArticlesSotre = defineStore("articles", {
           console.log("articles array length = ", articles.length);
           return false;
         }
-        this.$state.articles = articles.map((manual) => ({
-          id: manual.id,
-          user_id: manual.user_id,
-          space_id: manual.space_id,
-          title: manual.title,
-          description: manual.description,
-          color: this.setArticleColor(manual.title.charAt(0)),
-          space: manual.space,
-          users: manual.users,
+        
+        this.$state.articles = articles.map((article) => ({
+          id: article.id,
+          title: article.title,
+          content: article.content,
+          
+          users: article.users,
+          space: article.space,
+          manual: article.manual,
+          
+          color: this.setArticleColor(article.title.charAt(0)),
         }));
         return true;
       } catch (error) {
@@ -50,19 +52,19 @@ export const useArticlesSotre = defineStore("articles", {
         });
     },
 
-    // get Manual By Space id
-    async getArticlesBySpace(spaceId) {
+    // get Article By Space id
+    async getArticlesByManual(manualId) {
       this.$state.articles = [];
-      if (spaceId) {
+      if (manualId) {
         await axios
-          .get(`/api/articles/${spaceId}`)
+          .get(`/api/articles/${manualId}`)
           .then((response) => {
             this.setArticles(response);
             return true;
           })
           .catch((error) => {
             console.log("err", error);
-            console.log("ERROR IN getING articles BY SPACE", error);
+            console.log("ERROR IN getING articles BY MANUAL", error);
           });
       } else {
         console.log("spaceId has no value");
