@@ -11,23 +11,31 @@
                     </path>
                 </svg>
             </RouterLink>
-            <!-- <RouterLink v-if="manualsStore.manuals.length !== 0" :to="{ name: 'manuals' }" -->
-        <!-- <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
-          {{ spaceStore.title }}
-                          </RouterLink> -->
 
-            <RouterLink :to="{ name: 'space', params: { id: `${spaceStore.id}` } }"
+            <RouterLink :to="{ name: 'space', params: { id: `${manualStore.space.id}` } }"
                 class="hover:text-blue-500 text-base  rounded">
-                {{ spaceStore.title }}
+                {{ manualStore.space.title }}
+            </RouterLink>
+
+            <svg aria-hidden="true"
+                class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                </path>
+            </svg>
+
+            <RouterLink :to="{ name: 'manual', params: { id: `${manualStore.id}` } }"
+                class="hover:text-blue-500 text-base  rounded">
+                {{ manualStore.title }}
             </RouterLink>
 
             <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
-                    <!-- Add manual : most have the space that will have the manual-->
+                    <!-- Add article : most have the space that will have the article-->
                     <button @click="openModal" type="submit"
                         class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
-                        Ajouter Manual
+                        Ajouter article
                     </button>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
@@ -57,38 +65,38 @@
                     </form>
                 </div>
                 <!-- {{ manual_id.value }} -->
-                <!-- {{ manualStore }} -->
+                <!-- {{ articlesStore }}   -->
 
-                {{ manualStore.articles }}
-                <LoadingAnimation v-if=" manualStore.articles.length == 0" />
+                <!-- {{ manualStore.articles }} -->
+                <LoadingAnimation v-if="manualStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
-                    <div v-for="manual in manualStore.articles"
+                    <div v-for="article in articlesStore.articles"
                         class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
-                        <span class="font-blod p-2 border-b flex justify-between " :style="{ color: manual.color }">
-                            <span v-if="!manual_id">{{ manual.space.title }}</span>
+                        <span class="font-blod p-2 border-b flex justify-between " :style="{ color: article.color }">
+                            <span v-if="!manual_id">{{ article.space.title }}</span>
 
-                            <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
+                            <!-- <span class="ml-auto">{{ getCreatorName(article.users) }}</span> -->
                         </span>
 
-                        <!-- Manual logo [first letter] -->
-                        <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
+                        <!-- article logo [first letter] -->
+                        <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
                             class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-                            :style="{ backgroundColor: manual.color }">
-                            <span class="text-2xl ">{{ manual.title[0] }}
+                            :style="{ backgroundColor: article.color }">
+                            <span class="text-2xl ">{{ article.title[0] }}
                             </span>
                         </RouterLink>
 
                         <div class="flex justify-center p-4 items-center">
-                            <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
+                            <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
                                 class="hover:text-blue-500">
-                                <span >{{ manual.title.slice(0,
+                                <span>{{ article.title.slice(0,
                                     20) }}
                                 </span>
                             </RouterLink>
                             <!-- Modal  Edit/Delete Manual Buttons-->
-                            <Dropdown class="ml-auto"
-                                v-if='getCreatorId(manual.users) == userStore.id || userStore.isAdmin'>
+                            <!-- v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'> -->
+                            <Dropdown class="ml-auto" v-if="true">
                                 <template #trigger>
                                     <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
                                         class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
@@ -100,11 +108,11 @@
                                 </template>
                                 <template #content>
                                     <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                                        <button @click="openEditManualModal(manual.id, manual.title, manual.description)"
+                                        <button @click="openEditManualModal(article.id, article.title, article.description)"
                                             class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
                                             Editer
                                         </button>
-                                        <button @click="deleteManual(manual.id)"
+                                        <button @click="deleteManual(article.id)"
                                             class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
                                             Supprimer
                                         </button>
@@ -119,7 +127,7 @@
                 <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
                     @click.self="closeModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un manual</h1>
+                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un article</h1>
                         <form @submit.prevent="addManual" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
@@ -145,7 +153,7 @@
                 <div v-if="isEditManualModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
                     @click.self="closeEditManualModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Modifier le manual</h1>
+                        <h1 class="mb-4 text-2xl font-semibold">Modifier le article</h1>
                         <form @submit.prevent="editManual" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
@@ -214,7 +222,7 @@ const getArticles = onMounted(async () => {
     if (manual_id.value) {
         manualStore.getManual(manual_id.value);
 
-        articlesStore.getArticles(); 
+        articlesStore.getArticles();
         // spaceStore.getSpace(manual_id.value);
 
         // manualsStore.getManualsBySpace(manual_id.value);
@@ -228,6 +236,7 @@ watch(() => spaceStore.id, (newValue, oldValue) => {
 
 
 const getCreatorId = (users) => {
+
     let creatorId = -1;
     users.forEach(user => {
         if (user.pivot.is_creator == 1) {
@@ -251,7 +260,7 @@ const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
 
 const modalRef = ref(null);
-// Add manual model
+// Add article model
 const openModal = () => {
     form.value.title = '';
     form.value.description = '';

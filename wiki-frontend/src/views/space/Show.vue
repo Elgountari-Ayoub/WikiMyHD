@@ -79,7 +79,7 @@
 
             <div class="flex justify-center p-4 items-center">
               <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }" class="hover:text-blue-500">
-                <span @click="getArticles(manual.id)">{{ manual.title.slice(0,
+                <span >{{ manual.title.slice(0,
                   20) }}
                 </span>
               </RouterLink>

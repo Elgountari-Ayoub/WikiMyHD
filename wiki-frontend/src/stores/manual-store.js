@@ -38,7 +38,6 @@ export const useManualStore = defineStore("manual", {
         await axios
           .get(`/api/manuals/${manualId}/show`)
           .then((response) => {
-            console.log('MANUAL', response);
             this.setManual(response);
           })
           .catch((error) => {
