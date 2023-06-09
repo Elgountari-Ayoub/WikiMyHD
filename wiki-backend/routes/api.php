@@ -49,6 +49,7 @@ Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::post('/articles', [ArticleController::class, 'store']);
+Route::get('/users/getauth', [UserController::class, 'getAuth']);
 
 
 // ------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // USER ROUTES
     // GET AUTH USER DATA
-    Route::get('/users/getauth', [UserController::class, 'getAuth']);
+    // Route::get('/users/getauth', [UserController::class, 'getAuth']);
 
     // -- UPDATE AUTH USER PROFILE
     Route::put('/update', [UserController::class, 'update']);
@@ -72,7 +73,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/assignspace', [UserController::class, 'assignSpace']);
     // assignmanual
     Route::post('/assignmanual', [UserController::class, 'assignManual']);
-
 
 
     // SPACE ROUTES 

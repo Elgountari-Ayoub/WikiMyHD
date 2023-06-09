@@ -22,7 +22,7 @@ class Manual extends Model
 
     public function articles()
     {
-        return $this->hasMany(Article::class, 'manual_id');
+        return $this->hasMany(Article::class);
     }
 
 

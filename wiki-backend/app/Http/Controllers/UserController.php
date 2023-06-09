@@ -24,7 +24,7 @@ class UserController extends Controller
     {
         try {
             // GET THE USERS AND HIS SPACES, MANUALS DATA
-            $users = User::with('spaces', 'manuals')->get();
+            $users = User::with('spaces', 'manuals', 'articles')->get();
             return response()->json([
                 'users' => $users
             ], 200);
@@ -43,7 +43,7 @@ class UserController extends Controller
     {
         try {
             // GET THE USERS AND HIS SPACES, MANUALS DATA
-            $user = User::with('spaces', 'manuals')->findOrFail($id);
+            $user = User::with('spaces', 'manuals', 'articles')->findOrFail($id);
             return response()->json([
                 'user' => $user
             ], 200);
@@ -62,12 +62,12 @@ class UserController extends Controller
     {
         try {
             $id = Auth::id();
+            // $id = 2;
             // GET THE USERS AND HIS SPACES, MANUALS DATA
-            $user = User::with('spaces', 'manuals')->findOrFail($id);
+            $user = User::with('spaces', 'manuals', 'articles')->findOrFail($id);
             // $spaces = $user->spaces()->with('users', 'manuals')->latest();
             // $user->spaces = $user->spaces()->with('users', 'manuals')->latest();
             // $user->manuals = $user->manuals()->with('users', 'space')->latest();
-
 
             return response()->json([
                 'user' => $user
@@ -79,8 +79,6 @@ class UserController extends Controller
             ], 402);
         }
     }
-
-
 
     /**
      * Update the specified resource in storage.

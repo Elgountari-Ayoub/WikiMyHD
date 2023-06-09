@@ -23,7 +23,7 @@ class Space extends Model
     }
     public function articles()
     {
-        return $this->hasMany(Articles::class, 'space_id');
+        return $this->hasMany(Articles::class);
     }
 
     

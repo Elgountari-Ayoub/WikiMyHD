@@ -71,7 +71,7 @@ class User extends Authenticatable
 
     public function articles()
     {
-        return $this->hasMany(Article::class, 'user_id');
+        return $this->belongsToMany(Article::class)->withPivot('is_creator');
     }
     
 }

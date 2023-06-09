@@ -44,6 +44,5 @@ class RegisteredUserController extends Controller
         // Auth::login($user);
 
         return response()->json(['message' => 'Registration successful', 'user' => $user]);
-        // return response()->noContent();
     }
 }

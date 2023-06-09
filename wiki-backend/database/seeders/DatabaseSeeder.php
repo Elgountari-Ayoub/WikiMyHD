@@ -67,41 +67,41 @@ class DatabaseSeeder extends Seeder
         // $ayoub->spaces()->syncWithoutDetaching([1]);
 
 
-        Space::factory()->create([
-            'title' => 'IT',
-            'description' => 'IT description'
-        ]);
+        // Space::factory()->create([
+        //     'title' => 'IT',
+        //     'description' => 'IT description'
+        // ]);
 
         // $admin = User::find(1);
         // $admin->spaces()->syncWithoutDetaching([2 => ['is_creator' => false]]);
 
 
-        Manual::factory()->create([
-            'space_id' => 1,
-            'title' => 'Backend',
-            'description' => 'Backend description'
-        ]);
+        // Manual::factory()->create([
+        //     'space_id' => 1,
+        //     'title' => 'Backend',
+        //     'description' => 'Backend description'
+        // ]);
 
-        Article::factory()->create([
-            'space_id' => 1,
-            'manual_id' => 1,
-            'title' => 'Laravel',
-        ]);
-        Article::factory()->create([
-            'space_id' => 1,
-            'manual_id' => 1,
-            'title' => 'Tailwind',
-        ]);
-        Article::factory()->create([
-            'space_id' => 1,
-            'manual_id' => 1,
-            'title' => 'Vuejs',
-        ]);
-        Article::factory()->create([
-            'space_id' => 1,
-            'manual_id' => 1,
-            'title' => 'Mysql',
-        ]);
+        // Article::factory()->create([
+        //     'space_id' => 1,
+        //     'manual_id' => 1,
+        //     'title' => 'Laravel',
+        // ]);
+        // Article::factory()->create([
+        //     'space_id' => 1,
+        //     'manual_id' => 1,
+        //     'title' => 'Tailwind',
+        // ]);
+        // Article::factory()->create([
+        //     'space_id' => 1,
+        //     'manual_id' => 1,
+        //     'title' => 'Vuejs',
+        // ]);
+        // Article::factory()->create([
+        //     'space_id' => 1,
+        //     'manual_id' => 1,
+        //     'title' => 'Mysql',
+        // ]);
 
         // $admin = User::find(1);
         // $admin->manuals()->syncWithoutDetaching([1 => ['is_creator' => true]]);
