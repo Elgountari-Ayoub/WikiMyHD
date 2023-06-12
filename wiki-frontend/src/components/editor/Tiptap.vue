@@ -112,7 +112,7 @@
     </button>
   </div>
 
-  <editor-content :editor="editor" class="h-[80vh] overflow-auto" />
+  <editor-content :editor="editor" class="overflow-auto" />
 
   <button @click="submitArticle" class="bg-green-500 text-white px-4 py-2 rounded-full m-auto w-fit mt-2">Submit
     Article</button>
@@ -136,33 +136,8 @@ const editor = new Editor({
     Dropcursor,
     Link
   ],
-  content: `<h2>
-      Hi there,
-    </h2>
-    <p>
-      this is a <em>basic</em> example of <strong>tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
-    </p>
-    <ul>
-      <li>
-        That’s a bullet list with one …
-      </li>
-      <li>
-        … or two list items.
-      </li>
-    </ul>
-    <p>
-      Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
-    </p>
-    <pre><code class="language-css">body {
-display: none;
-}</code></pre>
-    <p>
-      I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
-    </p>
-
-`,
+  content: ``,
 })
-
 
 
 const submitArticle = async () => {
@@ -295,9 +270,9 @@ div.cmds .divider {
 }
 
 .ProseMirror {
-  // outline: 1rem;
-  padding: 5rem;
-
+  height: 80vh;
+  outline: 0rem;
+  padding: 3rem 2rem;
 
   >*+* {
     margin-top: 0.75em;

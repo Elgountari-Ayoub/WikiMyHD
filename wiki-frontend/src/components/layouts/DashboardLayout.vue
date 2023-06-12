@@ -61,7 +61,7 @@
                                 <li>
                                     <button @click="logout"
                                         class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
-                                                                                                                                                                                                                                    dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                                                                                                                                                                                            dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Se déconnecter
                                     </button>
 
@@ -220,12 +220,16 @@ import { useSpacesStore } from '../../stores/spaces-store';
 import { useManualsStore } from '../../stores/manuals-store';
 import { useUsersStore } from '../../stores/users-store';
 import { useSpaceIdStore } from '../../stores/space-id-store';
+import { useSpaceStore } from '../../stores/space-store';
+import { useManualStore } from '../../stores/manual-store';
 
 const router = useRouter();
 const userStore = useUserStore();
 const usersStore = useUsersStore();
 const spacesStore = useSpacesStore();
+const spaceStore = useSpaceStore();
 const manualsStore = useManualsStore();
+const manualStore = useManualStore();
 
 const showSpacesList = ref(false);
 const showManualsList = ref(false);
@@ -242,6 +246,8 @@ const toggleManualsList = (spaceId) => {
 const isManualsListVisible = (spaceId) => {
     return showManualsList.value === spaceId;
 }
+
+axios.defaults.withCredentials = true;
 
 // redirectToSpaceManualsPage
 const getManuals = async (spaceId, spaceTitle) => {
@@ -273,6 +279,7 @@ onMounted(async () => {
 let menuOpen = ref(false)
 
 const logout = async () => {
+    axios.defaults.withCredentials = true;
     await axios.post('/logout')
         .then(response => {
             try {
@@ -280,13 +287,19 @@ const logout = async () => {
                 console.log('User Store Cleard :>', userStore);
 
                 spacesStore.clearSpaces();
-                console.log('Space Store Cleard :>', userStore);
+                console.log('Space Store Cleard :>', spacesStore);
+
+                spaceStore.clearSpace();
+                console.log('Space Store Cleard :>', spaceStore);
 
                 spaceIdStore.clearSpaceId();
                 console.log('User Store Cleard :>', spaceIdStore);
 
                 manualsStore.clearManuals();
-                console.log('Manual Store Cleard :>', userStore);
+                console.log('Manual Store Cleard :>', manualsStore);
+
+                manualStore.clearManual();
+                console.log('Manual Store Cleard :>', manualStore);
 
                 usersStore.clearUsers();
                 console.log('Users Store Cleard :>', usersStore);

@@ -7,7 +7,7 @@
                 <div v-if="showModal"
                     class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
                     <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
-                        <div class="flex flex-col items-start justify-between p-6 space-y-4">
+                        <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
                             <div class="text-lg font-bold text-gray-900">Modal Title</div>
 
                             <!-- Spaces Multi-Select -->
@@ -30,7 +30,7 @@
                                 </select>
                             </div>
 
-                            <div class="flex justify-end space-x-4">
+                            <div class="flex justify-end space-x-2 ml-auto">
                                 <button @click="showModal = false" type="button"
                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                                     Cancel
@@ -43,18 +43,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Selected Spaces and Manuals -->
-                <!-- <div v-if="selectedSpaces.length > 0 || selectedManuals.length > 0" class="mt-4">
-                    <div class="text-lg font-bold">Selected Spaces:</div>
-                    <ul class="list-disc ml-4">
-                        <li v-for="spaceId in selectedSpaces" :key="spaceId">{{ spaceId }}</li>
-                    </ul>
-                    <div class="text-lg font-bold mt-4">Selected Manuals:</div>
-                    <ul class="list-disc ml-4">
-                        <li v-for="manual in selectedManuals" :key="manual">{{ manual }}</li>
-                    </ul>
-                </div> -->
             </div>
             <!-- table -->
             <div v-if="usersStore.users && userStore.isAdmin">
@@ -219,9 +207,6 @@ const getImageUrl = (photo) => {
     return baseUrl + photo;
 }
 
-
-
-
 const spaces = ref([]);
 onMounted(async () => {
     await spacesStore.getSpaces();
@@ -230,6 +215,7 @@ onMounted(async () => {
 
 const selectedSpaces = ref([]);
 const selectedManuals = ref([]);
+const selectedArticles = ref([]);
 
 const filteredManuals = computed(() => {
     const filtered = [];

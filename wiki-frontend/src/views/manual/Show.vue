@@ -3,40 +3,49 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
-                <svg aria-hidden="true"
-                    class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                    </path>
-                </svg>
-            </RouterLink>
+            <div v-if="manualStore">
+                <!-- Home => Spaces link-->
+                <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
+                    <svg aria-hidden="true"
+                        class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                        </path>
+                    </svg>
+                </RouterLink>
+                <!-- Space link-->
+                <RouterLink v-if="manualStore.space" :to="{ name: 'space', params: { id: `${manualStore.space.id}` } }"
+                    class="hover:text-blue-500 text-base  rounded">
+                    {{ manualStore.space.title }}
+                    <svg aria-hidden="true"
+                        class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                        </path>
+                    </svg>
+                </RouterLink>
+                <!-- Manual link -->
+                <RouterLink :to="{ name: 'manual', params: { id: `${manualStore.id}` } }"
+                    class="hover:text-blue-500 text-base  rounded">
+                    {{ manualStore.title }}
+                    <svg aria-hidden="true"
+                        class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                        </path>
+                    </svg>
+                </RouterLink>
+            </div>
 
-            <RouterLink :to="{ name: 'space', params: { id: `${manualStore.space.id}` } }"
-                class="hover:text-blue-500 text-base  rounded">
-                {{ manualStore.space.title }}
-            </RouterLink>
-
-            <svg aria-hidden="true"
-                class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                </path>
-            </svg>
-
-            <RouterLink :to="{ name: 'manual', params: { id: `${manualStore.id}` } }"
-                class="hover:text-blue-500 text-base  rounded">
-                {{ manualStore.title }}
-            </RouterLink>
 
             <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
-                    <!-- Add article : most have the space that will have the article-->
-                    <button @click="openModal" type="submit"
-                        class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
-                        Ajouter article
-                    </button>
+                    <!-- Add article : must have the space that will have the article -->
+                    <RouterLink :to="{ name: 'addArticle', params: { space_id: space_id, manual_id: manual_id } }"
+                        class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
+                        Ajouter Article
+                    </RouterLink>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
                     <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
@@ -64,114 +73,46 @@
                         </button>
                     </form>
                 </div>
-                <!-- {{ manual_id.value }} -->
-                <!-- {{ articlesStore }}   -->
 
-                <!-- {{ manualStore.articles }} -->
                 <LoadingAnimation v-if="manualStore.articles.length == 0" />
                 <div v-else
-                    class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
+                    class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 ">
+
                     <div v-for="article in articlesStore.articles"
-                        class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
-                        <span class="font-blod p-2 border-b flex justify-between " :style="{ color: article.color }">
-                            <span v-if="!manual_id">{{ article.space.title }}</span>
+                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
 
-                            <!-- <span class="ml-auto">{{ getCreatorName(article.users) }}</span> -->
-                        </span>
 
-                        <!-- article logo [first letter] -->
+                        <!-- LOGO -->
                         <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
                             class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
                             :style="{ backgroundColor: article.color }">
-                            <span class="text-2xl ">{{ article.title[0] }}
+                            <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
                             </span>
                         </RouterLink>
 
-                        <div class="flex justify-center p-4 items-center">
+                        <div class="flex justify-center items-center ">
+                            <!-- Title -->
                             <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
-                                class="hover:text-blue-500">
+                                class="font-bold hover:text-blue-500">
                                 <span>{{ article.title.slice(0,
-                                    20) }}
+                                    100) }}
                                 </span>
                             </RouterLink>
-                            <!-- Modal  Edit/Delete Manual Buttons-->
-                            <!-- v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'> -->
-                            <Dropdown class="ml-auto" v-if="true">
-                                <template #trigger>
-                                    <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
-                                        class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
-                                        </path>
-                                    </svg>
-                                </template>
-                                <template #content>
-                                    <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                                        <button @click="openEditManualModal(article.id, article.title, article.description)"
-                                            class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
-                                            Editer
-                                        </button>
-                                        <button @click="deleteManual(article.id)"
-                                            class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </template>
-                            </Dropdown>
+
+                            <!-- Btns -->
+                            <div class="ml-auto flex gap-4" v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
+                                <button @click="openEditManualModal(article.id, article.title, article.description)"
+                                    class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
+                                    <i class="ri-pencil-line"></i>
+                                </button>
+                                <button @click="deleteArticle(article.id)"
+                                    class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
+                                    <i class="ri-delete-bin-6-line"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Modal  Add Manual form-->
-                <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
-                    @click.self="closeModal">
-                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un article</h1>
-                        <form @submit.prevent="addManual" class="space-y-4 ">
-                            <div>
-                                <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
-                                <input v-model="form.title" type="text" id="title" name="title"
-                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a title"
-                                    required>
-                            </div>
-                            <div>
-                                <label for="description" class="block mb-2 font-medium text-gray-700">Description</label>
-                                <textarea v-model="form.description" id="description" name="description" rows="4"
-                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a description"
-                                    required></textarea>
-                            </div>
-                            <div class="flex justify-end">
-                                <button type="submit"
-                                    class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Modal  Edit Manual form-->
-                <div v-if="isEditManualModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
-                    @click.self="closeEditManualModal">
-                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Modifier le article</h1>
-                        <form @submit.prevent="editManual" class="space-y-4 ">
-                            <div>
-                                <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
-                                <input v-model="form.title" type="text" id="title" name="title"
-                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a title"
-                                    required>
-                            </div>
-                            <div>
-                                <label for="description" class="block mb-2 font-medium text-gray-700">Description</label>
-                                <textarea v-model="form.description" id="description" name="description" rows="4"
-                                    class="w-full px-4 py-2 border-gray-300 rounded-md" placeholder="Enter a description"
-                                    required></textarea>
-                            </div>
-                            <div class="flex justify-end">
-                                <button type="submit"
-                                    class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Editer</button>
-                            </div>
-                        </form>
+                        <!-- Author -->
+                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
                     </div>
                 </div>
             </div>
@@ -212,28 +153,20 @@ const articlesStore = useArticlesSotre();
 axios.defaults.withCredentials = true;
 
 const route = useRoute();
-const manual_id = ref(null);
+const space_id = ref(-1);
+const manual_id = ref(-1);
 manual_id.value = route.params.id;
 
-const router = useRouter();
 manualsStore.clearManuals();
 spaceStore.clearSpace();
+articlesStore.clearArticles();
 const getArticles = onMounted(async () => {
     if (manual_id.value) {
-        manualStore.getManual(manual_id.value);
-
-        articlesStore.getArticles();
-        // spaceStore.getSpace(manual_id.value);
-
-        // manualsStore.getManualsBySpace(manual_id.value);
-        // spacesStore.getSpaces();
+        await manualStore.getManual(manual_id.value);
+        space_id.value = manualStore.space.id;
+        articlesStore.getArticlesByManual(manual_id.value);
     }
 });
-
-watch(() => spaceStore.id, (newValue, oldValue) => {
-    getArticles();
-});
-
 
 const getCreatorId = (users) => {
 
@@ -247,7 +180,7 @@ const getCreatorId = (users) => {
 }
 
 const getCreatorName = (users) => {
-    let creatorName = -1;
+    let creatorName = '';
     users.forEach(user => {
         if (user.pivot.is_creator == 1) {
             creatorName = user.name;
@@ -255,6 +188,10 @@ const getCreatorName = (users) => {
     });
     return creatorName;
 }
+
+watch(() => spaceStore.id, (newValue, oldValue) => {
+    getArticles();
+});
 
 const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
@@ -275,25 +212,30 @@ const closeModal = () => {
 
 const form = ref({
     id: null,
+    space_id: null,
+    manual_id: null,
     title: null,
-    description: null,
+    content: null,
 })
 
 // MANAUL CRUD + SEARCH
 
 // Add Manual
-const addManual = async () => {
+const addArticle = async () => {
     try {
-        const response = await axios.post('/api/manuals', {
+        const response = await axios.post('/api/articles', {
             space_id: manual_id.value,
+            manual_id: manual_id.value,
             title: form.value.title,
-            description: form.value.description
+            content: form.value.content
         });
         closeModal();
         // Reset form fields after successful submission
         form.value.is = '';
+        form.value.space_id = '';
+        form.value.manual_id = '';
         form.value.title = '';
-        form.value.description = '';
+        form.value.content = '';
 
         // Swal.fire({
         //     position: 'top-end',
@@ -318,9 +260,9 @@ const addManual = async () => {
 };
 
 // Edit Manual
-const editManual = async () => {
+const editArticle = async () => {
     try {
-        const response = await axios.post(`/api/manuals/${form.value.id}`, {
+        const response = await axios.post(`/api/articles/${form.value.id}`, {
             _method: 'PUT',
             title: form.value.title,
             description: form.value.description
@@ -354,10 +296,10 @@ const editManual = async () => {
 }
 
 // delete Manual
-const deleteManual = async (manualId) => {
+const deleteArticle = async (manualId) => {
     // show a sweet alert for the confirmation
     try {
-        const response = await axios.delete(`/api/manuals/${manualId}`);
+        const response = await axios.delete(`/api/articles/${manualId}`);
         getArticles();
         // Swal.fire({
         //     position: 'top-end',

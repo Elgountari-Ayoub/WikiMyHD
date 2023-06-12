@@ -1,64 +1,56 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import { useSpaceIdStore } from "./space-id-store";
 
-export const useManualStore = defineStore("manual", {
+export const useArticleStore = defineStore("article", {
   state: () => ({
     id: null,
     title: null,
-    description: null,
-
-    users: [],
+    content: null,
+    users: null,
     space: null,
-    articles: [],
+    manual: null,
     color: null,
   }),
   actions: {
-    async setManual(res) {
+    async setArticle(res) {
       try {
-        let manual = res.data.manual;
-        this.$state.id = manual.id;
-        this.$state.title = manual.title;
-        this.$state.description = manual.description;
-
-        this.$state.users = manual.users;
-        this.$state.space = manual.space;
-        this.$state.articles = manual.articles;
-
-        this.$state.color = this.setManualColor(manual.title.charAt(0));
+        let article = res.data.article;
+        this.$state.id = article.id;
+        this.$state.title = article.title;
+        this.$state.content = article.content;
+        this.$state.users = article.users;
+        this.$state.space = article.space;
+        this.$state.manual = article.manual;
+        this.$state.color = article.color;
       } catch (error) {
-        console.log("ERROR IN SETTING MANUALS DEATIALS");
+        console.log("ERROR IN SETTING article DEATIALS");
         console.log(error);
       }
     },
 
-    // get Manual By Space id
-    async getManual(manualId) {
-      if (manualId) {
-        await axios
-          .get(`/api/manuals/${manualId}/show`)
-          .then((response) => {
-            this.setManual(response);
-          })
-          .catch((error) => {
-            window.location.href = "/notFound";
-            console.log("Can't get the manual", error);
-          });
-      } else {
-        console.log("spaceId has no value");
-      }
+    // GEt all the articles
+    async getArticle(articleId) {
+      await axios
+        .get(`/api/articles/${articleId}/show`)
+        .then((response) => {
+          console.log(1111);
+          this.setArticle(response);
+        })
+        .catch((error) => {
+          console.log(0);
+          console.log("ERROR IN getING article", error);
+        });
     },
-    clearManual() {
+    clearArticle() {
       this.$state.id = null;
       this.$state.title = null;
-      this.$state.description = null;
-      this.$state.users = [];
+      this.$state.content = null;
+      this.$state.users = null;
       this.$state.space = null;
-      this.$state.articles = [];
-
+      this.$state.manual = null;
       this.$state.color = null;
     },
-    setManualColor(letter) {
+    setArticleColor(letter) {
       let color = "";
       if (letter == "A" || letter == "a") {
         color = "#800000"; // Dark red

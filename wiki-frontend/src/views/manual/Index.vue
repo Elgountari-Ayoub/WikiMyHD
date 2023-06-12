@@ -72,7 +72,7 @@
                             <button @click="getArticles(manual.id)"
                                 class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
                                 :style="{ backgroundColor: manual.color }">
-                                <span class="text-2xl ">{{ manual.title[0] }}
+                                <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
                                 </span>
                             </button>
                         </RouterLink>

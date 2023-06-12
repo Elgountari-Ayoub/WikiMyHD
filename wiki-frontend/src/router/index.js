@@ -116,7 +116,7 @@ const router = createRouter({
     },
     // Create Article
     {
-      path: "/addArticle",
+      path: "/addArticle/:space_id/:manual_id",
       name: "addArticle",
       component: AddArticle,
       props: true,

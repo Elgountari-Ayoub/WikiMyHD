@@ -3,7 +3,7 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <div class="flex items-center">
+            <div class="flex items-center" v-if="false">
                 <!-- HOME => ALL SPACES PAGE -->
                 <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
                     <svg aria-hidden="true"
@@ -16,6 +16,12 @@
                 <!--  -->
                 <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
                     {{ spaceIdStore.spaceTitle }}
+                    <svg aria-hidden="true"
+                        class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                        </path>
+                    </svg>
                 </RouterLink>
             </div>
 
@@ -23,10 +29,11 @@
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <!-- Add article : most have the space that will have the article-->
-                    <button @click="openModal" type="submit"
-                        class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
+                    <!-- <button @click="openModal" type="submit" -->
+                    <RouterLink :to="{ name: 'addArticle' }"
+                        class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Article
-                    </button>
+                    </RouterLink>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
                     <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
@@ -55,7 +62,6 @@
                     </form>
                 </div>
 
-                <!-- {{ articlesStore.articles }} -->
                 <LoadingAnimation v-if="articlesStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
@@ -64,24 +70,24 @@
                         class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
                         <!-- <span v-if="!spaceIdStore.spaceId" class="font-blod p-2 border-b flex justify-between px-4" -->
                         <span class="font-blod p-2 border-b flex justify-between " :style="{ color: article.color }">
-                            <span v-if="!spaceIdStore.spaceId">{{ article.space.title }}</span>
+                            <span>{{ article.space.title }}</span>
                             <span class="ml-auto">{{ getCreatorName(article.users) }}</span>
                         </span>
 
                         <!-- article logo [first letter] -->
-                        <RouterLink :to="{ name: 'articles', params: { id: 1 } }">
-                            <button @click="getArticles(article.id)"
-                                class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-                                :style="{ backgroundColor: article.color }">
-                                <span class="text-2xl ">{{ article.title[0] }}
-                                </span>
-                            </button>
+                        <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: article.color }">
+                            <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
+                            </span>
                         </RouterLink>
+
                         <div class="flex justify-center p-4 items-center">
                             <!-- article title -->
-                            <button @click="getArticles(article.id)" class="hover:text-blue-500">{{ article.title.slice(0,
-                                100) }}
-                            </button>
+                            <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
+                                class="hover:text-blue-500">{{ article.title.slice(0,
+                                    100) }}
+                            </RouterLink>
 
                             <!-- Modal  Edit/Delete article Buttons-->
                             <Dropdown class="ml-auto"
@@ -201,7 +207,7 @@ watch(() => spaceIdStore.spaceId, (newValue, oldValue) => {
 
 const spaceId = ref();
 const getManuals = onMounted(async () => {
-    await articlesStore.getArticles();
+    articlesStore.getArticles();
     if (spaceIdStore.spaceId) {
         await manualsStore.getManualsBySpace(spaceIdStore.spaceId)
             .then(async (response) => {
@@ -212,7 +218,7 @@ const getManuals = onMounted(async () => {
             });
     }
     else {
-        await articlesStore.getArticles();
+        articlesStore.getArticles();
         await manualsStore.getManuals().then(async (response) => {
             await spacesStore.getSpaces();
         });
@@ -231,7 +237,7 @@ const getCreatorId = (users) => {
 }
 
 const getCreatorName = (users) => {
-    let creatorName = -1;
+    let creatorName = '';
     users.forEach(user => {
         if (user.pivot.is_creator == 1) {
             creatorName = user.name;

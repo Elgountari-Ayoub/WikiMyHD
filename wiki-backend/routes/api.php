@@ -109,9 +109,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // Route::get('/articles', [ArticleController::class, 'index']);
 
     // -- get articles by space id
-    Route::get('/articles/{id}', [ArticleController::class, 'getArticlesBySpaceId']);
+    Route::get('/articles/{id}/space', [ArticleController::class, 'getArticlesBySpaceId']);
     // -- get articles by manual id
-    Route::get('/articles/{id}', [ArticleController::class, 'getArticleByManualId']);
+    Route::get('/articles/{id}/manual', [ArticleController::class, 'getArticleByManualId']);
     // -- Show 
     Route::get('/articles/{id}/show', [ArticleController::class, 'show']);
     // -- Search
@@ -123,8 +123,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // --Delete
     Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
 });
-
-
 
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------

@@ -57,7 +57,7 @@ export const useArticlesSotre = defineStore("articles", {
       this.$state.articles = [];
       if (manualId) {
         await axios
-          .get(`/api/articles/${manualId}`)
+          .get(`/api/articles/${manualId}/manual`)
           .then((response) => {
             this.setArticles(response);
             return true;

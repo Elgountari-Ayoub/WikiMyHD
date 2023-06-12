@@ -14,7 +14,7 @@
       <!-- <RouterLink v-if="manualsStore.manuals.length !== 0" :to="{ name: 'manuals' }" -->
     <!-- <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
         {{ spaceStore.title }}
-                    </RouterLink> -->
+                                </RouterLink> -->
 
       <RouterLink :to="{ name: 'space', params: { id: `${spaceStore.id}` } }"
         class="hover:text-blue-500 text-base  rounded">
@@ -62,52 +62,40 @@
           class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
 
           <div v-for="manual in manualsStore.manuals"
-            class="flex flex-col shadow-sm justify-between gap-2 rounded h-52 bg-gray-50 dark:bg-gray-800">
-            <span class="font-blod p-2 border-b flex justify-between " :style="{ color: manual.color }">
-              <span v-if="!spaceId">{{ manual.space.title }}</span>
-
-              <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
-            </span>
+            class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4">
+            <div class="border-b flex justify-end gap-2 ">{{ manual.users.length }}<i class="ri-group-line"></i></div>
 
             <!-- Manual logo [first letter] -->
             <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
               class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
               :style="{ backgroundColor: manual.color }">
-              <span class="text-2xl ">{{ manual.title[0] }}
+              <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
               </span>
             </RouterLink>
 
-            <div class="flex justify-center p-4 items-center">
-              <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }" class="hover:text-blue-500">
-                <span >{{ manual.title.slice(0,
-                  20) }}
-                </span>
+            <div class="flex justify-center items-center">
+              <!-- Title -->
+              <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }" class="font-bold hover:text-blue-500">
+                {{ manual.title.slice(0,
+                  100) }}
               </RouterLink>
-              <!-- Modal  Edit/Delete Manual Buttons-->
-              <Dropdown class="ml-auto" v-if='getCreatorId(manual.users) == userStore.id || userStore.isAdmin'>
-                <template #trigger>
-                  <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
-                    class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
-                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
-                    </path>
-                  </svg>
-                </template>
-                <template #content>
-                  <div class="px-2 rounded-md shadow-2xl flex flex-col gap-2" ref="options">
-                    <button @click="openEditManualModal(manual.id, manual.title, manual.description)"
-                      class="px-2 py-1 text-white bg-blue-500 rounded-md hover:bg-blue-600 sm:text-sm md:text-base">
-                      Editer
-                    </button>
-                    <button @click="deleteManual(manual.id)"
-                      class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
-                      Supprimer
-                    </button>
-                  </div>
-                </template>
-              </Dropdown>
+
+              <!-- Btns -->
+              <div class="ml-auto flex gap-4" v-if='getCreatorId(manual.users) == userStore.id || userStore.isAdmin'>
+                <button @click="openEditManualModal(manual.id, manual.title, manual.description)"
+                  class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
+                  <i class="ri-pencil-line"></i>
+                </button>
+                <button @click="deleteManual(manual.id)"
+                  class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
+                  <i class="ri-delete-bin-6-line"></i>
+                </button>
+              </div>
             </div>
+
+
+
+            <span class="mr-auto text-sm">By {{ getCreatorName(manual.users) }}</span>
           </div>
         </div>
 

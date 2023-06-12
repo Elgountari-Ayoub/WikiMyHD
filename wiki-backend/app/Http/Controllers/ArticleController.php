@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -47,9 +48,6 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        // return response()->json([
-        //     'request' => $request->all()
-        // ]);
         try {
             // VALIDATE REQUEST
             $request->validate([
@@ -66,6 +64,7 @@ class ArticleController extends Controller
             $article->content = $request->content;
             $article->save();
             $creator_id = Auth::id();
+            // $creator_id = 2;
             $pivotData = [
                 'is_creator' => true,
             ];
@@ -89,9 +88,6 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
-        // return response()->json([
-        //     'articles' => []
-        // ]);
         try {
             if (Auth::user()->role == 'admin') {
                 $article = Article::with('users', 'space', 'manual')->findOrFail($id);
@@ -161,6 +157,31 @@ class ArticleController extends Controller
                 'article' => null,
                 'message' => $e->getMessage()
             ], 402);
+        }
+    }
+
+    public function getArticleByManualId($manualId)
+    {
+
+        try {
+            $authRole = 'admin';
+            if ($authRole == 'admin') {
+                $articles = Article::with('users', 'space', 'manual')->where('manual_id', $manualId)->orderBy('id', 'desc')->get();
+                return response()->json([
+                    'articles' => $articles
+                ], 200);
+            } else {
+                $user = User::findOrFail(Auth::id());
+                $articles = $user->articles()->with('users', 'space', 'manual')->where('manual_id', $manualId)->latest()->get();
+                return response()->json([
+                    'articles' => $articles,
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'articles' => null,
+                'message' => $e->getMessage()
+            ], 404);
         }
     }
 }
