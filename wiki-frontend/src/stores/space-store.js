@@ -107,6 +107,9 @@ export const useSpaceStore = defineStore("space", {
       } else if (letter == "Z" || letter == "z") {
         color = "#2F4F4F"; // Dark slate gray
       }
+      else{
+        color = "#2F4F4F";
+      }
       return color;
     },
   },

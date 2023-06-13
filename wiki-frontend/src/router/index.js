@@ -14,6 +14,7 @@ import Articles from "../views/article/Index.vue";
 import Article from "../views/article/Show.vue"
 import AddArticle from "../views/article/Add.vue"
 import EditArticle from "../views/article/Edit.vue"
+import articlesManagement from "../views/article/articlesManagement.vue"
 
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
@@ -75,7 +76,7 @@ const router = createRouter({
     },
     // Space by id
     {
-      path: "/spaces/:id",
+      path: "/space",
       name: "space",
       component: Space,
       props: true,
@@ -93,7 +94,7 @@ const router = createRouter({
     },
     // Manual by id
     {
-      path: "/manuals/:id",
+      path: "/manual",
       name: "manual",
       component: Manual,
       props: true,
@@ -137,6 +138,12 @@ const router = createRouter({
       name: "users",
       component: UsersIndex,
     },
+    // Article management route
+    {
+      path: "/articlesManagement",
+      name: "articlesManagement",
+      component: articlesManagement,
+    },
 
     // Not Found
     {
@@ -151,7 +158,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  const notExist = !['notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', ,'articles', 'article', 'addArticle', 'editArticle'].includes(to.name);
+  const notExist = !['notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', ,'articles', 'article', 'addArticle', 'editArticle', 'articlesManagement'].includes(to.name);
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
   const isAuthenticated = userStore.id;

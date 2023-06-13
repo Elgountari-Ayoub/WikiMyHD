@@ -172,7 +172,7 @@ div.cmds .divider {
 .ProseMirror {
     // outline: 1rem;
 
-    padding: 1rem;
+    padding: 1rem !important;
 
     >*+* {
         margin-top: 0.75em;

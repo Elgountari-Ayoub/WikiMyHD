@@ -33,11 +33,9 @@ export const useArticleStore = defineStore("article", {
       await axios
         .get(`/api/articles/${articleId}/show`)
         .then((response) => {
-          console.log(1111);
           this.setArticle(response);
         })
         .catch((error) => {
-          console.log(0);
           console.log("ERROR IN getING article", error);
         });
     },
@@ -104,6 +102,9 @@ export const useArticleStore = defineStore("article", {
         color = "#4B0082"; // Indigo
       } else if (letter == "Z" || letter == "z") {
         color = "#2F4F4F"; // Dark slate gray
+      }
+      else{
+        color = "#2F4F4F";
       }
       return color;
     },

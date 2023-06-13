@@ -148,7 +148,7 @@
 </template>
 <script setup>
 import DashboardLayout from '../../components/layouts/DashboardLayout.vue';
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 import Link from '@tiptap/extension-link'
 import Dropcursor from '@tiptap/extension-dropcursor'
 import Image from '@tiptap/extension-image'
@@ -177,6 +177,7 @@ const articleTitle = ref(null);
 
 const isModalOpen = ref(false);
 const route = useRoute();
+const router = useRouter();
 const addArticle = async () => {
     articleContent.value = editor.getHTML();
     await axios.post('/api/articles', {
@@ -186,6 +187,7 @@ const addArticle = async () => {
         content: articleContent.value
     }).then(response => {
         console.log(response);
+        router.go(-1);
     }).catch(error => {
         console.log(error);
     })

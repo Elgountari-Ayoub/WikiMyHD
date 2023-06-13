@@ -27,7 +27,7 @@
                         <div>
                             <button type="button" @click="menuOpen = !menuOpen"
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                                aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                                aria-expanded="false">
                                 <span class="sr-only">Open user menu</span>
                                 <img v-if="userStore.photo" class="w-8 rounded-full" :src="getImageUrl(userStore.photo)"
                                     alt="">
@@ -42,7 +42,7 @@
                         </div>
                         <div v-if="userStore.id && menuOpen"
                             class="z-50 absolute right-10 top-14 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
-                            id="dropdown-user">
+                            >
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
                                     {{ userStore.name }}

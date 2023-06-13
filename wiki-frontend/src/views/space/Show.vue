@@ -11,15 +11,14 @@
           </path>
         </svg>
       </RouterLink>
-      <!-- <RouterLink v-if="manualsStore.manuals.length !== 0" :to="{ name: 'manuals' }" -->
-    <!-- <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
-        {{ spaceStore.title }}
-                                </RouterLink> -->
 
-      <RouterLink :to="{ name: 'space', params: { id: `${spaceStore.id}` } }"
+    <!-- <RouterLink :to="{ name: 'space', params: { id: `${spaceStore.id}` } }"
         class="hover:text-blue-500 text-base  rounded">
         {{ spaceStore.title }}
-      </RouterLink>
+                  </RouterLink> -->
+      <button @click="toSpace(spaceStore.id)" class="hover:text-blue-500 text-base  rounded">
+        {{ spaceStore.title }}
+      </button>
 
       <div>
         <!-- Add btn and search -->
@@ -66,19 +65,25 @@
             <div class="border-b flex justify-end gap-2 ">{{ manual.users.length }}<i class="ri-group-line"></i></div>
 
             <!-- Manual logo [first letter] -->
-            <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
+          <!-- <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
               class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
               :style="{ backgroundColor: manual.color }">
               <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
               </span>
-            </RouterLink>
+                            </RouterLink> -->
+            <button @click="toManual(manual.space.id, manual.id)"
+              class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+              :style="{ backgroundColor: manual.color }">
+              <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
+              </span>
+            </button>
 
             <div class="flex justify-center items-center">
               <!-- Title -->
-              <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }" class="font-bold hover:text-blue-500">
+              <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500">
                 {{ manual.title.slice(0,
                   100) }}
-              </RouterLink>
+              </button>
 
               <!-- Btns -->
               <div class="ml-auto flex gap-4" v-if='getCreatorId(manual.users) == userStore.id || userStore.isAdmin'>
@@ -92,9 +97,6 @@
                 </button>
               </div>
             </div>
-
-
-
             <span class="mr-auto text-sm">By {{ getCreatorName(manual.users) }}</span>
           </div>
         </div>
@@ -160,7 +162,7 @@ import Swal from 'sweetalert2';
 import Dropdown from '../../components/global/Dropdown.vue';
 import LoadingAnimation from '../../components/global/LoadingAnimation.vue'
 
-import { ref, watchEffect, onMounted, watch } from 'vue';
+import { ref, watchEffect, onMounted, watch, onBeforeUnmount } from 'vue';
 import axios, { Axios } from 'axios';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 // Store [pinia]
@@ -170,73 +172,42 @@ import { useSpacesStore } from '../../stores/spaces-store';
 import { useSpaceStore } from '../../stores/space-store';
 
 import { useManualsStore } from '../../stores/manuals-store';
+import { useParamsStore } from '../../stores/params-store';
 
 
 const userStore = useUserStore();
 const manualsStore = useManualsStore();
 const spaceStore = useSpaceStore();
 const spacesStore = useSpacesStore();
+const paramsStore = useParamsStore();
 
 axios.defaults.withCredentials = true;
 
 const route = useRoute();
-const spaceId = ref(null);
-spaceId.value = route.params.id;
-
 const router = useRouter();
+
 manualsStore.clearManuals();
 spaceStore.clearSpace();
-const getManuals = onMounted(async () => {
-  if (spaceId.value) {
-    spaceStore.getSpace(spaceId.value);
 
-    manualsStore.getManualsBySpace(spaceId.value);
+const getManuals = onMounted(async () => {
+  if (paramsStore.getSpaceId()) {
+    spaceStore.getSpace(paramsStore.getSpaceId());
+    manualsStore.getManualsBySpace(paramsStore.getSpaceId());
     spacesStore.getSpaces();
   }
 });
 
-watch(() => spaceStore.id, (newValue, oldValue) => {
-  getManuals();
-});
+onBeforeUnmount(() => {
+  paramsStore.clear();
+})
 
 
-const getCreatorId = (users) => {
-  let creatorId = -1;
-  users.forEach(user => {
-    if (user.pivot.is_creator == 1) {
-      creatorId = user.id;
-    }
-  });
-  return creatorId;
-}
-
-const getCreatorName = (users) => {
-  let creatorName = -1;
-  users.forEach(user => {
-    if (user.pivot.is_creator == 1) {
-      creatorName = user.name;
-    }
-  });
-  return creatorName;
-}
 
 const isModalOpen = ref(false);
 const isEditManualModalOpen = ref(false);
 
 const modalRef = ref(null);
 
-// Add manual model
-const openModal = () => {
-  form.value.title = '';
-  form.value.description = '';
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
-  form.value.title = '';
-  form.value.description = '';
-};
 
 const form = ref({
   id: null,
@@ -250,7 +221,7 @@ const form = ref({
 const addManual = async () => {
   try {
     const response = await axios.post('/api/manuals', {
-      space_id: spaceId.value,
+      space_id: spaceStore.id,
       title: form.value.title,
       description: form.value.description
     });
@@ -259,15 +230,6 @@ const addManual = async () => {
     form.value.is = '';
     form.value.title = '';
     form.value.description = '';
-
-    // Swal.fire({
-    //     position: 'top-end',
-    //     icon: 'success',
-    //     width: '25rem',
-    //     title: 'le manuel ajouté avec succès',
-    //     showConfirmButton: false,
-    //     timer: 1500,
-    // })
     getManuals();
   } catch (error) {
     // Handle the error here if needed
@@ -370,10 +332,24 @@ const search = async () => {
   }
 };
 
-
-
 // HELPERS-------------------------
 // Edit Manual Modal
+const toSpace = (spaceId) => {
+  console.log(spaceId);
+  paramsStore.setSpaceId(spaceId);
+  router.push({ name: 'space' });
+}
+function toManual(spaceId, manualId) {
+  console.log(spaceId, manualId);
+  paramsStore.setSpaceId(spaceId);
+  paramsStore.setManualId(manualId);
+  router.push({ name: 'manual' })
+}
+
+
+
+
+
 const openEditManualModal = (manualId, manualTitle, manualDescription) => {
   form.value.id = manualId;
   form.value.title = manualTitle;
@@ -399,6 +375,45 @@ watchEffect(() => {
     document.removeEventListener('click', handleClickOutside);
   };
 });
+
+watch(() => spaceStore.id, (newValue, oldValue) => {
+  getManuals();
+});
+
+
+const getCreatorId = (users) => {
+  let creatorId = -1;
+  users.forEach(user => {
+    if (user.pivot.is_creator == 1) {
+      creatorId = user.id;
+    }
+  });
+  return creatorId;
+}
+
+const getCreatorName = (users) => {
+  let creatorName = -1;
+  users.forEach(user => {
+    if (user.pivot.is_creator == 1) {
+      creatorName = user.name;
+    }
+  });
+  return creatorName;
+}
+
+// Add manual model
+const openModal = () => {
+  form.value.title = '';
+  form.value.description = '';
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  form.value.title = '';
+  form.value.description = '';
+};
+
 
 const getImageUrl = (photo) => {
   const baseUrl = "http://localhost:8000/storage/";

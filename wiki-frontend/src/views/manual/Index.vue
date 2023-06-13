@@ -67,7 +67,7 @@
                             <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
                         </span>
 
-                        <!-- Manual logo [first letter] -->
+                        <!-- Manual logo [first letter]
                         <RouterLink :to="{ name: 'articles', params: { id: 1 } }">
                             <button @click="getArticles(manual.id)"
                                 class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
@@ -75,7 +75,15 @@
                                 <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
                                 </span>
                             </button>
-                        </RouterLink>
+                        </RouterLink> -->
+
+                        <button @click="toManual(manual.id)"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: manual.color }">
+                            <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
+                            </span>
+
+                        </button>
                         <div class="flex justify-center p-4 items-center">
                             <!-- Manual title -->
                             <button @click="getArticles(manual.id)" class="hover:text-blue-500">{{ manual.title.slice(0,
@@ -391,6 +399,16 @@ const search = async () => {
 
 // HELPERS-------------------------
 // Edit Manual Modal
+const toManual = (manualId) => {
+
+}
+
+
+
+
+
+
+
 const openEditManualModal = (manualId, manualTitle, manualDescription) => {
     form.value.id = manualId;
     form.value.title = manualTitle;

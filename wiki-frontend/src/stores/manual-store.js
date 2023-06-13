@@ -112,6 +112,8 @@ export const useManualStore = defineStore("manual", {
         color = "#4B0082"; // Indigo
       } else if (letter == "Z" || letter == "z") {
         color = "#2F4F4F"; // Dark slate gray
+      }      else{
+        color = "#2F4F4F";
       }
       return color;
     },

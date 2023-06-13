@@ -51,24 +51,25 @@
                     class="flex flex-col rounded-md justify-between gap-2 rounded h-60 bg-gray-50 shadow-md dark:bg-gray-800 p-4">
 
                     <!-- members count -->
-                    <div class="border-b flex justify-end gap-2 ">{{ space.users.length }}<i
-                            class="ri-group-line"></i></div>
+                    <div class="border-b flex justify-end gap-2 ">{{ space.users.length }}<i class="ri-group-line"></i>
+                    </div>
 
                     <!-- LOGO -->
-                    <RouterLink :to="{ name: 'space', params: { id: `${space.id}` } }"
+                    <button @click="toSpace(space.id)"
                         class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
                         :style="{ backgroundColor: space.color }">
                         <span class="text-2xl">{{
                             space.title[0].toUpperCase() }}
                         </span>
-                    </RouterLink>
+
+                    </button>
 
                     <div class="flex justify-center items-center">
                         <!-- TITLE -->
-                        <RouterLink :to="{ name: 'space', params: { id: `${space.id}` } }"
+                        <button @click="toSpace(space.id)"
                             class="font-bold hover:text-blue-500">{{
                                 space.title.slice(0, 100) }}
-                        </RouterLink>
+                        </button>
 
                         <!-- BTNS -->
                         <div class="ml-auto flex gap-4" v-if='userStore.isAdmin'>
@@ -83,9 +84,6 @@
                         </div>
                     </div>
 
-
-
-                    
                     <!-- Author -->
                     <span class="mr-auto text-sm">By {{ getCreatorName(space.users) }}</span>
                 </div>
@@ -160,14 +158,16 @@ import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
 import { useSpacesStore } from '../../stores/spaces-store';
 import { useManualsStore } from '../../stores/manuals-store';
 import { useSpaceIdStore } from '../../stores/space-id-store';
+import { useParamsStore } from '../../stores/params-store';
 
 axios.defaults.withCredentials = true;
 
 const spaceIdStore = useSpaceIdStore();
-
 const userStore = useUserStore();
 const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
+const paramsStore = useParamsStore();
+
 onMounted(async () => {
     spaceIdStore.spaceId = null;
     if (spacesStore.spaces.length == 0) {
@@ -367,6 +367,11 @@ const getManuals = async (spaceId, spaceTitle) => {
     }
 }
 
+const toSpace = (spaceId) => {
+    paramsStore.setSpaceId(spaceId);
+    router.push({name : 'space'});
+}
+
 // Close modal when clicking outside
 watchEffect(() => {
     const handleClickOutside = (event) => {
@@ -383,13 +388,6 @@ watchEffect(() => {
         document.removeEventListener('click', handleClickOutside);
     };
 });
-
-
-
-// watch(() => manualsStore.manuals, async (newValue, oldValue) => {
-//     await spacesStore.getSpaces()
-// });
-
 
 </script>
 

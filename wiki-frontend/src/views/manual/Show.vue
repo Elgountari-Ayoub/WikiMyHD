@@ -42,10 +42,14 @@
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <!-- Add article : must have the space that will have the article -->
-                    <RouterLink :to="{ name: 'addArticle', params: { space_id: space_id, manual_id: manual_id } }"
+                <!-- <RouterLink :to="{ name: 'addArticle', params: { space_id: manualStore.space.id, manual_id: manual_id } }"
                         class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Article
-                    </RouterLink>
+                        </RouterLink> -->
+                    <button @click="toAddArticle()"
+                        class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
+                        Ajouter Article
+                    </button>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
                     <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
@@ -74,7 +78,7 @@
                     </form>
                 </div>
 
-                <LoadingAnimation v-if="manualStore.articles.length == 0" />
+                <LoadingAnimation v-if="articlesStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 ">
 
@@ -100,8 +104,9 @@
                             </RouterLink>
 
                             <!-- Btns -->
-                            <div class="ml-auto flex gap-4" v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
-                                <button @click="openEditManualModal(article.id, article.title, article.description)"
+                            <div class="ml-auto flex gap-4"
+                                v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
+                                <button @click="toEditArticle(article.id)"
                                     class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
                                     <i class="ri-pencil-line"></i>
                                 </button>
@@ -141,26 +146,31 @@ import { useManualsStore } from '../../stores/manuals-store';
 import { useManualStore } from '../../stores/manual-store';
 
 import { useArticlesSotre } from '../../stores/articles-store';
+import { useParamsStore } from '../../stores/params-store';
 
+axios.defaults.withCredentials = true;
 
 const userStore = useUserStore();
 const manualsStore = useManualsStore();
 const manualStore = useManualStore();
 const spaceStore = useSpaceStore();
-const spacesStore = useSpacesStore();
 const articlesStore = useArticlesSotre();
-
-axios.defaults.withCredentials = true;
+const paramsStore = useParamsStore();
 
 const route = useRoute();
-const space_id = ref(-1);
-const manual_id = ref(-1);
-manual_id.value = route.params.id;
+const router = useRouter();
+const space_id = ref();
+const manual_id = ref();
+
+manual_id.value = paramsStore.getManualId();
+space_id.value = paramsStore.getSpaceId();
 
 manualsStore.clearManuals();
 spaceStore.clearSpace();
 articlesStore.clearArticles();
 const getArticles = onMounted(async () => {
+    console.log(paramsStore.getSpaceId());
+    console.log(paramsStore.getManualId());
     if (manual_id.value) {
         await manualStore.getManual(manual_id.value);
         space_id.value = manualStore.space.id;
@@ -194,8 +204,6 @@ watch(() => spaceStore.id, (newValue, oldValue) => {
 });
 
 const isModalOpen = ref(false);
-const isEditManualModalOpen = ref(false);
-
 const modalRef = ref(null);
 // Add article model
 const openModal = () => {
@@ -218,84 +226,9 @@ const form = ref({
     content: null,
 })
 
-// MANAUL CRUD + SEARCH
+// ARTICLE CRUD + SEARCH
 
-// Add Manual
-const addArticle = async () => {
-    try {
-        const response = await axios.post('/api/articles', {
-            space_id: manual_id.value,
-            manual_id: manual_id.value,
-            title: form.value.title,
-            content: form.value.content
-        });
-        closeModal();
-        // Reset form fields after successful submission
-        form.value.is = '';
-        form.value.space_id = '';
-        form.value.manual_id = '';
-        form.value.title = '';
-        form.value.content = '';
-
-        // Swal.fire({
-        //     position: 'top-end',
-        //     icon: 'success',
-        //     width: '25rem',
-        //     title: 'le manuel ajouté avec succès',
-        //     showConfirmButton: false,
-        //     timer: 1500,
-        // })
-        getArticles();
-    } catch (error) {
-        // Handle the error here if needed
-        Swal.fire({
-            position: 'top-end',
-            icon: 'warning',
-            title: 'error d\'insertion',
-            showConfirmButton: false,
-            timer: 1500
-        })
-        console.error(error);
-    }
-};
-
-// Edit Manual
-const editArticle = async () => {
-    try {
-        const response = await axios.post(`/api/articles/${form.value.id}`, {
-            _method: 'PUT',
-            title: form.value.title,
-            description: form.value.description
-        });
-        closeEditManualModal();
-        // Reset form fields after successful submission
-        form.value.is = '';
-        form.value.title = '';
-        form.value.description = '';
-
-        // Swal.fire({
-        //     position: 'top-end',
-        //     icon: 'success',
-        //     width: '25rem',
-        //     title: 'le manuel mis à jour avec succès',
-        //     showConfirmButton: false,
-        //     timer: 1500,
-        // })
-        getArticles();
-    } catch (error) {
-        // Handle the error here if needed
-        Swal.fire({
-            position: 'top-end',
-            icon: 'warning',
-            title: 'échec de la mise à jour de le manuel',
-            showConfirmButton: false,
-            timer: 1500
-        })
-        console.error(error);
-    }
-}
-
-// delete Manual
+// delete Article
 const deleteArticle = async (manualId) => {
     // show a sweet alert for the confirmation
     try {
@@ -347,16 +280,21 @@ const search = async () => {
     }
 };
 
-
-
 // HELPERS-------------------------
-// Edit Manual Modal
-const openEditManualModal = (manualId, manualTitle, manualDescription) => {
-    form.value.id = manualId;
-    form.value.title = manualTitle;
-    form.value.description = manualDescription;
-    isEditManualModalOpen.value = true;
+// Edit Article Modal
+const toEditArticle = (articleId) => {
+    paramsStore.setArticleId(articleId);
+    router.push({ name: 'editArticle' })
+
 };
+const toAddArticle = () => {
+    paramsStore.setSpaceId(manualStore.space.id);
+    paramsStore.setManualId(manualStore.id);
+    router.push({ name: 'addArticle' })
+
+};
+
+
 const closeEditManualModal = () => {
     isEditManualModalOpen.value = false;
 };
