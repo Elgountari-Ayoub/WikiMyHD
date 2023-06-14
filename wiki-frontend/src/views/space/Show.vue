@@ -61,11 +61,11 @@
 
 
             <div class="border-b flex justify-between gap-2 ">
-                        <span>
-                          {{ manual.users.length }}<i class="ri-group-line"></i>
-                        </span>
-                        <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
-                    </div>
+              <span>
+                {{ manual.users.length }}<i class="ri-group-line"></i>
+              </span>
+              <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+            </div>
 
             <button @click="toManual(manual.space.id, manual.id)"
               class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
@@ -187,6 +187,7 @@ manualsStore.clearManuals();
 
 const getManuals = onMounted(async () => {
   if (paramsStore.getSpaceId()) {
+    alert(paramsStore.spaceId)
     spaceStore.getSpace(paramsStore.getSpaceId());
     manualsStore.getManualsBySpace(paramsStore.getSpaceId());
     spacesStore.getSpaces();

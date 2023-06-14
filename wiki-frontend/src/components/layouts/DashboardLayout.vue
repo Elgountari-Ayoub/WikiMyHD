@@ -60,7 +60,7 @@
                                 <li>
                                     <button @click="logout"
                                         class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
-                                                                                                                                                                                                                                                dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                                                                                                                                                                                                    dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Se déconnecter
                                     </button>
 
@@ -125,7 +125,7 @@
                                                 d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </button>
-                                    <span @click="getManuals(space.id, space.title)">{{ space.title }}</span>
+                                    <span @click="toSpace(space.id)">{{ space.title }}</span>
                                 </div>
                                 <transition name="fade">
                                     <ul v-if="isManualsListVisible(space.id)" class="ml-14">
@@ -149,7 +149,7 @@
                                 d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                             </path>
                         </svg>
-                        <span class="manual-color flex-1 ml-3 whitespace-nowrap">Manuals</span>
+                        <span class="manual-color flex-1 ml-3 whitespace-nowrap">Manuels</span>
                         <!-- <span class="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
                     </RouterLink>
                 </li>
@@ -168,7 +168,7 @@
                         </svg> -->
                         <svg aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            fill="currentColor" viewBox="0 0 20 20"  xmlns="http://www.w3.org/2000/svg">
+                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M20 22H4C3.44772 22 3 21.5523 3 21V3C3 2.44772 3.44772 2 4 2H20C20.5523 2 21 2.44772 21 3V21C21 21.5523 20.5523 22 20 22ZM19 20V4H5V20H19ZM7 6H11V10H7V6ZM7 12H17V14H7V12ZM7 16H17V18H7V16ZM13 7H17V9H13V7Z">
                             </path>
@@ -268,6 +268,11 @@ const getManuals = async (spaceId, spaceTitle) => {
     }
 }
 
+const toSpace = (spaceId) => {
+    paramsStore.setSpaceId(spaceId);
+    router.push({ name: 'space' });
+}
+
 // watch(() => spacesStore.spaces, (newValue, oldValue) => {
 //     refreshManuals();
 // });
@@ -311,10 +316,10 @@ const logout = async () => {
 
                 usersStore.clearUsers();
                 console.log('Users Store Cleard :>', usersStore);
-                
+
                 paramsStore.clear();
                 console.log('Params Store Cleard :>', paramsStore);
-                
+
                 console.log('logout success');
             } catch (error) {
                 console.log('logout failed', error);

@@ -8,7 +8,7 @@
                     class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
                     <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
                         <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
-                            <div class="text-lg font-bold text-gray-900">Modal Title</div>
+                            <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
 
                             <!-- Spaces Multi-Select -->
                             <div class="w-full">
@@ -215,7 +215,6 @@ onMounted(async () => {
 
 const selectedSpaces = ref([]);
 const selectedManuals = ref([]);
-const selectedArticles = ref([]);
 
 const filteredManuals = computed(() => {
     const filtered = [];

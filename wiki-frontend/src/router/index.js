@@ -3,6 +3,7 @@ import DashboardLayout from "../components/layouts/DashboardLayout.vue";
 import HomeView from "../views/HomeView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
+import TestView from "../views/Test.vue";
 
 import Spaces from "../views/space/Index.vue";
 import Space from "../views/space/Show.vue";
@@ -83,7 +84,6 @@ const router = createRouter({
     },
 
 
-
     // Manual route
     // All manuals
     {
@@ -151,6 +151,14 @@ const router = createRouter({
       name: "notFound",
       component: notFoundView,
     },
+    
+    
+    // Test
+    {
+      path: "/test",
+      name: "test",
+      component: TestView,
+    },
   ],
 
   // Portect the routes
@@ -158,7 +166,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  const notExist = !['notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', 'articles', 'article', 'addArticle', 'editArticle', 'articlesManagement'].includes(to.name);
+  const notExist = !['test', 'notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', 'articles', 'article', 'addArticle', 'editArticle', 'articlesManagement'].includes(to.name);
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
   const isAuthenticated = userStore.id;

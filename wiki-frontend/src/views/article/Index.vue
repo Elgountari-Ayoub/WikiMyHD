@@ -40,8 +40,11 @@
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[60vh]">
 
                     <div v-for="article in articlesStore.articles"
-                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
+                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
 
+                        <div class="border-b flex gap-2 text-sm flex-start pb-2">
+                                {{ article.space.title }} <strong>:</strong> {{ article.manual.title }}
+                        </div>
 
                         <!-- LOGO -->
                         <button @click="toArticle(article.id)"

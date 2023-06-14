@@ -65,7 +65,6 @@
                         <span class="text-2xl">{{
                             space.title[0].toUpperCase() }}
                         </span>
-
                     </button>
 
                     <div class="flex justify-center items-center">
