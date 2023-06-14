@@ -110,21 +110,21 @@ const router = createRouter({
     },
     // Article by id
     {
-      path: "/articles/:id",
+      path: "/article",
       name: "article",
       component: Article,
       props: true,
     },
     // Create Article
     {
-      path: "/addArticle/:space_id/:manual_id",
+      path: "/addArticle",
       name: "addArticle",
       component: AddArticle,
       props: true,
     },
     // Update Article
     {
-      path: "/editArticle/:id",
+      path: "/editArticle",
       name: "editArticle",
       component: EditArticle,
       props: true,
@@ -158,7 +158,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  const notExist = !['notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', ,'articles', 'article', 'addArticle', 'editArticle', 'articlesManagement'].includes(to.name);
+  const notExist = !['notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', 'articles', 'article', 'addArticle', 'editArticle', 'articlesManagement'].includes(to.name);
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
   const isAuthenticated = userStore.id;

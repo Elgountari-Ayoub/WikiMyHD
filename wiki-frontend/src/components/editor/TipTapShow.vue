@@ -14,18 +14,17 @@ import axios from 'axios'
 import { useArticlesSotre } from '../../stores/articles-store'
 import {useArticleStore} from '../../stores/article-store'
 import { useRoute } from 'vue-router'
+import { useParamsStore } from '../../stores/params-store'
 
 axios.defaults.withCredentials = true;
 
+const paramsStore = useParamsStore();
 const articleStore = useArticleStore();
 
 const route = useRoute();
-const article_id = ref(null);
-article_id.value = route.params.id;
-
 
 const getArticle = onMounted(async() => {
-    await articleStore.getArticle(article_id.value);
+    await articleStore.getArticle(paramsStore.articleId);
     editor.commands.setContent(articleStore.content)
     editor.setEditable(false)
 }

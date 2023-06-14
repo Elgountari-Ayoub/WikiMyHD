@@ -20,7 +20,6 @@ return new class extends Migration
 
             // Add other article attributes as needed
             $table->timestamps();
-        
             $table->foreign('space_id')->references('id')->on('spaces')->onDelete('cascade');
             $table->foreign('manual_id')->references('id')->on('manuals')->onDelete('cascade');
         });

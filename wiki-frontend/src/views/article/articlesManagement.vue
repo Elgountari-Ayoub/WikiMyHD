@@ -3,7 +3,6 @@
         <RouterView />
         <DashboardLayout>
             <!-- table -->
-            <!-- {{ articlesStore.articles }} -->
             <div v-if="userStore.isAdmin">
                 <div class="relative  shadow-md sm:rounded-lg overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
@@ -18,7 +17,7 @@
                                 <th scope="col" class="px-6 py-3">
                                     Manual
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col" class="px-6 py-3 text-center">
                                     Actions
                                 </th>
                             </tr>
@@ -31,13 +30,13 @@
                                     {{ article.title }}
                                 </th>
                                 <td class="px-6 py-4">
-                                    {{ article.space.titel }}
+                                    {{ article.space.title }}
                                 </td>
                                 <td class="px-6 py-4">
                                     {{ article.manual.title }}
                                 </td>
-                                <td class="px-6 py-4 text-left">
-                                    <button @click="showArticle(article.id)"
+                                <td class="px-6 py-4 grid grid-cols-3 gap-0">
+                                    <button @click="toArticle(article.id)"
                                         class="text-lg text-green-500 rounded-md hover:text-green-700 sm:text-sm md:text-base">
                                         <i class="ri-article-line"></i>
                                     </button>
@@ -45,7 +44,7 @@
                                         class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
                                         <i class="ri-pencil-line"></i>
                                     </button>
-                                    <button @click="deleteArticle(manual.id)"
+                                    <button @click="deleteArticle(article.id)"
                                         class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
                                         <i class="ri-delete-bin-6-line"></i>
                                     </button>
@@ -76,19 +75,53 @@ import { useUserStore } from '../../stores/user-store';
 import { useUsersStore } from '../../stores/users-store';
 import Swal from 'sweetalert2';
 import { useArticlesSotre } from '../../stores/articles-store';
+import { useParamsStore } from '../../stores/params-store';
 
 axios.defaults.withCredentials = true;
 
+const paramsStore = useParamsStore();
 const articlesStore = useArticlesSotre();
 const userStore = useUserStore();
 const router = useRouter();
 
-onMounted(async () => {
-    await articlesStore.getArticles();
-    
-});
-const showModal = ref(false);
+articlesStore.clearArticles();
 
+const getArticles = onMounted(async () => {
+        await articlesStore.getArticles();
+});
+
+
+const toArticle = (articleId) => {
+    paramsStore.articleId = articleId;
+    window.open('/article', '_blank');
+}
+
+const toEditArticle = (articleId) => {
+    paramsStore.articleId = articleId
+    router.push({ name: 'editArticle' })
+
+};
+// delete Article
+const deleteArticle = async (articleId) => {
+    // show a sweet alert for the confirmation
+    try {
+        const response = await axios.delete(`/api/articles/${articleId}`);
+        getArticles();
+
+
+    } catch (err) {
+        console.log(err);
+        Swal.fire({
+            position: 'top-end',
+            icon: 'warning',
+            title: 'Échec de la suppression, actualisez la page et réessayez',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+}
+
+const showModal = ref(false);
 
 const userId = ref(null);
 const status = ref(null);
@@ -100,10 +133,6 @@ const showAssignModel = async (user_id, _status) => {
 }
 
 const spaces = ref([]);
-onMounted(async () => {
-    await spacesStore.getSpaces();
-    spaces.value = spacesStore.spaces;
-})
 
 const selectedSpaces = ref([]);
 const selectedManuals = ref([]);

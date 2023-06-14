@@ -1,184 +1,260 @@
+
 <template>
-    <div id="AccountView">
-        <RouterView />
+    <RouterView />
+    <div>
         <DashboardLayout>
-            <!-- table -->
-            <!-- {{ articlesStore.articles }} -->
-            <div v-if="userStore.isAdmin">
-                <div class="relative  shadow-md sm:rounded-lg overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    Titre
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Espace
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Manual
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="article in articlesStore.articles" :key="article.id"
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ article.title }}
-                                </th>
-                                <td class="px-6 py-4">
-                                    {{ article.space.titel }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ article.manual.title }}
-                                </td>
-                                <td class="px-6 py-4 text-left">
-                                    <button @click="showArticle(article.id)"
-                                        class="text-lg text-green-500 rounded-md hover:text-green-700 sm:text-sm md:text-base">
-                                        <i class="ri-article-line"></i>
-                                    </button>
-                                    <button @click="toEditArticle(article.id)"
-                                        class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
-                                        <i class="ri-pencil-line"></i>
-                                    </button>
-                                    <button @click="deleteArticle(manual.id)"
-                                        class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
-                                        <i class="ri-delete-bin-6-line"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div>
+                <!-- Add btn and search -->
+                <div class="flex items-center mb-4 gap-4">
+                    <!-- Add article : must have the space that will have the article -->
+                    <button @click="toAddArticle()"
+                        class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
+                        Ajouter Article
+                    </button>
+                    <!-- <SearchInput /> -->
+                    <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
+                    <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
+                        <div class="relative w-full m-auto">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
+                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <input v-model="searchInput" name="search" type="text" id="simple-search"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
+                                placeholder="Search">
+                        </div>
+                        <button type="submit"
+                            class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span class="sr-only">Search</span>
+                        </button>
+                    </form>
+                </div>
+
+                <LoadingAnimation v-if="articlesStore.articles.length == 0" />
+                <div v-else
+                    class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 ">
+
+                    <div v-for="article in articlesStore.articles"
+                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
+
+
+                        <!-- LOGO -->
+                        <button @click="toArticle(article.id)"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: article.color }">
+                            <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
+                            </span>
+                        </button>
+
+                        <div class="flex justify-center items-center ">
+                            <!-- Title -->
+                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500">
+                                <span>{{ article.title.slice(0,
+                                    100) }}
+                                </span>
+                            </button>
+
+                            <!-- Btns -->
+                            <div class="ml-auto flex gap-4"
+                                v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
+                                <button @click="toEditArticle(article.id)"
+                                    class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
+                                    <i class="ri-pencil-line"></i>
+                                </button>
+                                <button @click="deleteArticle(article.id)"
+                                    class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
+                                    <i class="ri-delete-bin-6-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Author -->
+                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
+                    </div>
                 </div>
             </div>
-            <LoadingAnimation v-else />
         </DashboardLayout>
     </div>
 </template>
-
+  
+  
 <script setup>
-import { RouterView } from 'vue-router';
 import DashboardLayout from '../../components/layouts/DashboardLayout.vue';
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
-import { useRouter } from 'vue-router';
-import Dropdown from '../../components/global/Dropdown.vue';
-
-import { computed, watchEffect } from 'vue';
-import { useSpacesStore } from '../../stores/spaces-store';
-
-import { useUserStore } from '../../stores/user-store';
-import { useUsersStore } from '../../stores/users-store';
+import SearchInput from '../../components/Partials/SearchInput.vue';
 import Swal from 'sweetalert2';
+import Dropdown from '../../components/global/Dropdown.vue';
+import LoadingAnimation from '../../components/global/LoadingAnimation.vue'
+
+import { ref, watchEffect, onMounted, watch } from 'vue';
+import axios, { Axios } from 'axios';
+import { RouterView, useRoute, useRouter } from 'vue-router';
+// Store [pinia]
+import { useUserStore } from '../../stores/user-store';
+
+import { useSpacesStore } from '../../stores/spaces-store';
+import { useSpaceStore } from '../../stores/space-store';
+
+import { useManualsStore } from '../../stores/manuals-store';
+import { useManualStore } from '../../stores/manual-store';
+
 import { useArticlesSotre } from '../../stores/articles-store';
+import { useParamsStore } from '../../stores/params-store';
 
 axios.defaults.withCredentials = true;
 
-const articlesStore = useArticlesSotre();
 const userStore = useUserStore();
+const articlesStore = useArticlesSotre();
+const paramsStore = useParamsStore();
+
+const route = useRoute();
 const router = useRouter();
 
-onMounted(async () => {
-    await articlesStore.getArticles();
-    
+articlesStore.clearArticles();
+const getArticles = onMounted(async () => {
+    articlesStore.getArticles();
 });
-const showModal = ref(false);
 
+const getCreatorId = (users) => {
 
-const userId = ref(null);
-const status = ref(null);
-const showAssignModel = async (user_id, _status) => {
-    showModal.value = true;
-    userId.value = user_id;
-    status.value = _status;
-
+    let creatorId = -1;
+    users.forEach(user => {
+        if (user.pivot.is_creator == 1) {
+            creatorId = user.id;
+        }
+    });
+    return creatorId;
 }
 
-const spaces = ref([]);
-onMounted(async () => {
-    await spacesStore.getSpaces();
-    spaces.value = spacesStore.spaces;
+const getCreatorName = (users) => {
+    let creatorName = '';
+    users.forEach(user => {
+        if (user.pivot.is_creator == 1) {
+            creatorName = user.name;
+        }
+    });
+    return creatorName;
+}
+
+
+
+const isModalOpen = ref(false);
+const modalRef = ref(null);
+// Add article model
+const openModal = () => {
+    form.value.title = '';
+    form.value.description = '';
+    isModalOpen.value = true;
+};
+
+const closeModal = () => {
+    isModalOpen.value = false;
+    form.value.title = '';
+    form.value.description = '';
+};
+
+const form = ref({
+    id: null,
+    space_id: null,
+    manual_id: null,
+    title: null,
+    content: null,
 })
 
-const selectedSpaces = ref([]);
-const selectedManuals = ref([]);
-const selectedArticles = ref([]);
+// ARTICLE CRUD + SEARCH
 
-const filteredManuals = computed(() => {
-    const filtered = [];
-    for (const spaceId of selectedSpaces.value) {
-        const space = spaces.value.find((space) => space.id === spaceId);
-        if (space) {
-            filtered.push(...space.manuals);
-        }
+// delete Article
+const deleteArticle = async (articleId) => {
+    // show a sweet alert for the confirmation
+    try {
+        const response = await axios.delete(`/api/articles/${articleId}`);
+        getArticles();
+
+
+    } catch (err) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'warning',
+            title: 'Échec de la suppression, actualisez la page et réessayez',
+            showConfirmButton: false,
+            timer: 1500
+        })
     }
-    return filtered;
-});
+}
 
-const handleSubmit = () => {
-    showModal.value = false;
-    shareSpaces();
-    shareManuals();
-    approve(userId.value, status.value)
-    userId.value = null;
-    status.value = null;
-    selectedSpaces.value = [];
-    selectedManuals.value = [];
+// Search
+const searchInput = ref(null)
+const search = async () => {
+    try {
+        if (!searchInput.value) {
+            if (manualsStore.manuals.length === 0) {
+                manualsStore.getArticles();
+            }
+            return;
+        }
+        const response = await axios.get(`/api/manuals/search/${searchInput.value}`);
+        if (response.data.length > 0) {
+            manualsStore.manuals = response.data
+            manualsStore.manuals.forEach(element => {
+                element.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            })
+            return;
+        }
+        manualsStore.manuals = [];
+
+    } catch (error) {
+        // Handle the error here if needed
+        console.error(error);
+    }
 };
 
-const updateManuals = () => {
-    const selectedSpaceIds = selectedSpaces.value;
-    selectedManuals.value = selectedManuals.value.filter((manualId) => {
-        const manualSpace = spaces.value.find((space) => space.manuals.some((manual) => manual.id === manualId));
-        return manualSpace && selectedSpaceIds.includes(manualSpace.id);
-    });
+// HELPERS-------------------------
+// Edit Article Modal
+
+const toArticle = (articleId) => {
+    paramsStore.articleId = articleId;
+    window.open('/article', '_blank');
+}
+
+const toEditArticle = (articleId) => {
+    paramsStore.articleId = articleId
+    router.push({ name: 'editArticle' })
+
+};
+const toAddArticle = () => {
+    router.push({ name: 'addArticle' })
+
 };
 
+// Close modal when clicking outside
 watchEffect(() => {
-    // Update selected manuals when spaces selection changes
-    updateManuals();
+    const handleClickOutside = (event) => {
+        const modalElement = modalRef.value;
+
+        if (modalElement && !modalElement.contains(event.target)) {
+            closeModal();
+        }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+        document.removeEventListener('click', handleClickOutside);
+    };
 });
 
-
-
-const approve = async (userId, status) => {
-    await axios.post('/api/approve', {
-        user_id: userId,
-        status: status
-    }).then(async (response) => {
-        console.log(response);
-        await usersStore.getUsers();
-    }).catch(error => {
-        console.log('ERROR IN APPROVING');
-        console.log(error);
-
-    })
+const getImageUrl = (photo) => {
+    const baseUrl = "http://localhost:8000/storage/";
+    return baseUrl + photo; // Concatenating the base URL and the photo variable
 }
-const shareSpaces = async () => {
-    await axios.post('/api/assignspace', {
-        user_id: userId.value,
-        spaces: selectedSpaces.value
-    }).then(response => {
-        console.log(response);
-    }).catch(error => {
-        console.log(error);
-    })
-}
-const shareManuals = async () => {
-    await axios.post('/api/assignmanual', {
-        user_id: userId.value,
-        manuals: selectedManuals.value
-    }).then(response => {
-        console.log(response);
-    }).catch(error => {
-        console.log(error);
-    })
-}
+
 </script>
-
-<style lang="scss" scoped></style>
+  
+<style></style>

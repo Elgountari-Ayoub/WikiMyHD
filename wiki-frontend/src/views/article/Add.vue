@@ -155,8 +155,9 @@ import Image from '@tiptap/extension-image'
 import Highlight from '@tiptap/extension-highlight'
 import StarterKit from '@tiptap/starter-kit'
 import { Editor, EditorContent } from '@tiptap/vue-3'
-import { onBeforeUnmount, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import axios from 'axios'
+import { useParamsStore } from '../../stores/params-store';
 
 
 
@@ -171,6 +172,12 @@ const editor = new Editor({
     content: ``,
 })
 
+const paramsStore = useParamsStore();
+onMounted(() => {
+    console.log(paramsStore.spaceId, paramsStore.manualId);
+})
+
+
 
 const articleContent = ref(null);
 const articleTitle = ref(null);
@@ -181,8 +188,8 @@ const router = useRouter();
 const addArticle = async () => {
     articleContent.value = editor.getHTML();
     await axios.post('/api/articles', {
-        space_id: route.params.space_id,
-        manual_id: route.params.manual_id,
+        space_id: paramsStore.getSpaceId(),
+        manual_id: paramsStore.getManualId(),
         title: articleTitle.value,
         content: articleContent.value
     }).then(response => {
@@ -204,9 +211,6 @@ const closeModal = () => {
     articleContent.value = null;
     articleTitle.value = null;
 };
-
-
-
 
 
 

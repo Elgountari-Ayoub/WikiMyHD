@@ -26,7 +26,7 @@ export const useParamsStore = defineStore("paramsStore", {
       return this.$state.spaceId;
     },
     getManualId() {
-      return this.$state.spaceId;
+      return this.$state.manualId;
     },
     getArticleId() {
       return this.$state.articleId;

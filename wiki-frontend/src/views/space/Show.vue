@@ -12,10 +12,6 @@
         </svg>
       </RouterLink>
 
-    <!-- <RouterLink :to="{ name: 'space', params: { id: `${spaceStore.id}` } }"
-        class="hover:text-blue-500 text-base  rounded">
-        {{ spaceStore.title }}
-                  </RouterLink> -->
       <button @click="toSpace(spaceStore.id)" class="hover:text-blue-500 text-base  rounded">
         {{ spaceStore.title }}
       </button>
@@ -58,19 +54,19 @@
 
         <LoadingAnimation v-if="manualsStore.manuals.length == 0" />
         <div v-else
-          class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
+          class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[65vh]">
 
           <div v-for="manual in manualsStore.manuals"
             class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4">
-            <div class="border-b flex justify-end gap-2 ">{{ manual.users.length }}<i class="ri-group-line"></i></div>
 
-            <!-- Manual logo [first letter] -->
-          <!-- <RouterLink :to="{ name: 'manual', params: { id: `${manual.id}` } }"
-              class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-              :style="{ backgroundColor: manual.color }">
-              <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
-              </span>
-                            </RouterLink> -->
+
+            <div class="border-b flex justify-between gap-2 ">
+                        <span>
+                          {{ manual.users.length }}<i class="ri-group-line"></i>
+                        </span>
+                        <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+                    </div>
+
             <button @click="toManual(manual.space.id, manual.id)"
               class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
               :style="{ backgroundColor: manual.color }">
@@ -198,7 +194,7 @@ const getManuals = onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  paramsStore.clear();
+  // paramsStore.clear();
 })
 
 
@@ -340,9 +336,10 @@ const toSpace = (spaceId) => {
   router.push({ name: 'space' });
 }
 function toManual(spaceId, manualId) {
-  console.log(spaceId, manualId);
   paramsStore.setSpaceId(spaceId);
   paramsStore.setManualId(manualId);
+  console.log(paramsStore.getSpaceId(), paramsStore.getManualId());
+
   router.push({ name: 'manual' })
 }
 

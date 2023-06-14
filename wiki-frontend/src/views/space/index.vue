@@ -45,13 +45,17 @@
 
             <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
             <div v-else
-                class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4">
+                class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[65vh]">
 
                 <div v-for="space in spacesStore.spaces" :key="space.id"
                     class="flex flex-col rounded-md justify-between gap-2 rounded h-60 bg-gray-50 shadow-md dark:bg-gray-800 p-4">
 
                     <!-- members count -->
-                    <div class="border-b flex justify-end gap-2 ">{{ space.users.length }}<i class="ri-group-line"></i>
+                    <div class="border-b flex justify-between gap-2 ">
+                        <span>
+                            {{ space.users.length }}<i class="ri-group-line"></i>
+                        </span>
+                        <i class="ri-information-line cursor-pointer" :title="space.description"></i>
                     </div>
 
                     <!-- LOGO -->
@@ -66,9 +70,8 @@
 
                     <div class="flex justify-center items-center">
                         <!-- TITLE -->
-                        <button @click="toSpace(space.id)"
-                            class="font-bold hover:text-blue-500">{{
-                                space.title.slice(0, 100) }}
+                        <button @click="toSpace(space.id)" class="font-bold hover:text-blue-500">{{
+                            space.title.slice(0, 100) }}
                         </button>
 
                         <!-- BTNS -->
@@ -85,7 +88,11 @@
                     </div>
 
                     <!-- Author -->
-                    <span class="mr-auto text-sm">By {{ getCreatorName(space.users) }}</span>
+                    <div class="flex justify-between text-sm">
+                        <span>By {{ getCreatorName(space.users) }}</span>
+                        <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer" @click="shareSpace()"></i>
+                    </div>
+
                 </div>
 
             </div>
@@ -369,7 +376,11 @@ const getManuals = async (spaceId, spaceTitle) => {
 
 const toSpace = (spaceId) => {
     paramsStore.setSpaceId(spaceId);
-    router.push({name : 'space'});
+    router.push({ name: 'space' });
+}
+
+const shareSpace = () => {
+
 }
 
 // Close modal when clicking outside

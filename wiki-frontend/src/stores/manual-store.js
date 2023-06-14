@@ -31,7 +31,6 @@ export const useManualStore = defineStore("manual", {
         console.log(error);
       }
     },
-
     // get Manual By Space id
     async getManual(manualId) {
       if (manualId) {
@@ -41,7 +40,7 @@ export const useManualStore = defineStore("manual", {
             this.setManual(response);
           })
           .catch((error) => {
-            window.location.href = "/notFound";
+            // window.location.href = "/notFound";
             console.log("Can't get the manual", error);
           });
       } else {

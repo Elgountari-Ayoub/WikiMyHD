@@ -41,8 +41,7 @@
                             </button>
                         </div>
                         <div v-if="userStore.id && menuOpen"
-                            class="z-50 absolute right-10 top-14 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
-                            >
+                            class="z-50 absolute right-10 top-14 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
                                     {{ userStore.name }}
@@ -61,7 +60,7 @@
                                 <li>
                                     <button @click="logout"
                                         class="w-full text-start block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300
-                                                                                                                                                                                                                                            dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                                                                                                                                                                                                dark:hover:bg-gray-600 dark:hover:text-white"
                                         role="menuitem">Se déconnecter
                                     </button>
 
@@ -157,7 +156,7 @@
                 <li v-if="userStore.isAdmin">
                     <RouterLink :to="{ name: 'articles' }" @click="spaceIdStore.spaceId = null"
                         class="articles-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <svg aria-hidden="true"
+                        <!-- <svg aria-hidden="true"
                             class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                             fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -165,6 +164,13 @@
                             </path>
                             <path
                                 d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z">
+                            </path>
+                        </svg> -->
+                        <svg aria-hidden="true"
+                            class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            fill="currentColor" viewBox="0 0 20 20"  xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M20 22H4C3.44772 22 3 21.5523 3 21V3C3 2.44772 3.44772 2 4 2H20C20.5523 2 21 2.44772 21 3V21C21 21.5523 20.5523 22 20 22ZM19 20V4H5V20H19ZM7 6H11V10H7V6ZM7 12H17V14H7V12ZM7 16H17V18H7V16ZM13 7H17V9H13V7Z">
                             </path>
                         </svg>
                         <span class="flex-1 ml-3 whitespace-nowrap">Articles</span>
@@ -185,7 +191,7 @@
                     </RouterLink>
                 </li>
                 <li v-if="userStore.isAdmin">
-                    <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
+                    <RouterLink :to="{ name: 'articlesManagement' }" @click="spaceIdStore.spaceId = null"
                         class="users-management-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true"

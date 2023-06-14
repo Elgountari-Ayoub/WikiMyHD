@@ -42,10 +42,6 @@
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <!-- Add article : must have the space that will have the article -->
-                <!-- <RouterLink :to="{ name: 'addArticle', params: { space_id: manualStore.space.id, manual_id: manual_id } }"
-                        class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
-                        Ajouter Article
-                        </RouterLink> -->
                     <button @click="toAddArticle()"
                         class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
                         Ajouter Article
@@ -87,21 +83,21 @@
 
 
                         <!-- LOGO -->
-                        <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
+                        <button @click="toArticle(article.id)"
                             class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
                             :style="{ backgroundColor: article.color }">
                             <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
                             </span>
-                        </RouterLink>
+                        </button>
 
                         <div class="flex justify-center items-center ">
                             <!-- Title -->
-                            <RouterLink :to="{ name: 'article', params: { id: `${article.id}` } }"
+                            <button @click="toArticle(article.id)"
                                 class="font-bold hover:text-blue-500">
                                 <span>{{ article.title.slice(0,
                                     100) }}
                                 </span>
-                            </RouterLink>
+                            </button>
 
                             <!-- Btns -->
                             <div class="ml-auto flex gap-4"
@@ -159,22 +155,15 @@ const paramsStore = useParamsStore();
 
 const route = useRoute();
 const router = useRouter();
-const space_id = ref();
-const manual_id = ref();
-
-manual_id.value = paramsStore.getManualId();
-space_id.value = paramsStore.getSpaceId();
 
 manualsStore.clearManuals();
 spaceStore.clearSpace();
 articlesStore.clearArticles();
+
 const getArticles = onMounted(async () => {
-    console.log(paramsStore.getSpaceId());
-    console.log(paramsStore.getManualId());
-    if (manual_id.value) {
-        await manualStore.getManual(manual_id.value);
-        space_id.value = manualStore.space.id;
-        articlesStore.getArticlesByManual(manual_id.value);
+    if (paramsStore.getManualId()) {
+        await manualStore.getManual(paramsStore.getManualId());
+        articlesStore.getArticlesByManual(paramsStore.getManualId());
     }
 });
 
@@ -229,19 +218,12 @@ const form = ref({
 // ARTICLE CRUD + SEARCH
 
 // delete Article
-const deleteArticle = async (manualId) => {
+const deleteArticle = async (articleId) => {
     // show a sweet alert for the confirmation
     try {
-        const response = await axios.delete(`/api/articles/${manualId}`);
+        const response = await axios.delete(`/api/articles/${articleId}`);
         getArticles();
-        // Swal.fire({
-        //     position: 'top-end',
-        //     icon: 'success',
-        //     title: 'le manuel a été supprimé avec succès',
-        //     showConfirmButton: false,
-        //     timer: 1500
 
-        // })
 
     } catch (err) {
         Swal.fire({
@@ -282,22 +264,22 @@ const search = async () => {
 
 // HELPERS-------------------------
 // Edit Article Modal
+
+const toArticle = (articleId) => {
+    paramsStore.articleId = articleId;
+    window.open('/article', '_blank');
+}
+
 const toEditArticle = (articleId) => {
-    paramsStore.setArticleId(articleId);
+    paramsStore.articleId = articleId
     router.push({ name: 'editArticle' })
 
 };
 const toAddArticle = () => {
-    paramsStore.setSpaceId(manualStore.space.id);
-    paramsStore.setManualId(manualStore.id);
     router.push({ name: 'addArticle' })
 
 };
 
-
-const closeEditManualModal = () => {
-    isEditManualModalOpen.value = false;
-};
 // Close modal when clicking outside
 watchEffect(() => {
     const handleClickOutside = (event) => {
