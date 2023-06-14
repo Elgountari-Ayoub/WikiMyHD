@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Space;
 use App\Models\Manual;
 use App\Models\Article;
+use App\Models\ArticleVersion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ class ArticleController extends Controller
             // $authRole = Auth::user()->role;
 
             if ($authRole == 'admin') {
-                $articles = Article::with('users', 'space', 'manual')->orderBy('id', 'desc')->get();
+                $articles = Article::with('users', 'space', 'manual', 'versions')->orderBy('id', 'desc')->get();
                 return response()->json([
                     'articles' => $articles
                 ], 200);
@@ -72,6 +73,19 @@ class ArticleController extends Controller
 
             $article = Article::with('users', 'space', 'manual')->findOrFail($article->id);
 
+            // Get the maximum version number for the article
+            $maxVersionNumber = $article->versions()->max('version_number');
+            $versionNumber = $maxVersionNumber ? $maxVersionNumber + 0.01 : 1;
+
+            // Create a new version in the article_versions table
+            ArticleVersion::create([
+                'article_id' => $article->id,
+                'user_id' => Auth::id(),
+                'title' => $article->title,
+                'content' => $article->content,
+                'version_number' => $versionNumber
+            ]);
+
             return response()->json([
                 'article' => $article
             ], 200);
@@ -111,6 +125,56 @@ class ArticleController extends Controller
         }
     }
 
+    public function showByVersion($id, $version)
+    {
+        try {
+            if (Auth::user()->role == 'admin') {
+                $article = Article::with('users', 'space', 'manual')->findOrFail($id);
+
+                if ($version) {
+                    $articleVersion = $article->versions()->where('id', $version)->first();
+
+                    if ($articleVersion) {
+                        return response()->json([
+                            'article' => $articleVersion
+                        ], 200);
+                    } else {
+                        throw new Exception("Article version not found.$version");
+                    }
+                }
+
+                return response()->json([
+                    'article' => $article
+                ], 200);
+            } else {
+                $user = User::findOrFail(Auth::id());
+                $article = $user->articles()->with('users', 'space', 'manual')->findOrFail($id);
+
+                if ($version) {
+                    $articleVersion = $article->versions()->with('users', 'space', 'manual')->where('version_number', $version)->first();
+
+                    if ($articleVersion) {
+                        return response()->json([
+                            'article' => $articleVersion
+                        ], 200);
+                    } else {
+                        throw new Exception("Article version not found.");
+                    }
+                }
+
+                return response()->json([
+                    'article' => $article
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'article' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+
+
     /**
      * Update the specified resource in storage.
      */
@@ -124,9 +188,26 @@ class ArticleController extends Controller
             ]);
 
             $article = Article::findOrFail($id);
+
+            // Get the maximum version number for the article
+            $maxVersionNumber = $article->versions()->max('version_number');
+            $versionNumber = $maxVersionNumber ? $maxVersionNumber + 0.01 : 1;
+
+
+            // Update the article with the new data
             $article->title = $request->title;
             $article->content = $request->content;
             $article->save();
+
+            // Create a new version in the article_versions table
+            ArticleVersion::create([
+                'article_id' => $article->id,
+                'user_id' => Auth::id(),
+                'title' => $article->title,
+                'content' => $article->content,
+                'version_number' => $versionNumber
+            ]);
+
 
             $article = Article::with('users', 'space', 'manual')->find($article->id);
             return response()->json([

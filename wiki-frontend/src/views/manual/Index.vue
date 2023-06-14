@@ -3,29 +3,9 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <div v-if="spaceIdStore.spaceId" class="flex items-center">
-                <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
-                    <svg aria-hidden="true"
-                        class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                        </path>
-                    </svg>
-                </RouterLink>
-                <!-- <RouterLink v-if="manualsStore.manuals.length !== 0" :to="{ name: 'manuals' }" -->
-                <RouterLink :to="{ name: 'manuals' }" class="hover:text-blue-500 text-base  rounded">
-                    {{ spaceIdStore.spaceTitle }}
-                    <!-- {{ manualsStore.manuals[0].space.title }} -->
-                </RouterLink>
-            </div>
             <div>
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
-                    <!-- Add manual : most have the space that will have the manual-->
-                    <button @click="openModal" type="submit"
-                        class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
-                        Ajouter Manual
-                    </button>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
                     <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
@@ -67,7 +47,7 @@
                             <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
                         </span>
 
-                        <!-- Manual logo [first letter]
+                    <!-- Manual logo [first letter]
                         <RouterLink :to="{ name: 'articles', params: { id: 1 } }">
                             <button @click="getArticles(manual.id)"
                                 class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
@@ -75,7 +55,7 @@
                                 <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
                                 </span>
                             </button>
-                        </RouterLink> -->
+                            </RouterLink> -->
 
                         <button @click="toManual(manual.id)"
                             class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"

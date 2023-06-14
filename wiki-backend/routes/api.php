@@ -114,6 +114,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/articles/{id}/manual', [ArticleController::class, 'getArticleByManualId']);
     // -- Show 
     Route::get('/articles/{id}/show', [ArticleController::class, 'show']);
+    // -- Show by Article
+    Route::get('/articles/{id}/{version}/showByVersion', [ArticleController::class, 'showByVersion']);
     // -- Search
     Route::get('/articles/search/{title}', [ArticleController::class, 'search']);
     // --Add 

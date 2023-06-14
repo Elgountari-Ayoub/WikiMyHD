@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
-    
+    protected $guarded = [];
+
     public function users()
     {
         return $this->belongsToMany(User::class)->withPivot('is_creator');
@@ -22,5 +23,9 @@ class Article extends Model
     public function manual()
     {
         return $this->belongsTo(Manual::class);
+    }
+    public function versions()
+    {
+        return $this->hasMany(ArticleVersion::class);
     }
 }

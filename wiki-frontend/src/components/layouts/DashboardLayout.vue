@@ -228,6 +228,7 @@ import { useUsersStore } from '../../stores/users-store';
 import { useSpaceIdStore } from '../../stores/space-id-store';
 import { useSpaceStore } from '../../stores/space-store';
 import { useManualStore } from '../../stores/manual-store';
+import { useParamsStore } from '../../stores/params-store';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -236,6 +237,7 @@ const spacesStore = useSpacesStore();
 const spaceStore = useSpaceStore();
 const manualsStore = useManualsStore();
 const manualStore = useManualStore();
+const paramsStore = useParamsStore();
 
 const showSpacesList = ref(false);
 const showManualsList = ref(false);
@@ -309,6 +311,10 @@ const logout = async () => {
 
                 usersStore.clearUsers();
                 console.log('Users Store Cleard :>', usersStore);
+                
+                paramsStore.clear();
+                console.log('Params Store Cleard :>', paramsStore);
+                
                 console.log('logout success');
             } catch (error) {
                 console.log('logout failed', error);

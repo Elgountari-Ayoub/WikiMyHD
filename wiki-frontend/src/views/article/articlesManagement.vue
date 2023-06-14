@@ -17,6 +17,9 @@
                                 <th scope="col" class="px-6 py-3">
                                     Manual
                                 </th>
+                                <th scope="col" class="px-6 py-3 ">
+                                    Versions
+                                </th>
                                 <th scope="col" class="px-6 py-3 text-center">
                                     Actions
                                 </th>
@@ -34,6 +37,14 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     {{ article.manual.title }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <select v-model="selectedVersion" @change="toArticle(article.id)" class="outline-0 rounded-full">
+                                        <option v-for="version in article.versions" :key="version.id" :value="version.id">
+                                            {{ version.version_number }}
+                                        </option>
+                                    </select>
+
                                 </td>
                                 <td class="px-6 py-4 grid grid-cols-3 gap-0">
                                     <button @click="toArticle(article.id)"
@@ -87,12 +98,14 @@ const router = useRouter();
 articlesStore.clearArticles();
 
 const getArticles = onMounted(async () => {
-        await articlesStore.getArticles();
+    await articlesStore.getArticles();
 });
 
-
+const selectedVersion = ref(null);
 const toArticle = (articleId) => {
     paramsStore.articleId = articleId;
+    paramsStore.articleVersion = selectedVersion.value;
+    selectedVersion.value = null
     window.open('/article', '_blank');
 }
 

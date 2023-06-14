@@ -183,7 +183,7 @@ const route = useRoute();
 const router = useRouter();
 
 manualsStore.clearManuals();
-spaceStore.clearSpace();
+// spaceStore.clearSpace();
 
 const getManuals = onMounted(async () => {
   if (paramsStore.getSpaceId()) {

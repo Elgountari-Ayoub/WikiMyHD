@@ -24,8 +24,15 @@ const articleStore = useArticleStore();
 const route = useRoute();
 
 const getArticle = onMounted(async() => {
-    await articleStore.getArticle(paramsStore.articleId);
-    editor.commands.setContent(articleStore.content)
+    if (paramsStore.articleVersion) {
+        await articleStore.getArticleByVersion(paramsStore.articleId, paramsStore.articleVersion);
+        paramsStore.articleVersion = null;
+        editor.commands.setContent(articleStore.content)
+    }
+    else {
+        await articleStore.getArticle(paramsStore.articleId);
+        editor.commands.setContent(articleStore.content)
+    }
     editor.setEditable(false)
 }
 )

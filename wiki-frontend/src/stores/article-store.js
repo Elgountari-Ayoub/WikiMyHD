@@ -28,7 +28,7 @@ export const useArticleStore = defineStore("article", {
       }
     },
 
-    // GEt all the articles
+    // GET the article
     async getArticle(articleId) {
       await axios
         .get(`/api/articles/${articleId}/show`)
@@ -37,6 +37,17 @@ export const useArticleStore = defineStore("article", {
         })
         .catch((error) => {
           console.log("ERROR IN getING article", error);
+        });
+    },
+    async getArticleByVersion(id, version) {
+      await axios
+        .get(`/api/articles/${id}/${version}/showByVersion`)
+        .then((response) => {
+          console.log(response);
+          this.setArticle(response);
+        })
+        .catch((error) => {
+          console.log("ERROR IN getING article by version", error);
         });
     },
     clearArticle() {

@@ -24,6 +24,7 @@ export const useArticlesSotre = defineStore("articles", {
           id: article.id,
           title: article.title,
           content: article.content,
+          versions: article.versions,
           
           users: article.users,
           space: article.space,

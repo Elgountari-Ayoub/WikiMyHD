@@ -157,7 +157,7 @@ const route = useRoute();
 const router = useRouter();
 
 manualsStore.clearManuals();
-spaceStore.clearSpace();
+// spaceStore.clearSpace();
 articlesStore.clearArticles();
 
 const getArticles = onMounted(async () => {

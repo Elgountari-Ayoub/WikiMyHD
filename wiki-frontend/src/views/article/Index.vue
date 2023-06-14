@@ -7,10 +7,6 @@
                 <!-- Add btn and search -->
                 <div class="flex items-center mb-4 gap-4">
                     <!-- Add article : must have the space that will have the article -->
-                    <button @click="toAddArticle()"
-                        class="px-4 py-2 w-2/12 text-white text-sm text-center bg-green-500 rounded-md hover:bg-green-600 ">
-                        Ajouter Article
-                    </button>
                     <!-- <SearchInput /> -->
                     <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
                     <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
@@ -41,7 +37,7 @@
 
                 <LoadingAnimation v-if="articlesStore.articles.length == 0" />
                 <div v-else
-                    class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 ">
+                    class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[60vh]">
 
                     <div v-for="article in articlesStore.articles"
                         class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
@@ -142,8 +138,6 @@ const getCreatorName = (users) => {
     });
     return creatorName;
 }
-
-
 
 const isModalOpen = ref(false);
 const modalRef = ref(null);
