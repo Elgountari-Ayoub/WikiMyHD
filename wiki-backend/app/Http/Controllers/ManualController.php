@@ -67,6 +67,19 @@ class ManualController extends Controller
             ];
             $manual->users()->syncWithoutDetaching([$creator_id => $pivotData]);
 
+            // If the auth not an Admin Assign to him
+            $authRole = Auth::user()->role;
+
+            if ($authRole != 'admin') {
+                $adminUser = User::where('role', 'admin')->first();
+                $admin_id = $adminUser->id;
+                $pivotData = [
+                    'is_creator' => false,
+                ];
+                $manual->users()->syncWithoutDetaching([$admin_id => $pivotData]);
+            }
+
+
             $manual = Manual::with('users', 'space')->findOrFail($manual->id);
 
             return response()->json([
@@ -122,7 +135,7 @@ class ManualController extends Controller
             } else {
                 $user = User::findOrFail(Auth::id());
                 $manuals = $user->manuals()->where('space_id', $spaceId)->with('users', 'space')->get();
-                
+
                 return response()->json([
                     'manuals' => $manuals
                 ], 200);
@@ -189,7 +202,36 @@ class ManualController extends Controller
         }
     }
 
+    public function assignUserToManual(Request $request)
+    {
+        try {
+            $request->validate([
+                'manual_id' => 'required',
+                'users' => 'required|array'
+            ]);
 
+            $manual = Manual::findOrFail($request->manual_id);
+
+            $users = User::whereIn('id', $request->users)->get();
+
+            $manual->users()->syncWithoutDetaching($users->pluck('id')->toArray());
+
+            $space = $manual->space;
+
+            $space->users()->syncWithoutDetaching($users->pluck('id')->toArray());
+
+
+            return response()->json([
+                'manual' => $manual,
+                'users_assigned' => true
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'users_assigned' => false,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
     /**
      * Search for a name
      *

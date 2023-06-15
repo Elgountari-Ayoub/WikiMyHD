@@ -56,10 +56,8 @@
         <div v-else
           class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[65vh]">
 
-          <div v-for="manual in manualsStore.manuals"
+          <div v-if="!searchInput" v-for="manual in manualsStore.manuals"
             class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4">
-
-
             <div class="border-b flex justify-between gap-2 ">
               <span>
                 {{ manual.users.length }}<i class="ri-group-line"></i>
@@ -93,7 +91,112 @@
                 </button>
               </div>
             </div>
-            <span class="mr-auto text-sm">By {{ getCreatorName(manual.users) }}</span>
+            <div class="flex -justify-between text-sm">
+              <span class="mr-auto text-sm">By {{ getCreatorName(manual.users) }}</span>
+              <!-- share space -->
+              <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
+                @click="openShareModal(manual.id)"></i>
+              <!-- Share space with users Modal-->
+              <div v-show="isShareModalOpen"
+                class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                  <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                    <div class="text-lg font-bold text-gray-900 self-center">Users</div>
+                    <div class="w-full">
+                      <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                      <input type="text" v-model="searchQuery" placeholder="Search users"
+                        class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md mb-2" />
+                      <select multiple v-model="selectedUsers" id="spaces" name="spaces[]"
+                        class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                        <option v-for="user in filteredUsers" :value="user.id" :key="user.id">{{
+                          user.name
+                        }}
+                        </option>
+                      </select>
+                      <div class="flex justify-between">
+                        <button class="p-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                          @click="shareManualWithUsers()">Soumettre</button>
+
+                        <button class="p-2 mt-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                          @click="closeShareModal()">Fermer</button>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else v-for="manual in filteredManuals"
+            class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4">
+            <div class="border-b flex justify-between gap-2 ">
+              <span>
+                {{ manual.users.length }}<i class="ri-group-line"></i>
+              </span>
+              <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+            </div>
+
+            <button @click="toManual(manual.space.id, manual.id)"
+              class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+              :style="{ backgroundColor: manual.color }">
+              <span class="text-2xl ">{{ manual.title[0].toUpperCase() }}
+              </span>
+            </button>
+
+            <div class="flex justify-center items-center">
+              <!-- Title -->
+              <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500">
+                {{ manual.title.slice(0,
+                  100) }}
+              </button>
+
+              <!-- Btns -->
+              <div class="ml-auto flex gap-4" v-if='getCreatorId(manual.users) == userStore.id || userStore.isAdmin'>
+                <button @click="openEditManualModal(manual.id, manual.title, manual.description)"
+                  class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
+                  <i class="ri-pencil-line"></i>
+                </button>
+                <button @click="deleteManual(manual.id)"
+                  class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
+                  <i class="ri-delete-bin-6-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="flex -justify-between text-sm">
+              <span class="mr-auto text-sm">By {{ getCreatorName(manual.users) }}</span>
+              <!-- share space -->
+              <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
+                @click="openShareModal(manual.id)"></i>
+              <!-- Share space with users Modal-->
+              <div v-show="isShareModalOpen"
+                class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                  <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                    <div class="text-lg font-bold text-gray-900 self-center">Users</div>
+                    <div class="w-full">
+                      <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                      <input type="text" v-model="searchQuery" placeholder="Search users"
+                        class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md mb-2" />
+                      <select multiple v-model="selectedUsers" id="spaces" name="spaces[]"
+                        class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                        <option v-for="user in filteredUsers" :value="user.id" :key="user.id">{{
+                          user.name
+                        }}
+                        </option>
+                      </select>
+                      <div class="flex justify-between">
+                        <button class="p-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                          @click="shareManualWithUsers()">Soumettre</button>
+
+                        <button class="p-2 mt-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                          @click="closeShareModal()">Fermer</button>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -169,7 +272,10 @@ import { useSpaceStore } from '../../stores/space-store';
 
 import { useManualsStore } from '../../stores/manuals-store';
 import { useParamsStore } from '../../stores/params-store';
+import { useUsersStore } from '../../stores/users-store';
+import { computed } from '@vue/reactivity';
 
+axios.defaults.withCredentials = true;
 
 const userStore = useUserStore();
 const manualsStore = useManualsStore();
@@ -177,27 +283,24 @@ const spaceStore = useSpaceStore();
 const spacesStore = useSpacesStore();
 const paramsStore = useParamsStore();
 
-axios.defaults.withCredentials = true;
 
 const route = useRoute();
 const router = useRouter();
 
-manualsStore.clearManuals();
-// spaceStore.clearSpace();
+const selectedUsers = ref([]);
+const searchQuery = ref('');
+const usersStore = useUsersStore();
+const isShareModalOpen = ref(false);
 
+manualsStore.clearManuals();
 const getManuals = onMounted(async () => {
   if (paramsStore.getSpaceId()) {
-    alert(paramsStore.spaceId)
     spaceStore.getSpace(paramsStore.getSpaceId());
     manualsStore.getManualsBySpace(paramsStore.getSpaceId());
     spacesStore.getSpaces();
+    await usersStore.getUsers();
   }
 });
-
-onBeforeUnmount(() => {
-  // paramsStore.clear();
-})
-
 
 
 const isModalOpen = ref(false);
@@ -205,7 +308,53 @@ const isEditManualModalOpen = ref(false);
 
 const modalRef = ref(null);
 
+// -------------------------------------------
+const manualId = ref(null);
+function hasManualId(user, manualId) {
+  if (Array.isArray(user.manuals)) {
+    return user.manuals.some(manual => manual.id === manualId);
+  }
+  return false;
+}
 
+// return user.spaces.some(space => space.id === spaceId);
+const filteredUsers = computed(() => {
+  return usersStore.users.filter(user => {
+    if (user.status === 1 && user.role != 'admin' && !hasManualId(user, manualId.value)) {
+      return user.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    }
+  });
+});
+
+function openShareModal(space_id) {
+  isShareModalOpen.value = true;
+  manualId.value = space_id
+}
+function closeShareModal() {
+  isShareModalOpen.value = false;
+  manualId.value = null;
+  searchQuery.value = '';
+  selectedUsers.value = [];
+}
+
+const shareManualWithUsers = async () => {
+  if (selectedUsers.value.length > 0) {
+    // return;
+    await axios.post('/api/assignUserToManual', {
+      manual_id: manualId.value,
+      users: selectedUsers.value,
+    }).then(response => {
+      console.log(response);
+      closeShareModal();
+      getManuals()
+    }).catch(error => {
+      console.log(error);
+    })
+  }
+
+
+}
+// -------------------------------------------
 const form = ref({
   id: null,
   title: null,
@@ -283,14 +432,6 @@ const deleteManual = async (manualId) => {
   try {
     const response = await axios.delete(`/api/manuals/${manualId}`);
     getManuals();
-    // Swal.fire({
-    //     position: 'top-end',
-    //     icon: 'success',
-    //     title: 'le manuel a été supprimé avec succès',
-    //     showConfirmButton: false,
-    //     timer: 1500
-
-    // })
 
   } catch (err) {
     Swal.fire({
@@ -305,48 +446,32 @@ const deleteManual = async (manualId) => {
 
 // Search
 const searchInput = ref(null)
-const search = async () => {
-  try {
-    if (!searchInput.value) {
-      if (manualsStore.manuals.length === 0) {
-        manualsStore.getManuals();
-      }
-      return;
-    }
-    const response = await axios.get(`/api/manuals/search/${searchInput.value}`);
-    if (response.data.length > 0) {
-      manualsStore.manuals = response.data
-      manualsStore.manuals.forEach(element => {
-        element.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-      })
-      return;
-    }
-    manualsStore.manuals = [];
-
-  } catch (error) {
-    // Handle the error here if needed
-    console.error(error);
+watch(searchInput, () => {
+  let isEmpty = /^\s*$/.test(searchInput.value);
+  if (isEmpty) {
+    searchInput.value = null;
   }
-};
+});
+
+const filteredManuals = computed(() => {
+  return manualsStore.manuals.filter(manual => {
+    return manual.title.toLowerCase().includes(searchInput.value.toLowerCase()) || manual.description.toLowerCase().includes(searchInput.value.toLowerCase());
+  });
+});
+
 
 // HELPERS-------------------------
 // Edit Manual Modal
 const toSpace = (spaceId) => {
-  console.log(spaceId);
   paramsStore.setSpaceId(spaceId);
   router.push({ name: 'space' });
 }
 function toManual(spaceId, manualId) {
   paramsStore.setSpaceId(spaceId);
   paramsStore.setManualId(manualId);
-  console.log(paramsStore.getSpaceId(), paramsStore.getManualId());
 
   router.push({ name: 'manual' })
 }
-
-
-
-
 
 const openEditManualModal = (manualId, manualTitle, manualDescription) => {
   form.value.id = manualId;
@@ -373,11 +498,6 @@ watchEffect(() => {
     document.removeEventListener('click', handleClickOutside);
   };
 });
-
-watch(() => spaceStore.id, (newValue, oldValue) => {
-  getManuals();
-});
-
 
 const getCreatorId = (users) => {
   let creatorId = -1;
@@ -411,7 +531,6 @@ const closeModal = () => {
   form.value.title = '';
   form.value.description = '';
 };
-
 
 const getImageUrl = (photo) => {
   const baseUrl = "http://localhost:8000/storage/";

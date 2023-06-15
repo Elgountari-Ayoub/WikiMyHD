@@ -47,7 +47,7 @@
             <div v-else
                 class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[65vh]">
 
-                <div v-for="space in spacesStore.spaces" :key="space.id"
+                <div v-if="!searchInput" v-for="space in spacesStore.spaces" :key="space.id"
                     class="flex flex-col rounded-md justify-between gap-2 rounded h-60 bg-gray-50 shadow-md dark:bg-gray-800 p-4">
 
                     <!-- members count -->
@@ -85,17 +85,123 @@
                             </button>
                         </div>
                     </div>
-
                     <!-- Author -->
                     <div class="flex justify-between text-sm">
                         <span>By {{ getCreatorName(space.users) }}</span>
-                        <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer" @click="shareSpace()"></i>
+                        <!-- share space -->
+                        <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
+                            @click="openShareModal(space.id)"></i>
+                        <!-- Share space with users Modal-->
+                        <div v-show="isShareModalOpen"
+                            class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                            <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                                <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                                    <div class="text-lg font-bold text-gray-900 self-center">Users</div>
+                                    <div class="w-full">
+                                        <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                                        <input type="text" v-model="searchQuery" placeholder="Search users"
+                                            class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md mb-2" />
+                                        <select multiple v-model="selectedUsers" id="spaces" name="spaces[]"
+                                            class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                            <option v-for="user in filteredUsers" :value="user.id" :key="user.id">{{
+                                                user.name
+                                            }}
+                                            </option>
+                                        </select>
+                                        <div class="flex justify-between">
+                                            <button class="p-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                                                @click="shareSpaceWithUsers()">Soumettre</button>
+
+                                            <button class="p-2 mt-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                                                @click="closeShareModal()">Fermer</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
+
                 </div>
+                <div v-else v-for="space in filteredSpaces" 
+                    class="flex flex-col rounded-md justify-between gap-2 rounded h-60 bg-gray-50 shadow-md dark:bg-gray-800 p-4">
 
+                    <!-- members count -->
+                    <div class="border-b flex justify-between gap-2 ">
+                        <span>
+                            {{ space.users.length }}<i class="ri-group-line"></i>
+                        </span>
+                        <i class="ri-information-line cursor-pointer" :title="space.description"></i>
+                    </div>
+
+                    <!-- LOGO -->
+                    <button @click="toSpace(space.id)"
+                        class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                        :style="{ backgroundColor: space.color }">
+                        <span class="text-2xl">{{
+                            space.title[0].toUpperCase() }}
+                        </span>
+                    </button>
+
+                    <div class="flex justify-center items-center">
+                        <!-- TITLE -->
+                        <button @click="toSpace(space.id)" class="font-bold hover:text-blue-500">{{
+                            space.title.slice(0, 100) }}
+                        </button>
+
+                        <!-- BTNS -->
+                        <div class="ml-auto flex gap-4" v-if='userStore.isAdmin'>
+                            <button @click="openEditSpaceModal(space.id, space.title, space.description)"
+                                class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
+                                <i class="ri-pencil-line"></i>
+                            </button>
+                            <button @click="deleteSpace(space.id)"
+                                class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
+                                <i class="ri-delete-bin-6-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Author -->
+                    <div class="flex justify-between text-sm">
+                        <span>By {{ getCreatorName(space.users) }}</span>
+                        <!-- share space -->
+                        <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
+                            @click="openShareModal(space.id)"></i>
+                        <!-- Share space with users Modal-->
+                        <div v-show="isShareModalOpen"
+                            class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                            <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                                <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                                    <div class="text-lg font-bold text-gray-900 self-center">Users</div>
+                                    <div class="w-full">
+                                        <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                                        <input type="text" v-model="searchQuery" placeholder="Search users"
+                                            class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md mb-2" />
+                                        <select multiple v-model="selectedUsers" id="spaces" name="spaces[]"
+                                            class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                            <option v-for="user in filteredUsers" :value="user.id" :key="user.id">{{
+                                                user.name
+                                            }}
+                                            </option>
+                                        </select>
+                                        <div class="flex justify-between">
+                                            <button class="p-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                                                @click="shareSpaceWithUsers()">Soumettre</button>
+
+                                            <button class="p-2 mt-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                                                @click="closeShareModal()">Fermer</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
             </div>
-
             <!-- Modal  Add Space form-->
             <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center " @click.self="closeModal">
                 <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
@@ -144,7 +250,6 @@
                     </form>
                 </div>
             </div>
-
         </DashboardLayout>
     </div>
 </template>
@@ -165,6 +270,8 @@ import { useSpacesStore } from '../../stores/spaces-store';
 import { useManualsStore } from '../../stores/manuals-store';
 import { useSpaceIdStore } from '../../stores/space-id-store';
 import { useParamsStore } from '../../stores/params-store';
+import { useUsersStore } from '../../stores/users-store';
+import { computed } from '@vue/reactivity';
 
 axios.defaults.withCredentials = true;
 
@@ -174,12 +281,64 @@ const spacesStore = useSpacesStore();
 const manualsStore = useManualsStore();
 const paramsStore = useParamsStore();
 
-onMounted(async () => {
+const selectedUsers = ref([]);
+const searchQuery = ref('');
+const usersStore = useUsersStore();
+const isShareModalOpen = ref(false);
+const getSpaces = onMounted(async () => {
     spaceIdStore.spaceId = null;
-    if (spacesStore.spaces.length == 0) {
-        await spacesStore.getSpaces();
-    }
+    await spacesStore.getSpaces();
+    await usersStore.getUsers();
 });
+
+// -----------------------------------------------------------------------------
+
+const spaceId = ref(null);
+function hasSpaceId(user, spaceId) {
+  if (Array.isArray(user.spaces)) {
+    return user.spaces.some(space => space.id === spaceId);
+  }
+  return false;
+}
+const filteredUsers = computed(() => {
+    return usersStore.users.filter(user => {
+        if (user.status === 1 && user.role != 'admin' && !hasSpaceId(user, spaceId.value)) {
+            return user.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+        }
+    });
+});
+
+
+function openShareModal(space_id) {
+    isShareModalOpen.value = true;
+    spaceId.value = space_id
+}
+function closeShareModal() {
+    isShareModalOpen.value = false;
+    spaceId.value = null;
+    searchQuery.value = '';
+    selectedUsers.value = [];
+}
+
+const shareSpaceWithUsers = async () => {
+    if (selectedUsers.value.length > 0) {
+        console.log(selectedUsers);
+        // return;
+        await axios.post('/api/assignUserToSpace', {
+            space_id: spaceId.value,
+            users: selectedUsers.value,
+        }).then(response => {
+            console.log(response);
+            getSpaces();
+            closeShareModal();
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+
+}
+// -------------------------------------------------------
 
 const isModalOpen = ref(false);
 const isEditSpaceModalOpen = ref(false);
@@ -233,7 +392,6 @@ const addSpace = async () => {
         title: form.value.title,
         description: form.value.description
     }).then(async (response) => {
-        console.log('response gg', response);
         // Reset form fields after successful submission
         closeModal();
         form.value.id = '';
@@ -297,8 +455,6 @@ const editSpace = async () => {
 
 // delete Space
 const deleteSpace = async (spaceId) => {
-    // show a sweet alert for the confirmation
-    console.log(spaceId);
     await axios.delete(`/api/spaces/${spaceId}`)
         .then(async (response) => {
             await spacesStore.getSpaces();
@@ -326,39 +482,20 @@ const deleteSpace = async (spaceId) => {
 }
 
 // Search
+// Find a space by title
 const searchInput = ref(null)
 watch(searchInput, () => {
-    setTimeout(search, 1000);
-
+  let isEmpty = /^\s*$/.test(searchInput.value);
+  if (isEmpty) {
+    searchInput.value = null;
+  }
 });
-// Find a space by title
-const spaces = ref([]);
-const search = async () => {
-    try {
-        let isEmpty = /^\s*$/.test(searchInput.value);
-        if (isEmpty) {
-            spacesStore.getSpaces();
-            console.log();
-        }
-        const response = await axios.get(`/api/spaces/search/${searchInput.value}`);
 
-        // Handle the response here if needed
-        console.log(response.data.spaces);
-        spacesStore.setSpaces(response);
-
-        // give the 1st letter a color
-        // spaces.value.forEach(element => {
-        //     element['color'] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        // });
-        // Reset form fields after successful submission
-        // searchInput.value = null;
-
-        // Close the modal after form submission
-    } catch (error) {
-        // Handle the error here if needed
-        console.error(error);
-    }
-};
+const filteredSpaces = computed(() => {
+  return spacesStore.spaces.filter(space => {
+    return space.title.toLowerCase().includes(searchInput.value.toLowerCase()) || space.description.toLowerCase().includes(searchInput.value.toLowerCase());
+  });
+});
 
 
 // Redirect to Space Manauls View
@@ -376,10 +513,6 @@ const getManuals = async (spaceId, spaceTitle) => {
 const toSpace = (spaceId) => {
     paramsStore.setSpaceId(spaceId);
     router.push({ name: 'space' });
-}
-
-const shareSpace = () => {
-
 }
 
 // Close modal when clicking outside

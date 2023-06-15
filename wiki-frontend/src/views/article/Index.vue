@@ -3,47 +3,69 @@
     <RouterView />
     <div>
         <DashboardLayout>
-            <div>
-                <!-- Add btn and search -->
-                <div class="flex items-center mb-4 gap-4">
-                    <!-- Add article : must have the space that will have the article -->
-                    <!-- <SearchInput /> -->
-                    <!-- md:w-4/12 lg:w-6/12 sm:w-4/12   -->
-                    <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
-                        <div class="relative w-full m-auto">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
-                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <input v-model="searchInput" name="search" type="text" id="simple-search"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
-                                placeholder="Search">
-                        </div>
-                        <button type="submit"
-                            class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            <div class="relative">
+                <div class="flex items-center m-auto sticky gap-4 z-96 ">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
+                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                    clip-rule="evenodd"></path>
                             </svg>
-                            <span class="sr-only">Search</span>
-                        </button>
-                    </form>
+                        </div>
+                        <input v-model="searchInput" name="search" type="text" id="simple-search"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
+                            placeholder="Search">
                 </div>
 
                 <LoadingAnimation v-if="articlesStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[60vh]">
 
-                    <div v-for="article in articlesStore.articles"
+                    <div v-if="!searchInput" v-for="article in articlesStore.articles"
                         class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
 
                         <div class="border-b flex gap-2 text-sm flex-start pb-2">
-                                {{ article.space.title }} <strong>:</strong> {{ article.manual.title }}
+                            {{ article.space.title }} <strong>:</strong> {{ article.manual.title }}
+                        </div>
+
+                        <!-- LOGO -->
+                        <button @click="toArticle(article.id)"
+                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
+                            :style="{ backgroundColor: article.color }">
+                            <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
+                            </span>
+                        </button>
+
+                        <div class="flex justify-center items-center ">
+                            <!-- Title -->
+                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500">
+                                <span>{{ article.title.slice(0,
+                                    100) }}
+                                </span>
+                            </button>
+
+                            <!-- Btns -->
+                            <div class="ml-auto flex gap-4"
+                                v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
+                                <button @click="toEditArticle(article.id)"
+                                    class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
+                                    <i class="ri-pencil-line"></i>
+                                </button>
+                                <button @click="deleteArticle(article.id)"
+                                    class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
+                                    <i class="ri-delete-bin-6-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Author -->
+                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
+                    </div>
+                    <div v-else v-for="article in filteredArticles"
+                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
+
+                        <div class="border-b flex gap-2 text-sm flex-start pb-2">
+                            {{ article.space.title }} <strong>:</strong> {{ article.manual.title }}
                         </div>
 
                         <!-- LOGO -->
@@ -106,6 +128,7 @@ import { useManualStore } from '../../stores/manual-store';
 
 import { useArticlesSotre } from '../../stores/articles-store';
 import { useParamsStore } from '../../stores/params-store';
+import { computed } from '@vue/reactivity';
 
 axios.defaults.withCredentials = true;
 
@@ -186,31 +209,22 @@ const deleteArticle = async (articleId) => {
     }
 }
 
-// Search
-const searchInput = ref(null)
-const search = async () => {
-    try {
-        if (!searchInput.value) {
-            if (manualsStore.manuals.length === 0) {
-                manualsStore.getArticles();
-            }
-            return;
-        }
-        const response = await axios.get(`/api/manuals/search/${searchInput.value}`);
-        if (response.data.length > 0) {
-            manualsStore.manuals = response.data
-            manualsStore.manuals.forEach(element => {
-                element.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-            })
-            return;
-        }
-        manualsStore.manuals = [];
+// Search---------------------------------------------
 
-    } catch (error) {
-        // Handle the error here if needed
-        console.error(error);
+const searchInput = ref(null)
+watch(searchInput, () => {
+    let isEmpty = /^\s*$/.test(searchInput.value);
+    if (isEmpty) {
+        searchInput.value = null;
     }
-};
+});
+
+const filteredArticles = computed(() => {
+    return articlesStore.articles.filter(article => {
+        return article.title.toLowerCase().includes(searchInput.value.toLowerCase()) || article.content.toLowerCase().includes(searchInput.value.toLowerCase());
+    });
+});
+// Search---------------------------------------------
 
 // HELPERS-------------------------
 // Edit Article Modal

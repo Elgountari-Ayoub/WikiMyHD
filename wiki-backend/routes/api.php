@@ -69,10 +69,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // --LOGOUT
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // assignspace
-    Route::post('/assignspace', [UserController::class, 'assignSpace']);
-    // assignmanual
-    Route::post('/assignmanual', [UserController::class, 'assignManual']);
 
 
     // SPACE ROUTES 
@@ -151,6 +147,11 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     // UPDATE USER DATA
     Route::put('/update/{id}', [UserController::class, 'update']);
 
+    // assignspace
+    Route::post('/assignspace', [UserController::class, 'assignSpace']);
+    // assignmanual
+    Route::post('/assignmanual', [UserController::class, 'assignManual']);
+
 
 
 
@@ -161,4 +162,11 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     Route::put('/spaces/{id}', [SpaceController::class, 'update']);
     // --Delete
     Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
+
+    // assignUserToSpace
+    Route::post('/assignUserToSpace', [SpaceController::class, 'assignUserToSpace']);
+
+    // MANUAL ROUTES
+    // assignUserToManual
+    Route::post('/assignUserToManual', [ManualController::class, 'assignUserToManual']);
 });

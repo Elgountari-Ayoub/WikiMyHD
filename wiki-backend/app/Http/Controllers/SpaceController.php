@@ -30,11 +30,11 @@ class SpaceController extends Controller
             } else {
                 $user = User::findOrFail(Auth::id());
 
-                $spaces = $user->spaces()->with(['users', 'articles','manuals' => function ($query) use ($user) {
+                $spaces = $user->spaces()->with(['users', 'articles', 'manuals' => function ($query) use ($user) {
                     $query->whereHas('users', function ($query) use ($user) {
                         $query->where('users.id', $user->id);
                     });
-                }])->get();
+                }])->orderBy('id', 'desc')->get();
 
                 return response()->json([
                     'spaces' => $spaces,
@@ -103,7 +103,7 @@ class SpaceController extends Controller
                 // GET THE SPACE AND HIS USERS, MANUALS DATA
                 $user = User::findOrFail(Auth::id());
                 // $space = $user->spaces()->with('users', 'manuals')->findOrFail($id);
-                $space = $user->spaces()->with(['users', 'articles','manuals' => function ($query) use ($user) {
+                $space = $user->spaces()->with(['users', 'articles', 'manuals' => function ($query) use ($user) {
                     $query->whereHas('users', function ($query) use ($user) {
                         $query->where('users.id', $user->id);
                     });
@@ -205,4 +205,30 @@ class SpaceController extends Controller
             ], 404);
         }
     }
-}
+
+    public function assignUserToSpace(Request $request)
+    {
+        try {
+            $request->validate([
+                'space_id' => 'required',
+                'users' => 'required|array'
+            ]);
+
+            $space = Space::findOrFail($request->space_id);
+
+            $users = User::whereIn('id', $request->users)->get();
+
+            $space->users()->syncWithoutDetaching($users->pluck('id')->toArray());
+            return response()->json([
+                'space' => $space,
+                'users_assigned' => true
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'users_assigned' => false,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+
+}   

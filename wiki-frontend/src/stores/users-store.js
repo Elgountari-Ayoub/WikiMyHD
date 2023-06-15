@@ -18,6 +18,8 @@ export const useUsersStore = defineStore("users", {
         status: user.status,
         role: user.role,
         post: user.post,
+        spaces: user.spaces,
+        manuals: user.manuals,
       }));
     },
     async getUsers() {

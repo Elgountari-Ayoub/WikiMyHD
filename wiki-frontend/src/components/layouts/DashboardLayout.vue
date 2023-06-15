@@ -208,7 +208,7 @@
     </aside>
 
     <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14 dark:border-gray-700">
+        <div class="p-4 border-2 relative border-gray-200 border-dashed rounded-lg mt-14 dark:border-gray-700">
             <slot />
         </div>
     </div>
@@ -270,7 +270,8 @@ const getManuals = async (spaceId, spaceTitle) => {
 
 const toSpace = (spaceId) => {
     paramsStore.setSpaceId(spaceId);
-    router.push({ name: 'space' });
+    // router.push({ name: 'space' });
+    window.open("/space", "_self");
 }
 
 // watch(() => spacesStore.spaces, (newValue, oldValue) => {

@@ -4,7 +4,6 @@ import 'remixicon/fonts/remixicon.css'
 import { createApp } from "vue";
 import App from "./App.vue";
 
-
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
@@ -23,7 +22,5 @@ app.use(router);
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 app.use(VueSweetalert2);
-
-
 
 app.mount("#app");
