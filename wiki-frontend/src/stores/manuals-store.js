@@ -8,7 +8,7 @@ export const useManualsStore = defineStore("manuals", {
   }),
   actions: {
     async setManuals(res) {
-      this.$state.manuals = [];
+      // this.$state.manuals = [];
       try {
         let manuals = res.data.manuals;
         if (!Array.isArray(manuals)) {

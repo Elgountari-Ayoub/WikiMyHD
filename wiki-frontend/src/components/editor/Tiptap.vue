@@ -114,7 +114,7 @@
 
   <editor-content :editor="editor" class="overflow-auto" />
 
-  <button @click="submitArticle" class="bg-green-500 text-white px-4 py-2 rounded-full m-auto w-fit mt-2">Submit
+  <button @click="submitArticle" class="bg-green-500 text-white px-4 py-2 rounded-full m-auto w-fit mt-2">Soumettre
     Article</button>
 </template>
 

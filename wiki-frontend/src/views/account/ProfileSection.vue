@@ -25,7 +25,7 @@
                 <!-- <InputError :message="form.errs.name" class="mt-2" /> -->
                 <div class="space-x-2">
                   <PrimaryButton class="mt-4">Save</PrimaryButton>
-                  <button class="mt-4" @click="nameEditing = false">Cancel</button>
+                  <button class="mt-4" @click="nameEditing = false">Annuler</button>
                 </div>
               </form>
               <span v-else class="flex-grow">{{ user.name }}</span>
@@ -47,7 +47,7 @@
                 <!-- <InputError :message="form.errs.name" class="mt-2" /> -->
                 <div class="space-x-2">
                   <PrimaryButton class="mt-4">Save</PrimaryButton>
-                  <button class="mt-4" @click="emailEditing = false">Cancel</button>
+                  <button class="mt-4" @click="emailEditing = false">Annuler</button>
                 </div>
               </form>
               <span v-else class="flex-grow">{{ user.email }}</span>
@@ -68,7 +68,7 @@
                 <!-- <InputError :message="form.errs.name" class="mt-2" /> -->
                 <div class="space-x-2">
                   <PrimaryButton class="mt-4">Save</PrimaryButton>
-                  <button class="mt-4" @click="passwordEditing = false">Cancel</button>
+                  <button class="mt-4" @click="passwordEditing = false">Annuler</button>
                 </div>
               </form>
               <span v-else class="flex-grow overflow-hidden">•••••••••••••</span>
@@ -89,7 +89,7 @@
                 <!-- <InputError :message="form.errs.name" class="mt-2" /> -->
                 <div class="space-x-2">
                   <PrimaryButton class="mt-4">Save</PrimaryButton>
-                  <button class="mt-4" @click="postEditing = false">Cancel</button>
+                  <button class="mt-4" @click="postEditing = false">Annuler</button>
                 </div>
               </form>
               <span v-else class="flex-grow">{{ user.post ?? 'Not assigned yet' }}</span>
@@ -111,7 +111,7 @@
                 <!-- <InputError :message="form.errs.name" class="mt-2" /> -->
                 <div class="space-x-2">
                   <PrimaryButton class="mt-4">Save</PrimaryButton>
-                  <button class="mt-4" @click="roleEditing = false">Cancel</button>
+                  <button class="mt-4" @click="roleEditing = false">Annuler</button>
                 </div>
               </form>
               <span v-else class="flex-grow">{{ user.role }}</span>
@@ -138,7 +138,7 @@
 
                 <div class="space-x-2">
                   <PrimaryButton class="mt-4">Save</PrimaryButton>
-                  <button class="mt-4" @click="photoEditing = false">Cancel</button>
+                  <button class="mt-4" @click="photoEditing = false">Annuler</button>
                 </div>
               </form>
               <span v-else class="flex-grow flex items-center justify-between ">

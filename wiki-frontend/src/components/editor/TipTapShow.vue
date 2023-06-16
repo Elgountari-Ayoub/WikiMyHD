@@ -34,8 +34,14 @@ const getArticle = onMounted(async() => {
         editor.commands.setContent(articleStore.content)
     }
     editor.setEditable(false)
+    console.log(articleStore);
 }
 )
+
+/**
+ * "SQLSTATE[42S22]: Column not found: 1054 Unknown
+ *  column 'user_id' in 'where clause' (Connection: mysql, SQL: select exists(select * from `manuals` where `id` = 2 and `user_id` = 13) as `exists`)"
+ */
 articleStore.clearArticle();
 const editor = new Editor({
     extensions: [

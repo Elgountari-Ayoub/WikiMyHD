@@ -5,7 +5,7 @@
             <div>
                 <!-- Modal -->
                 <div v-if="showModal"
-                    class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                    class="fixed left-0 z-50 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
                     <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
                         <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
                             <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
@@ -33,17 +33,23 @@
                             <div class="flex justify-end space-x-2 ml-auto">
                                 <button @click="showModal = false" type="button"
                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                    Cancel
+                                    Annuler
                                 </button>
                                 <button @click="handleSubmit" type="button"
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Submit
+                                    Soumettre
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Add user -->
+            <button @click="openAddUserModal"
+                class="px-4 py-2 w-fit mb-2 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
+                Ajouter Utilisateur
+            </button>
             <!-- table -->
             <div v-if="usersStore.users && userStore.isAdmin">
                 <div class="relative  shadow-md sm:rounded-lg overflow-x-auto">
@@ -147,6 +153,54 @@
                 </div>
             </div>
             <LoadingAnimation v-else />
+
+            <!--Start Add User Section -->
+            <!-- <div v-if="isAddUserModalOpen" class="flex items-center justify-center fixed inset-0" @click.self="closeAddUserModal"> -->
+            <!-- <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow-lg" ref="modal"> -->
+            <div v-if="isAddUserModalOpen" class="fixed inset-0 z-10 flex items-center justify-center "
+                @click.self="closeAddUserModal">
+                <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
+                    <h1 class="mb-6 text-3xl font-bold">Créer un utilisateur</h1>
+                    <form @submit.prevent="createUser">
+
+                        <div class="mb-4">
+                            <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
+                                :error="errors.name ? errors.name[0] : ''" />
+                        </div>
+
+                        <div class="mb-4">
+                            <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email"
+                                inputType="email" :error="errors.email ? errors.email[0] : ''" />
+                        </div>
+                        <div class="mb-4">
+                            <TextInput label="Mot de passe" v-model:input="password" inputType="password"
+                                :error="errors.password ? errors.password[0] : ''" />
+                        </div>
+                        <div class="mb-4">
+                            <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation"
+                                inputType="password" :error="errors.password ? errors.password[0] : ''" />
+
+                        </div>
+                        <div class="mb-4">
+                            <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
+                                :error="errors.post ? errors.post[0] : ''" />
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                                Créer
+                            </button>
+
+                            <span @click="showModal = true"
+                                class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
+                                Attribution d'espaces/manuels.
+                            </span>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <!--End Add User Section -->
+
         </DashboardLayout>
     </div>
 </template>
@@ -166,6 +220,7 @@ import { useSpacesStore } from '../../stores/spaces-store';
 import { useUserStore } from '../../stores/user-store';
 import { useUsersStore } from '../../stores/users-store';
 import Swal from 'sweetalert2';
+import TextInput from '../../components/global/TextInput.vue';
 
 
 axios.defaults.withCredentials = true;
@@ -228,15 +283,22 @@ const filteredManuals = computed(() => {
 });
 
 const handleSubmit = () => {
-    showModal.value = false;
-    shareSpaces();
-    shareManuals();
-    approve(userId.value, status.value)
-    userId.value = null;
-    status.value = null;
-    selectedSpaces.value = [];
-    selectedManuals.value = [];
-};
+    if (userId.value == null ||
+        status.value == null) {
+        createUser();
+        return;
+    }
+    else {
+        showModal.value = false;
+        shareSpaces();
+        shareManuals();
+        approve(userId.value, status.value)
+        userId.value = null;
+        status.value = null;
+        selectedSpaces.value = [];
+        selectedManuals.value = [];
+    };
+}
 
 const updateManuals = () => {
     const selectedSpaceIds = selectedSpaces.value;
@@ -250,8 +312,6 @@ watchEffect(() => {
     // Update selected manuals when spaces selection changes
     updateManuals();
 });
-
-
 
 const approve = async (userId, status) => {
     await axios.post('/api/approve', {
@@ -286,6 +346,100 @@ const shareManuals = async () => {
         console.log(error);
     })
 }
+
+// -----------------------------------------------------------------------------|   |  ----
+// -----------------------------------------------------------------------------|   | |---|
+// -----------------------------------------------------------------------------|___| ___|
+// <!--Start Add User Section -->
+
+const name = ref(null)
+const email = ref(null)
+const password = ref(null)
+const password_confirmation = ref(null)
+const post = ref(null)
+
+const errors = ref([]);
+
+
+async function createUser() {
+    try {
+        // Get CSRF token from Laravel
+        const csrf = await axios.get('/sanctum/csrf-cookie');
+
+        errors.value = [];
+        const res = await axios.post('/api/createUser', {
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            password_confirmation: password_confirmation.value,
+            post: post.value,
+            spaces: selectedSpaces.value,
+            manuals: selectedManuals.value
+
+        }).then(response => {
+            showModal.value = false;
+            closeAddUserModal();
+            console.log(response);
+            // Clear form fields
+            email.value = null;
+            password.value = null;
+            password_confirmation.value = null;
+            post.value = null;
+            selectedSpaces.value = [];
+            selectedManuals.value = [];
+            
+            // Show Success Message
+            console.log('Registration successful:', response.data);
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'l\'utilisateur ' + name.value + ' a créé avec succès',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            name.value = null;
+
+            // empty the errors array
+            errors.value = [];
+        }).catch(error => {
+            console.log('ERROR\n\n', error);
+            errors.value = error.response.data.errors;
+            console.error('Registration failed:', error);
+            if (errors.lenght === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Quelque chose s\'est mal passé !',
+                })
+            }
+
+        });
+
+    } catch (err) {
+        console.log('ERROR\N\N', error);
+        errors.value = err.response.data.errors;
+        console.error('Registration failed:', err);
+        if (errors.lenght === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Quelque chose s\'est mal passé !',
+            })
+        }
+
+    }
+};
+
+
+const isAddUserModalOpen = ref(false);
+const openAddUserModal = () => {
+    isAddUserModalOpen.value = true;
+}
+const closeAddUserModal = () => {
+    isAddUserModalOpen.value = false;
+}
+
+// <!--End Add User Section -->
 </script>
 
 <style lang="scss" scoped></style>

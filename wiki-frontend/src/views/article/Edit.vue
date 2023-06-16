@@ -15,7 +15,7 @@
                         </div>
                         <div class="flex justify-end">
                             <button type="submit"
-                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Submit</button>
+                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Soumettre</button>
                         </div>
                     </form>
                 </div>
@@ -140,7 +140,7 @@
 
                 <editor-content :editor="editor" class="overflow-auto" />
                 <button @click="openModal"
-                    class="bg-green-500 text-white px-4 py-2 rounded-full m-auto w-fit mt-2">Submit
+                    class="bg-green-500 text-white px-4 py-2 rounded-full m-auto w-fit mt-2">Soumettre
                     Article</button>
             </div>
         </DashboardLayout>

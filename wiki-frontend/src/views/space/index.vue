@@ -16,31 +16,19 @@
                     class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                     Ajouter Espace
                 </button>
-                <!-- <SearchInput /> -->
-                <form class="relative z-10 flex items-center w-8/12 m-auto" @submit.prevent="search">
-                    <div class="relative w-full m-auto">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
-                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <input @change="search" v-model="searchInput" name="search" type="text" id="simple-search"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
-                            placeholder="Search">
-                    </div>
-                    <button type="submit"
-                        class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <div class="flex items-center m-auto w-8/12 sticky gap-4 z-96 ">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
+                            viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                clip-rule="evenodd"></path>
                         </svg>
-                        <span class="sr-only">Search</span>
-                    </button>
-                </form>
+                    </div>
+                    <input v-model="searchInput" name="search" type="text" id="simple-search"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
+                        placeholder="Search">
+                </div>
             </div>
 
             <LoadingAnimation v-if="spacesStore.spaces.length == 0" />
@@ -220,7 +208,7 @@
                         </div>
                         <div class="flex justify-end">
                             <button type="submit"
-                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Submit</button>
+                                class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">Soumettre</button>
                         </div>
                     </form>
                 </div>
@@ -500,15 +488,6 @@ const filteredSpaces = computed(() => {
 
 // Redirect to Space Manauls View
 const router = useRouter();
-const getManuals = async (spaceId, spaceTitle) => {
-    try {
-        spaceIdStore.spaceId = spaceId;
-        spaceIdStore.spaceTitle = spaceTitle;
-        router.push({ name: 'manuals' })
-    } catch (error) {
-        console.log('ERR\N\N', error);
-    }
-}
 
 const toSpace = (spaceId) => {
     paramsStore.setSpaceId(spaceId);
@@ -516,21 +495,21 @@ const toSpace = (spaceId) => {
 }
 
 // Close modal when clicking outside
-watchEffect(() => {
-    const handleClickOutside = (event) => {
-        const modalElement = modalRef.value;
+// watchEffect(() => {
+//     const handleClickOutside = (event) => {
+//         const modalElement = modalRef.value;
 
-        if (modalElement && !modalElement.contains(event.target)) {
-            closeModal();
-        }
-    };
+//         if (modalElement && !modalElement.contains(event.target)) {
+//             closeModal();
+//         }
+//     };
 
-    document.addEventListener('click', handleClickOutside);
+//     document.addEventListener('click', handleClickOutside);
 
-    return () => {
-        document.removeEventListener('click', handleClickOutside);
-    };
-});
+//     return () => {
+//         document.removeEventListener('click', handleClickOutside);
+//     };
+// });
 
 </script>
 

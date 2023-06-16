@@ -29,7 +29,7 @@
         </div>
         <div>
           <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
-            Register
+            Enregistrer
           </button>
         </div>
       </form>
@@ -68,7 +68,6 @@ async function register() {
 
     errors.value = [];
     console.log("this is the empty errors array\n", errors.value);
-
     const res = await axios.post('/register', {
       name: name.value,
       email: email.value,
@@ -76,14 +75,6 @@ async function register() {
       password_confirmation: password_confirmation.value,
       post: post.value,
     });
-
-
-    // I'll not save his data cuz the register is a request to join the website, so we need to wait the approvment from the admin first
-    // save it in a store
-    {
-      // userStore.setUser(res);
-    }
-
     // Clear form fields
     name.value = null;
     email.value = null;

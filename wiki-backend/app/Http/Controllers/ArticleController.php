@@ -110,8 +110,18 @@ class ArticleController extends Controller
                     'article' => $article
                 ], 200);
             } else {
-                $user = User::findOrFail(Auth::id());
-                $article = $user->articles()->with('users', 'space', 'manual')->findOrFail($id);
+                $user = User::findOrFail( Auth::id());
+                $article = Article::findOrFail($id);
+                $manual = $article->manual;
+                $manualBelongsToUser = $user->manuals()->where('manual_id', $manual->id)->exists();
+                if ($manualBelongsToUser) {
+                    $article = Article::with('users', 'space', 'manual')->findOrFail($id);
+                } else {
+                    $article = null;
+                    throw new Exception("the user hasn't the access to the manual of the this article", 1);
+                }
+                // Worning  
+                // $article = Article::with('users', 'space', 'manual')->findOrFail($id);
 
                 return response()->json([
                     'article' => $article

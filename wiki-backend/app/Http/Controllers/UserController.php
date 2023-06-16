@@ -221,6 +221,8 @@ class UserController extends Controller
             'post' => 'required|string'
         ]);
 
+
+        // Create the user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -228,13 +230,30 @@ class UserController extends Controller
             'post' => $request->input('post'),
         ]);
 
+        // Assign spaces to him
+        $assignSpacesRequest = new Request();
+        $assignSpacesRequest = new Request([
+            'user_id' => $user->id,
+            'spaces' => $request->spaces,
+        ]);
+        $this->assignSpace($assignSpacesRequest);
+        
+        // Assign manuals to him
+        $assignManualsRequest = new Request();
+        $assignManualsRequest = new Request([
+            'user_id' => $user->id,
+            'manuals' => $request->manuals,
+        ]);
+        $this->assignManual($assignManualsRequest);
+        
+        // Approvement Request
         $approvementRequest = new Request();
         $approvementRequest = new Request([
             'user_id' => $user->id,
             'status' => 1,
         ]);
         $this->updateStatus($approvementRequest);
-        
+
         // $mail = new MembershipApplicationMailController($user->name, $user->email, $user->post);
         // $mail->sendMail();
 
