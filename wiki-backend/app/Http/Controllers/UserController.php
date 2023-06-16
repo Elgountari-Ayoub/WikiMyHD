@@ -6,7 +6,9 @@ use App\Models\Manual;
 use App\Models\Space;
 use Exception;
 use App\Models\User;
+// use Doctrine\Inflector\Rules\English\Rules;
 use GuzzleHttp\Psr7\Message;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -198,7 +201,6 @@ class UserController extends Controller
         }
     }
 
-
     public function getAuthStatus()
     {
         $user = Auth::user() ?? null;
@@ -209,36 +211,36 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            // VALIDATE REQUEST
-            $request->validate([
-                'title' => 'required',
-                'description' => 'required'
-            ]);
-            $space = new Space();
-            $space->title = $request->title;
-            $space->description = $request->description;
-            $space->save();
 
+        
+        // return response()->json(['message' => 'Registration successful', 'user' => $request]);
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'post' => 'required|string'
+        ]);
 
-            // ADD SPACE USER
-            $creator_id = Auth::id();
-            $pivotData = [
-                'is_creator' => true, //tHE REQUEST PROTECTED BY THE IS_ADMIN MIDDLEWARE !!
-            ];
-            $space->users()->syncWithoutDetaching([$creator_id => $pivotData]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'post' => $request->input('post'),
+        ]);
 
-            // GET THE SPACE WITH HIS USERS, MANUAL DATA
-            $space = Space::with('users', 'manuals')->find($space->id);
-            return response()->json([
-                'space' => $space
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'space' => null,
-                'message' => $e->getMessage()
-            ], 402);
-        }
+        $approvementRequest = new Request();
+        $approvementRequest = new Request([
+            'user_id' => $user->id,
+            'status' => 1,
+        ]);
+        $this->updateStatus($approvementRequest);
+        
+        // $mail = new MembershipApplicationMailController($user->name, $user->email, $user->post);
+        // $mail->sendMail();
+
+        event(new Registered($user));
+
+        return response()->json(['message' => 'Registration successful', 'user' => $user]);
     }
 
     public function assignSpace(Request $request)

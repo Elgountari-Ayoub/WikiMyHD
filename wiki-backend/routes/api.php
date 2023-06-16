@@ -151,6 +151,10 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     Route::post('/assignspace', [UserController::class, 'assignSpace']);
     // assignmanual
     Route::post('/assignmanual', [UserController::class, 'assignManual']);
+    
+    // CREATE USER
+    Route::post('/createUser', [UserController::class, 'store']);
+
 
 
 
