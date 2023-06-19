@@ -28,7 +28,7 @@
                     <!-- <span class="font-blod p-2 border-b flex justify-between " >
                         
                         <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
-                                                        </span> -->
+                                                                </span> -->
                         <div class="border-b flex justify-between gap-2 text-sm ">
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="flex gap-2">
@@ -106,7 +106,7 @@
                     <!-- <span class="font-blod p-2 border-b flex justify-between " >
                         
                         <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
-                                                        </span> -->
+                                                                </span> -->
                         <div class="border-b flex justify-between gap-2 text-sm ">
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="flex gap-2">
@@ -334,16 +334,16 @@ const shareManualWithUsers = async () => {
 // Search---------------------------------------
 const searchInput = ref(null)
 watch(searchInput, () => {
-  let isEmpty = /^\s*$/.test(searchInput.value);
-  if (isEmpty) {
-    searchInput.value = null;
-  }
+    let isEmpty = /^\s*$/.test(searchInput.value);
+    if (isEmpty) {
+        searchInput.value = null;
+    }
 });
 
 const filteredManuals = computed(() => {
-  return manualsStore.manuals.filter(manual => {
-    return manual.title.toLowerCase().includes(searchInput.value.toLowerCase()) || manual.description.toLowerCase().includes(searchInput.value.toLowerCase());
-  });
+    return manualsStore.manuals.filter(manual => {
+        return manual.title.toLowerCase().includes(searchInput.value.toLowerCase()) || manual.description.toLowerCase().includes(searchInput.value.toLowerCase());
+    });
 });
 // Search---------------------------------------
 
@@ -467,18 +467,41 @@ const editManual = async () => {
 
 // delete Manual
 const deleteManual = async (manualId) => {
-    await axios.delete(`/api/manuals/${manualId}`).then(repsonse => {
+    Swal.fire({
+        title: "Êtes-vous sûr(e) ?",
+        text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: 'Confirmer',
+        denyButtonText: `Annuler`,
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await axios.delete(`/api/manuals/${manualId}`).then(response => {
+                getManuals();
+            }).catch(async (error) => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Échec de la suppression, actualisez la page et réessayez',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            })
+        }
+    }
+    )
+    // await axios.delete(`/api/manuals/${manualId}`).then(repsonse => {
 
-    }).catch(error => {
-        Swal.fire({
-            position: 'top-end',
-            icon: 'warning',
-            title: 'Échec de la suppression, actualisez la page et réessayez',
-            showConfirmButton: false,
-            timer: 1500
-        })
-    });
-    getManuals();
+    // }).catch(error => {
+    //     Swal.fire({
+    //         position: 'top-end',
+    //         icon: 'warning',
+    //         title: 'Échec de la suppression, actualisez la page et réessayez',
+    //         showConfirmButton: false,
+    //         timer: 1500
+    //     })
+    // });
+    // getManuals();
 
 
 }

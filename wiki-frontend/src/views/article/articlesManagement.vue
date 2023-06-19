@@ -116,22 +116,30 @@ const toEditArticle = (articleId) => {
 };
 // delete Article
 const deleteArticle = async (articleId) => {
-    // show a sweet alert for the confirmation
-    try {
-        const response = await axios.delete(`/api/articles/${articleId}`);
-        getArticles();
-
-
-    } catch (err) {
-        console.log(err);
-        Swal.fire({
-            position: 'top-end',
-            icon: 'warning',
-            title: 'Échec de la suppression, actualisez la page et réessayez',
-            showConfirmButton: false,
-            timer: 1500
-        })
-    }
+    Swal.fire({
+        title: "Êtes-vous sûr(e) ?",
+        text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: 'Confirmer',
+        denyButtonText: `Annuler`,
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            // show a sweet alert for the confirmation
+            await axios.delete(`/api/articles/${articleId}`).then(response => {
+                getArticles();
+            }).catch(error => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Échec de la suppression, actualisez la page et réessayez',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+            )
+        }
+    })
 }
 
 const showModal = ref(false);

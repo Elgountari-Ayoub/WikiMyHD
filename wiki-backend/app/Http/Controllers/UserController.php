@@ -174,8 +174,8 @@ class UserController extends Controller
                     'status' => $request->status,
                 ]);
 
+            $user = User::find($request->user_id);
             if ($request->status === 1) {
-                $user = User::find($request->user_id);
                 $spaces = $user->spaces()->with('manuals')->get();
 
                 $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
@@ -212,7 +212,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
 
-        
+
         // return response()->json(['message' => 'Registration successful', 'user' => $request]);
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -237,7 +237,7 @@ class UserController extends Controller
             'spaces' => $request->spaces,
         ]);
         $this->assignSpace($assignSpacesRequest);
-        
+
         // Assign manuals to him
         $assignManualsRequest = new Request();
         $assignManualsRequest = new Request([
@@ -245,7 +245,7 @@ class UserController extends Controller
             'manuals' => $request->manuals,
         ]);
         $this->assignManual($assignManualsRequest);
-        
+
         // Approvement Request
         $approvementRequest = new Request();
         $approvementRequest = new Request([

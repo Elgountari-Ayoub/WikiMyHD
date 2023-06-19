@@ -75,7 +75,7 @@ class ArticleController extends Controller
 
             // Get the maximum version number for the article
             $maxVersionNumber = $article->versions()->max('version_number');
-            $versionNumber = $maxVersionNumber ? $maxVersionNumber + 0.01 : 1;
+            $versionNumber = $maxVersionNumber ? $maxVersionNumber + 0.1 : 1;
 
             // Create a new version in the article_versions table
             ArticleVersion::create([
@@ -201,7 +201,7 @@ class ArticleController extends Controller
 
             // Get the maximum version number for the article
             $maxVersionNumber = $article->versions()->max('version_number');
-            $versionNumber = $maxVersionNumber ? $maxVersionNumber + 0.01 : 1;
+            $versionNumber = $maxVersionNumber ? $maxVersionNumber + 0.1 : 1;
 
 
             // Update the article with the new data

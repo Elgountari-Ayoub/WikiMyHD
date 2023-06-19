@@ -297,7 +297,7 @@ onMounted(async () => {
     console.log(spacesStore);
 });
 
-let menuOpen = ref(true)
+let menuOpen = ref(false)
 let sideBareOpen = ref(false)
 
 const toggleSideBare = () => {

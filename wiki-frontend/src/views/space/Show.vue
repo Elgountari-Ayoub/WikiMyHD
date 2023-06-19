@@ -416,21 +416,32 @@ const editManual = async () => {
 
 // delete Manual
 const deleteManual = async (manualId) => {
-  // show a sweet alert for the confirmation
-  try {
-    const response = await axios.delete(`/api/manuals/${manualId}`);
-    getManuals();
-
-  } catch (err) {
-    Swal.fire({
-      position: 'top-end',
-      icon: 'warning',
-      title: 'Échec de la suppression, actualisez la page et réessayez',
-      showConfirmButton: false,
-      timer: 1500
-    })
+  Swal.fire({
+    title: "Êtes-vous sûr(e) ?",
+    text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
+    icon: "warning",
+    showDenyButton: true,
+    confirmButtonText: 'Confirmer',
+    denyButtonText: `Annuler`,
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      await axios.delete(`/api/manuals/${manualId}`).then(response => {
+        getManuals();
+      }).catch(async (error) => {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'warning',
+          title: 'Échec de la suppression, actualisez la page et réessayez',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      })
+    }
   }
+  )
 }
+
+
 
 // Search
 const searchInput = ref(null)

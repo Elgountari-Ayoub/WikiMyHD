@@ -1,11 +1,60 @@
 <template>
-    <div id="AccountView">
-        <RouterView />
-        <DashboardLayout>
-            <div>
-                <!-- Modal -->
-                <div v-if="showModal"
-                    class="fixed left-0 z-50 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+    <RouterView />
+    <DashboardLayout>
+
+        <div class="bg-gray-500 flex flex-col text-white fixed inset-0 z-10 flex items-center justify-center">
+            <button @click="toggleTaps" :class="{ 'bg-red-500': tapOpen }"
+                class="bg-green-500 w-fit m-auto p-2 rounded">toggle</button>
+            <div class="flex text-white bg-gray-500 justify-between">
+                <!--Start Add User Section -->
+                <!-- Modal 1 -->
+                <div v-if="isAddUserModalOpen" class=" "
+                    @click.self="closeAddUserModal">
+                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
+                        <h1 class="mb-6 text-3xl font-bold">Créer un utilisateur</h1>
+                        <form @submit.prevent="createUser">
+                            <div class="mb-4">
+                                <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
+                                    :error="errors.name ? errors.name[0] : ''" />
+                            </div>
+
+                            <div class="mb-4">
+                                <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email"
+                                    inputType="email" :error="errors.email ? errors.email[0] : ''" />
+                            </div>
+                            <div class="mb-4">
+                                <TextInput label="Mot de passe" v-model:input="password" inputType="password"
+                                    :error="errors.password ? errors.password[0] : ''" />
+                            </div>
+                            <div class="mb-4">
+                                <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation"
+                                    inputType="password" :error="errors.password ? errors.password[0] : ''" />
+
+                            </div>
+                            <div class="mb-4">
+                                <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
+                                    :error="errors.post ? errors.post[0] : ''" />
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                                    Créer
+                                </button>
+
+                                <span @click="showModal = true"
+                                    class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
+                                    Attribution d'espaces/manuels.
+                                </span>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <!--End Add User Section -->
+
+
+                <!-- Start [Assing Spaces/Manuals To User] Section -->
+                <!-- Modal 2-->
+                <div v-if="showModal" class=" ">
                     <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
                         <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
                             <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
@@ -42,173 +91,207 @@
                             </div>
                         </div>
                     </div>
+                    <!-- End [Assing Spaces/Manuals To User] Section -->
                 </div>
             </div>
+        </div>
 
-            <!-- Add user -->
+        <!-- ------------------------------------------------------------------------------------------------------ -->
+
+
+        <!-- ------------------------------------------------------------------------------------------------------ -->
+
+        <!-- Add user btn -->
+        <div class="flex items-center mb-4 gap-4">
             <button @click="openAddUserModal"
                 class="px-4 py-2 w-fit mb-2 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                 Ajouter Utilisateur
             </button>
-            <!-- table -->
-            <div v-if="usersStore.users && userStore.isAdmin">
-                <div class="relative  shadow-md sm:rounded-lg overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    Nom Utilisateur
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Email
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Photo
-                                </th>
-                                <th scope="col" class="px-6 py-3 w-16">
-                                    Post
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Rôle
-                                </th>
-                                <th scope="col" class="px-6 py-3"> <!--approved or not -->
-                                    Status
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    <span class="">Edit</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="user in usersStore.users" :key="user.id"
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ user.name }}
-                                </th>
-                                <td class="px-6 py-4">
-                                    {{ user.email }}
-                                </td>
-                                <td class="px-6 py-4 ">
-                                    <img v-if="userStore.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)"
-                                        alt="">
-                                    <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                        class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
-                                        </path>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ user.post }}
-
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ user.role }}
-
-                                </td>
-                                <!-- Start status -->
-                                <td class="px-6 py-4 font-bold text-blue-500 cursor-pointer" v-if="user.status === 0">
-                                    <!-- en attente -->
-                                    <!-- Modal  Edit/Delete Manual Buttons-->
-                                    <Dropdown class="ml-auto">
-                                        <template #trigger>
-                                            <svg fill="currentColor" stroke="" stroke-width="1.5" viewBox="0 0 24 24"
-                                                class="w-10 h-10 font-bold flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:x`-700"
-                                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z">
-                                                </path>
-                                            </svg>
-                                        </template>
-                                        <template #content>
-                                            <div class=" rounded-md text-sm shadow-2xl flex flex-col gap-2" ref="options">
-                                                <button @click="showAssignModel(user.id, 1)"
-                                                    class="px-2 py-1 text-white bg-green-500 rounded-md hover:bg-green-600">
-                                                    Approuvée
-                                                </button>
-                                                <button @click="cancel(user.id, -1)"
-                                                    class="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-600 sm:text-sm md:text-base">
-                                                    Supprimer
-                                                </button>
-                                            </div>
-                                        </template>
-                                    </Dropdown>
-                                </td>
-                                <td class="px-6 py-4 font-bold text-green-500" v-else-if="user.status === 1">
-                                    approuvée
-                                </td>
-                                <td class="px-6 py-4 font-bold text-red-500" v-else>
-                                    pas approuvée
-                                </td>
-                                <!-- End Status -->
-                                <td class="px-6 py-4 text-left">
-                                    <a href="#"
-                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="flex items-center m-auto w-8/12 sticky gap-4 z-96 ">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor"
+                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd"></path>
+                    </svg>
                 </div>
+                <input v-model="searchInput" name="search" type="text" id="simple-search"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
+                    placeholder="Search">
             </div>
-            <LoadingAnimation v-else />
+        </div>
 
-            <!--Start Add User Section -->
-            <!-- <div v-if="isAddUserModalOpen" class="flex items-center justify-center fixed inset-0" @click.self="closeAddUserModal"> -->
-            <!-- <div class="w-full max-w-md p-6 mx-auto mt-16 bg-white rounded-md shadow-lg" ref="modal"> -->
-            <div v-if="isAddUserModalOpen" class="fixed inset-0 z-10 flex items-center justify-center "
-                @click.self="closeAddUserModal">
-                <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                    <h1 class="mb-6 text-3xl font-bold">Créer un utilisateur</h1>
-                    <form @submit.prevent="createUser">
+        <!-- ------------------------------------------------------------------------------------------------------ -->
 
-                        <div class="mb-4">
-                            <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
-                                :error="errors.name ? errors.name[0] : ''" />
-                        </div>
+        <!-- table -->
+        <div v-if="usersStore.users && userStore.isAdmin">
+            <div class="relative  shadow-md sm:rounded-lg overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3    ">
+                                Photo
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Nom Utilisateur
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Email
+                            </th>
 
-                        <div class="mb-4">
-                            <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email"
-                                inputType="email" :error="errors.email ? errors.email[0] : ''" />
-                        </div>
-                        <div class="mb-4">
-                            <TextInput label="Mot de passe" v-model:input="password" inputType="password"
-                                :error="errors.password ? errors.password[0] : ''" />
-                        </div>
-                        <div class="mb-4">
-                            <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation"
-                                inputType="password" :error="errors.password ? errors.password[0] : ''" />
+                            <th scope="col" class="px-6 py-3">
+                                Espaces
+                            </th>
 
-                        </div>
-                        <div class="mb-4">
-                            <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
-                                :error="errors.post ? errors.post[0] : ''" />
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
-                                Créer
-                            </button>
+                            <th scope="col" class="px-6 py-3">
+                                Manuels
+                            </th>
+                            <th scope="col" class="px-6 py-3 w-16">
+                                Post
+                            </th>
+                            <th scope="col" class="px-6 py-3"> <!--approved or not -->
+                                Status
+                            </th>
+                            <!-- <th scope="col" class="px-6 py-3">
+                            <span class="">Edit</span>
+                        </th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-if="!searchInput" v-for="user in usersStore.users" :key="user.id"
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 ">
+                                <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
+                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                                    </path>
+                                </svg>
+                            </td>
+                            <th scope="row" class="px-6 py-4  font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ user.name }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ user.email }}
+                            </td>
 
-                            <span @click="showModal = true"
-                                class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
-                                Attribution d'espaces/manuels.
-                            </span>
-                        </div>
-                    </form>
+                            <td class="px-6 py-4">
+                                <button @click="user.showSpaces = !user.showSpaces">Toggle Spaces</button>
+                                <ul>
+                                    <li v-for="spaceTitle in getUserSpacesTitles(user)">
+                                        - {{ spaceTitle }}
+                                    </li>
+                                </ul>
 
-                </div>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <ul>
+                                    <li v-for="manualTitle in getUserManualsTitles(user)">
+                                        - {{ manualTitle }}
+
+                                    </li>
+                                </ul>
+
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ user.post }}
+
+                            </td>
+                            <!-- Start status -->
+                            <td class="px-6 py-4 font-bold text-xl flex justify-around" v-if="user.status === 0">
+                                <!-- en attente -->
+                                <i @click="showAssignModel(user.id, 1)" title="Approuvée"
+                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
+                                <i @click="cancel(user.id, -1)" title="Annuler"
+                                    class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
+                            </td>
+                            <td class="px-6 py-4 font-bold text-xl text-green-500" v-else-if="user.status === 1">
+                                <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
+                            </td>
+                            <td class="px-6 py-4 font-bold text-xl text-red-500" v-else>
+                                <i @click="cancel(user.id, -1)" title="Annulé"
+                                    class="ri-close-line bg-red-500 text-white"></i>
+                            </td>
+                            <!-- End Status -->
+                        </tr>
+                        <tr v-else v-for="user in filteredUsers"
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 ">
+                                <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
+                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                                    </path>
+                                </svg>
+                            </td>
+                            <th scope="row" class="px-6 py-4  font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ user.name }}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{ user.email }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <ul>
+                                    <li v-for="spaceTitle in getUserSpacesTitles(user)">
+                                        - {{ spaceTitle }}
+
+                                    </li>
+                                </ul>
+
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <ul>
+                                    <li v-for="manualTitle in getUserManualsTitles(user)">
+                                        - {{ manualTitle }}
+
+                                    </li>
+                                </ul>
+
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ user.post }}
+
+                            </td>
+                            <!-- Start status -->
+                            <td class="px-6 py-4 font-bold text-xl flex justify-around" v-if="user.status === 0">
+                                <!-- en attente -->
+                                <i @click="showAssignModel(user.id, 1)" title="Approuvée"
+                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
+                                <i @click="cancel(user.id, -1)" title="Annuler"
+                                    class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
+                            </td>
+                            <td class="px-6 py-4 font-bold text-xl text-green-500" v-else-if="user.status === 1">
+                                <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
+                            </td>
+                            <td class="px-6 py-4 font-bold text-xl text-red-500" v-else>
+                                <i @click="cancel(user.id, -1)" title="Annulé"
+                                    class="ri-close-line bg-red-500 text-white"></i>
+                            </td>
+                            <!-- End Status -->
+                            <!-- <td class="px-6 py-4 text-left">
+                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                        </td> -->
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <!--End Add User Section -->
-
-        </DashboardLayout>
-    </div>
+        </div>
+        <LoadingAnimation v-else />
+    </DashboardLayout>
 </template>
 
 <script setup>
 import { RouterView } from 'vue-router';
 import DashboardLayout from '../../components/layouts/DashboardLayout.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import LoadingAnimation from '../../components/global/LoadingAnimation.vue';
 import { useRouter } from 'vue-router';
@@ -221,7 +304,7 @@ import { useUserStore } from '../../stores/user-store';
 import { useUsersStore } from '../../stores/users-store';
 import Swal from 'sweetalert2';
 import TextInput from '../../components/global/TextInput.vue';
-
+import { removeDuplicates } from '@tiptap/core';
 
 axios.defaults.withCredentials = true;
 
@@ -235,7 +318,6 @@ onMounted(async () => {
 });
 const showModal = ref(false);
 
-
 const userId = ref(null);
 const status = ref(null);
 const showAssignModel = async (user_id, _status) => {
@@ -246,15 +328,17 @@ const showAssignModel = async (user_id, _status) => {
 }
 
 const cancel = async (userId, status) => {
-    try {
-        const res = await axios.post('/api/approve', {
-            user_id: userId,
-            status: status
-        })
-        // usersStore.getUsers();
-    } catch (error) {
-        console.log('ERROR IN APPROVING');
-    }
+    await axios.post('/api/approve', {
+        user_id: userId,
+        status: status
+    }).then(async (response) => {
+        console.log(response);
+        await usersStore.getUsers();
+    }).catch(error => {
+        console.log(error);
+        console.log('ERROR IN CANCLE USER');
+    });
+    // usersStore.getUsers();
 }
 
 const getImageUrl = (photo) => {
@@ -387,7 +471,7 @@ async function createUser() {
             post.value = null;
             selectedSpaces.value = [];
             selectedManuals.value = [];
-            
+
             // Show Success Message
             console.log('Registration successful:', response.data);
             Swal.fire({
@@ -438,8 +522,84 @@ const openAddUserModal = () => {
 const closeAddUserModal = () => {
     isAddUserModalOpen.value = false;
 }
+const toggleAddUserModal = () => {
+    isAddUserModalOpen.value = !isAddUserModalOpen.value;
+}
+
+const tapOpen = ref(true);
+const toggleTaps = () => {
+    isAddUserModalOpen.value = !isAddUserModalOpen.value
+    isAddUserModalOpen.value ? showModal.value = false : showModal.value = true
+        
+    
+    // showModal.value = !showModal.value
+};
+
+
 
 // <!--End Add User Section -->
+
+
+// Start The Search Section
+const searchInput = ref(null)
+watch(searchInput, () => {
+    let isEmpty = /^\s*$/.test(searchInput.value);
+    if (isEmpty) {
+        searchInput.value = null;
+    }
+});
+
+const getUserByName = (user) => {
+    console.log(user.name.toLowerCase().includes(searchInput.value.toLowerCase()));
+    return user.name.toLowerCase().includes(searchInput.value.toLowerCase())
+}
+const getUserByEmail = (user) => {
+    return user.email.toLowerCase().includes(searchInput.value.toLowerCase())
+}
+const getUserByPost = (user) => {
+    return user.post.toLowerCase().includes(searchInput.value.toLowerCase())
+}
+const getUserByRole = (user) => {
+    return user.role.toLowerCase().includes(searchInput.value.toLowerCase())
+}
+const getUserBySpace = (user) => {
+    return user.spaces.some(space => space.title.toLowerCase().includes(searchInput.value.toLowerCase()));
+}
+const getUserByanual = (user) => {
+    return user.manuals.some(manual => manual.title.toLowerCase().includes(searchInput.value.toLowerCase()));
+}
+const filteredUsers = computed(() => {
+    return usersStore.users.filter(user => {
+        return getUserByName(user) || getUserBySpace(user) || getUserByanual(user) || getUserByEmail(user) || getUserByPost(user) || getUserByRole(user);
+    });
+});
+// End The Search Section
+
+// ---------------------------------
+// Start The Users Spaces Section
+const getUserSpacesTitles = (user) => {
+    let res = [];
+    user.spaces.filter(space => {
+        res.push(space.title)
+    })
+    return res;
+}
+
+// End The Users Spaces Section
+
+
+// ---------------------------------
+// Start The User Manuals Section
+const getUserManualsTitles = (user) => {
+    let res = [];
+    user.manuals.filter(manual => {
+        res.push(manual.title)
+    })
+    return res;
+}
+// End The User Manuals Section
+
+// Toggle the Spaces list
 </script>
 
 <style lang="scss" scoped></style>
