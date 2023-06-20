@@ -2,16 +2,29 @@
     <RouterView />
     <DashboardLayout>
 
-        <div class="bg-gray-500 flex flex-col text-white fixed inset-0 z-10 flex items-center justify-center">
-            <button @click="toggleTaps" :class="{ 'bg-red-500': tapOpen }"
-                class="bg-green-500 w-fit m-auto p-2 rounded">toggle</button>
-            <div class="flex text-white bg-gray-500 justify-between">
+        <div v-if="isModalOpen" @click.self="closeModal"
+            class="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-scroll">
+            <div class="bg-white rounded-md shadow-2xl w-96">
+
+                <!-- Toggle Taps Buttons -->
+                <div class="flex w-full bg-gray-200 pt-4 text-sm ">
+                    <button @click="OpenCrearUserModal"
+                        class="text-black bg-gray-50 w-fit rounded-t p-2 px-4 ml-4 border-2 border-b-white"
+                        :class="{ 'bg-transparent text-blue-500 hover:text-blue-700 border-2 border-solid border-b-gray-200 hover:border-gray-300': !isAddUserModalOpen }">Créer</button>
+                    <button @click="OpenAssignSpaceModal"
+                        class="text-black bg-gray-50 w-fit rounded-t p-2 px-4  border-2 border-b-white"
+                        :class="{ 'bg-transparent text-blue-500 hover:text-blue-700 border-2 border-solid border-b-gray-200 hover:border-gray-300': isAddUserModalOpen }">Attribuer</button>
+                    <!-- <button @click="OpenAssignSpaceModal" class="bg-black text-gray-100 w-fit rounded-t p-2 px-4 "
+                        :class="{ 'text-gray-900 bg-gray-200': isAddUserModalOpen }">Attribuer</button> -->
+
+
+                </div>
+
                 <!--Start Add User Section -->
                 <!-- Modal 1 -->
-                <div v-if="isAddUserModalOpen" class=" "
-                    @click.self="closeAddUserModal">
-                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-6 text-3xl font-bold">Créer un utilisateur</h1>
+                <div v-if="isAddUserModalOpen" class="p-8 " @click.self="closeAddUserModal">
+                    <div class="" ref="modal">
+                        <h2 class="mb-6 font-bold">Créer un utilisateur</h2>
                         <form @submit.prevent="createUser">
                             <div class="mb-4">
                                 <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
@@ -40,10 +53,10 @@
                                     Créer
                                 </button>
 
-                                <span @click="showModal = true"
+                                <!-- <span @click="showModal = true"
                                     class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
                                     Attribution d'espaces/manuels.
-                                </span>
+                                </span> -->
                             </div>
                         </form>
 
@@ -51,46 +64,36 @@
                 </div>
                 <!--End Add User Section -->
 
-
                 <!-- Start [Assing Spaces/Manuals To User] Section -->
                 <!-- Modal 2-->
-                <div v-if="showModal" class=" ">
-                    <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
-                        <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
-                            <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
-
-                            <!-- Spaces Multi-Select -->
-                            <div class="w-full">
-                                <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1">Spaces</label>
-                                <select multiple v-model="selectedSpaces" id="spaces" name="spaces[]"
-                                    class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                                    <option v-for="space in spaces" :value="space.id" :key="space.id">{{ space.title }}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <!-- Manuals Dropdown -->
-                            <div class="w-full">
-                                <label for="manual" class="block text-sm font-medium text-gray-700 mb-1">Manuals</label>
-                                <select multiple v-model="selectedManuals" id="manual" name="manual[]"
-                                    class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                                    <option v-for="manual in filteredManuals" :value="manual.id" :key="manual.id">{{
-                                        manual.title }}</option>
-                                </select>
-                            </div>
-
-                            <div class="flex justify-end space-x-2 ml-auto">
-                                <button @click="showModal = false" type="button"
-                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                    Annuler
-                                </button>
-                                <button @click="handleSubmit" type="button"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Soumettre
-                                </button>
-                            </div>
+                <div v-else @click.self="showModal = false" class="p-8 ">
+                    <div class="">
+                        <h2 class="mb-6 font-bold">Sélectionner les espaces et les manuel</h2>
+                        <!-- Spaces Multi-Select -->
+                        <div class="w-full">
+                            <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1">Spaces</label>
+                            <select multiple v-model="selectedSpaces" id="spaces" name="spaces[]"
+                                class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                <option v-for="space in spaces" :value="space.id" :key="space.id">{{ space.title }}
+                                </option>
+                            </select>
                         </div>
+
+                        <!-- Manuals Dropdown -->
+                        <div class="w-full">
+                            <label for="manual" class="block text-sm font-medium text-gray-700 mb-1">Manuals</label>
+                            <select multiple v-model="selectedManuals" id="manual" name="manual[]"
+                                class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                <option v-for="manual in filteredManuals" :value="manual.id" :key="manual.id">{{
+                                    manual.title }}</option>
+                            </select>
+                        </div>
+                        <button @click="handleSubmit" type="button"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto">
+                            Soumettre
+                        </button>
                     </div>
+                    <!-- </div> -->
                     <!-- End [Assing Spaces/Manuals To User] Section -->
                 </div>
             </div>
@@ -98,12 +101,47 @@
 
         <!-- ------------------------------------------------------------------------------------------------------ -->
 
+        <!-- Start [Assing Spaces/Manuals To User] Section -->
+        <!-- Modal 2-->
+        <div v-if="showModal" @click.self="showModal = false"
+            class="fixed inset-0 z-30 flex flex-col items-center justify-center">
+            <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                    <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
 
+                    <!-- Spaces Multi-Select -->
+                    <div class="w-full">
+                        <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1">Spaces</label>
+                        <select multiple v-model="selectedSpaces" id="spaces" name="spaces[]"
+                            class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                            <option v-for="space in spaces" :value="space.id" :key="space.id">{{ space.title }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Manuals Dropdown -->
+                    <div class="w-full">
+                        <label for="manual" class="block text-sm font-medium text-gray-700 mb-1">Manuals</label>
+                        <select multiple v-model="selectedManuals" id="manual" name="manual[]"
+                            class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                            <option v-for="manual in filteredManuals" :value="manual.id" :key="manual.id">{{
+                                manual.title }}</option>
+                        </select>
+                    </div>
+
+                    <button @click="handleSubmit" type="button"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto">
+                        Soumettre
+                    </button>
+                </div>
+            </div>
+            <!-- End [Assing Spaces/Manuals To User] Section -->
+        </div>
         <!-- ------------------------------------------------------------------------------------------------------ -->
 
         <!-- Add user btn -->
         <div class="flex items-center mb-4 gap-4">
-            <button @click="openAddUserModal"
+            <button @click="openModal"
                 class="px-4 py-2 w-fit mb-2 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
                 Ajouter Utilisateur
             </button>
@@ -446,6 +484,33 @@ const errors = ref([]);
 
 
 async function createUser() {
+
+    errors.value = {} // Reset any previous errors
+
+    // Validate form inputs
+    if (!name.value) {
+        errors.value.name = ['Veuillez entrer votre nom']
+    }
+
+    if (!email.value) {
+        errors.value.email = ['Veuillez entrer votre adresse e-mail']
+    }
+
+    if (!password.value) {
+        errors.value.password = ['Veuillez entrer un mot de passe']
+    } else if (password.value !== password_confirmation.value) {
+        errors.value.password = ['Les mots de passe ne correspondent pas']
+    }
+
+    if (!post.value) {
+        errors.value.post = ['Veuillez entrer votre poste']
+    }
+
+    // If there are any errors, stop form submission
+    if (Object.keys(errors.value).length > 0) {
+        return
+    }
+
     try {
         // Get CSRF token from Laravel
         const csrf = await axios.get('/sanctum/csrf-cookie');
@@ -514,6 +579,14 @@ async function createUser() {
     }
 };
 
+const isModalOpen = ref(false)
+const openModal = () => {
+    isModalOpen.value = true;
+    isAddUserModalOpen.value = true;
+}
+const closeModal = () => {
+    isModalOpen.value = false;
+}
 
 const isAddUserModalOpen = ref(false);
 const openAddUserModal = () => {
@@ -527,14 +600,16 @@ const toggleAddUserModal = () => {
 }
 
 const tapOpen = ref(true);
-const toggleTaps = () => {
+const toggleModals = () => {
     isAddUserModalOpen.value = !isAddUserModalOpen.value
-    isAddUserModalOpen.value ? showModal.value = false : showModal.value = true
-        
-    
-    // showModal.value = !showModal.value
 };
 
+const OpenCrearUserModal = () => {
+    isAddUserModalOpen.value = true;
+}
+const OpenAssignSpaceModal = () => {
+    isAddUserModalOpen.value = false;
+};
 
 
 // <!--End Add User Section -->
@@ -602,4 +677,106 @@ const getUserManualsTitles = (user) => {
 // Toggle the Spaces list
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/**
+
+        <div v-if="isAddUserModalOpen"
+            class="fixed inset-0 z-30 flex flex-col items-center justify-center bg-blue-50  overflow-scroll">
+
+            <button @click="toggleModals" :class="{ 'bg-blue-500': isAddUserModalOpen }"
+                class="bg-green-500 text-white w-fit m-auto p-2 rounded">toggle</button>
+
+            <div class="flex bg-gray-500 justify-between">
+
+                <!--Start Add User Section -->
+                <!-- Modal 1 -->
+                <div v-if="isAddUserModalOpen" class=" " @click.self="closeAddUserModal">
+                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
+                        <h1 class="mb-6 text-3xl font-bold">Créer un utilisateur</h1>
+                        <form @submit.prevent="createUser">
+                            <div class="mb-4">
+                                <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
+                                    :error="errors.name ? errors.name[0] : ''" />
+                            </div>
+
+                            <div class="mb-4">
+                                <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email"
+                                    inputType="email" :error="errors.email ? errors.email[0] : ''" />
+                            </div>
+                            <div class="mb-4">
+                                <TextInput label="Mot de passe" v-model:input="password" inputType="password"
+                                    :error="errors.password ? errors.password[0] : ''" />
+                            </div>
+                            <div class="mb-4">
+                                <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation"
+                                    inputType="password" :error="errors.password ? errors.password[0] : ''" />
+
+                            </div>
+                            <div class="mb-4">
+                                <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
+                                    :error="errors.post ? errors.post[0] : ''" />
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
+                                    Créer
+                                </button>
+
+                                <span @click="showModal = true"
+                                    class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
+                                    Attribution d'espaces/manuels.
+                                </span>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <!--End Add User Section -->
+
+                <!-- Start [Assing Spaces/Manuals To User] Section -->
+                <!-- Modal 2-->
+                <div v-if="showModal" class=" ">
+                    <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                        <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                            <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
+
+                            <!-- Spaces Multi-Select -->
+                            <div class="w-full">
+                                <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1">Spaces</label>
+                                <select multiple v-model="selectedSpaces" id="spaces" name="spaces[]"
+                                    class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                    <option v-for="space in spaces" :value="space.id" :key="space.id">{{ space.title }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Manuals Dropdown -->
+                            <div class="w-full">
+                                <label for="manual" class="block text-sm font-medium text-gray-700 mb-1">Manuals</label>
+                                <select multiple v-model="selectedManuals" id="manual" name="manual[]"
+                                    class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                    <option v-for="manual in filteredManuals" :value="manual.id" :key="manual.id">{{
+                                        manual.title }}</option>
+                                </select>
+                            </div>
+
+                            <div class="flex justify-between w-full">
+                                <button @click="showModal = false" type="button"
+                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Annuler
+                                </button>
+                                <button @click="handleSubmit" type="button"
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Soumettre
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End [Assing Spaces/Manuals To User] Section -->
+                </div>
+            </div>
+        </div>
+
+*/
+</style>
+
+

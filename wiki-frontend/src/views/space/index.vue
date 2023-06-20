@@ -57,8 +57,9 @@
 
                     <div class="flex justify-center items-center">
                         <!-- TITLE -->
-                        <button @click="toSpace(space.id)" class="font-bold hover:text-blue-500">{{
-                            space.title.slice(0, 100) }}
+                        <button @click="toSpace(space.id)" class="font-bold hover:text-blue-500 text-ellipsis"
+                            :title="space.title">
+                            {{ space.title.length > 20 ? space.title.slice(0, 20) + '...' : space.title }}
                         </button>
 
                         <!-- BTNS -->
@@ -112,7 +113,7 @@
 
 
                 </div>
-                <div v-else v-for="space in filteredSpaces" 
+                <div v-else v-for="space in filteredSpaces"
                     class="flex flex-col rounded-md justify-between gap-2 rounded h-60 bg-gray-50 shadow-md dark:bg-gray-800 p-4">
 
                     <!-- members count -->
@@ -134,9 +135,10 @@
 
                     <div class="flex justify-center items-center">
                         <!-- TITLE -->
-                        <button @click="toSpace(space.id)" class="font-bold hover:text-blue-500">{{
-                            space.title.slice(0, 100) }}
-                        </button>
+                        <button @click="toSpace(space.id)" class="font-bold hover:text-blue-500 text-ellipsis"
+                            :title="space.title">
+                            {{ space.title.length > 20 ? space.title.slice(0, 20) + '...' : space.title }}
+                        </button>>
 
                         <!-- BTNS -->
                         <div class="ml-auto flex gap-4" v-if='userStore.isAdmin'>
@@ -283,10 +285,10 @@ const getSpaces = onMounted(async () => {
 
 const spaceId = ref(null);
 function hasSpaceId(user, spaceId) {
-  if (Array.isArray(user.spaces)) {
-    return user.spaces.some(space => space.id === spaceId);
-  }
-  return false;
+    if (Array.isArray(user.spaces)) {
+        return user.spaces.some(space => space.id === spaceId);
+    }
+    return false;
 }
 const filteredUsers = computed(() => {
     return usersStore.users.filter(user => {
@@ -443,46 +445,48 @@ const editSpace = async () => {
 
 // delete Space
 const deleteSpace = async (spaceId) => {
-    await axios.delete(`/api/spaces/${spaceId}`)
-        .then(async (response) => {
-            await spacesStore.getSpaces();
+    Swal.fire({
+        title: "Êtes-vous sûr(e) ?",
+        text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: 'Confirmer',
+        denyButtonText: `Annuler`,
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await axios.delete(`/api/spaces/${spaceId}`)
+                .then(async (response) => {
+                    await spacesStore.getSpaces();
 
-        }).catch(error => {
-            console.log(error);
-            Swal.fire({
-                position: 'top-end',
-                icon: 'warning',
-                title: 'Échec de la suppression, actualisez la page et réessayez',
-                showConfirmButton: false,
-                timer: 1500
-            })
+                }).catch(error => {
+                    console.log(error);
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Échec de la suppression, actualisez la page et réessayez',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                );
         }
-        );
-    // Swal.fire({
-    //     position: 'top-end',
-    //     icon: 'success',
-    //     title: 'L\'espace a été supprimé avec succès',
-    //     showConfirmButton: false,
-    //     timer: 1500
-
-    // })
-
+    })
 }
 
 // Search
 // Find a space by title
 const searchInput = ref(null)
 watch(searchInput, () => {
-  let isEmpty = /^\s*$/.test(searchInput.value);
-  if (isEmpty) {
-    searchInput.value = null;
-  }
+    let isEmpty = /^\s*$/.test(searchInput.value);
+    if (isEmpty) {
+        searchInput.value = null;
+    }
 });
 
 const filteredSpaces = computed(() => {
-  return spacesStore.spaces.filter(space => {
-    return space.title.toLowerCase().includes(searchInput.value.toLowerCase()) || space.description.toLowerCase().includes(searchInput.value.toLowerCase());
-  });
+    return spacesStore.spaces.filter(space => {
+        return space.title.toLowerCase().includes(searchInput.value.toLowerCase()) || space.description.toLowerCase().includes(searchInput.value.toLowerCase());
+    });
 });
 
 

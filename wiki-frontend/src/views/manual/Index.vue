@@ -28,7 +28,7 @@
                     <!-- <span class="font-blod p-2 border-b flex justify-between " >
                         
                         <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
-                                                                </span> -->
+                                                                        </span> -->
                         <div class="border-b flex justify-between gap-2 text-sm ">
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="flex gap-2">
@@ -46,9 +46,9 @@
 
                         <div class="flex justify-center items-center">
                             <!-- Title -->
-                            <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500">
-                                {{ manual.title.slice(0,
-                                    100) }}
+                            <button @click="toManual(manual.space.id, manual.id)"
+                                class="font-bold hover:text-blue-500 text-ellipsis" :title="manual.title">
+                                {{ manual.title.length > 20 ? manual.title.slice(0, 20) + '...' : manual.title }}
                             </button>
 
                             <!-- Modal  Edit/Delete Manual Buttons-->
@@ -106,7 +106,7 @@
                     <!-- <span class="font-blod p-2 border-b flex justify-between " >
                         
                         <span class="ml-auto">{{ getCreatorName(manual.users) }}</span>
-                                                                </span> -->
+                                                                        </span> -->
                         <div class="border-b flex justify-between gap-2 text-sm ">
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="flex gap-2">
@@ -124,9 +124,9 @@
 
                         <div class="flex justify-center items-center">
                             <!-- Title -->
-                            <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500">
-                                {{ manual.title.slice(0,
-                                    100) }}
+                            <button @click="toManual(manual.space.id, manual.id)"
+                                class="font-bold hover:text-blue-500 text-ellipsis" :title="manual.title">
+                                {{ manual.title.length > 20 ? manual.title.slice(0, 20) + '...' : manual.title }}
                             </button>
 
                             <!-- Modal  Edit/Delete Manual Buttons-->
@@ -516,10 +516,6 @@ function toManual(spaceId, manualId) {
 
     router.push({ name: 'manual' })
 }
-
-
-
-
 
 
 const openEditManualModal = (manualId, manualTitle, manualDescription) => {

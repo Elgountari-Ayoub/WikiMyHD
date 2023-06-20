@@ -39,12 +39,10 @@
 
                         <div class="flex justify-center items-center ">
                             <!-- Title -->
-                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500">
-                                <span>{{ article.title.slice(0,
-                                    100) }}
-                                </span>
+                            <button @click="toArticle(article.id)"
+                                class="font-bold hover:text-blue-500 text-ellipsis" :title="article.title">
+                                {{ article.title.length > 20 ? article.title.slice(0, 20) + '...' : article.title }}
                             </button>
-
                             <!-- Btns -->
                             <div class="ml-auto flex gap-4"
                                 v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
@@ -78,10 +76,9 @@
 
                         <div class="flex justify-center items-center ">
                             <!-- Title -->
-                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500">
-                                <span>{{ article.title.slice(0,
-                                    100) }}
-                                </span>
+                            <button @click="toArticle(article.id)"
+                                class="font-bold hover:text-blue-500 text-ellipsis" :title="article.title">
+                                {{ article.title.length > 20 ? article.title.slice(0, 20) + '...' : article.title }}
                             </button>
 
                             <!-- Btns -->

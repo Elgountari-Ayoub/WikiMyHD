@@ -62,9 +62,8 @@
 
             <div class="flex justify-center items-center">
               <!-- Title -->
-              <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500">
-                {{ manual.title.slice(0,
-                  100) }}
+              <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500 text-ellipsis" :title="manual.title">
+                  {{ manual.title.length > 20 ? manual.title.slice(0, 20) + '...' : manual.title }}
               </button>
 
               <!-- Btns -->
@@ -133,9 +132,8 @@
 
             <div class="flex justify-center items-center">
               <!-- Title -->
-              <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500">
-                {{ manual.title.slice(0,
-                  100) }}
+              <button @click="toManual(manual.space.id, manual.id)" class="font-bold hover:text-blue-500 text-ellipsis" :title="manual.title">
+                  {{ manual.title.length > 20 ? manual.title.slice(0, 20) + '...' : manual.title }}
               </button>
 
               <!-- Btns -->
@@ -189,7 +187,7 @@
         </div>
 
         <!-- Modal  Add Manual form-->
-        <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center " @click.self="closeModal">
+        <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="closeModal">
           <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
             <h1 class="mb-4 text-2xl font-semibold">Ajouter un manual</h1>
             <form @submit.prevent="addManual" class="space-y-4 ">
@@ -440,8 +438,6 @@ const deleteManual = async (manualId) => {
   }
   )
 }
-
-
 
 // Search
 const searchInput = ref(null)

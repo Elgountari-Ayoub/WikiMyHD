@@ -8,6 +8,7 @@ export const useParamsStore = defineStore("paramsStore", {
     articleId: null,
     spaceTitle: null,
     articleVersion: null,
+    activeLink: null,
   }),
   actions: {
     setSpaceId(spaceId) {
@@ -21,6 +22,12 @@ export const useParamsStore = defineStore("paramsStore", {
     },
     setSpaceTitle(spaceTitle) {
       this.$state.spaceTitle = spaceTitle;
+    },
+    setArticleVersion(articleVersion) {
+      this.$state.articleVersion = articleVersion;
+    },
+    setActiveLink(activeLink) {
+      this.$state.activeLink = activeLink;
     },
     setArticleVersion(articleVersion) {
       this.$state.articleVersion = articleVersion;
@@ -41,6 +48,10 @@ export const useParamsStore = defineStore("paramsStore", {
     getArticleVersion() {
       return this.$state.articleVersion;
     },
+    getActiveLink() {
+      return this.$state.activeLink;
+    },
+
 
     clearSpaceId() {
       this.$state.spaceId = null;
@@ -57,12 +68,16 @@ export const useParamsStore = defineStore("paramsStore", {
     clearArticleVersion() {
       this.$state.articleVersion = null;
     },
+    clearActiveLink() {
+      this.$state.activeLink = null;
+    },
     clear() {
       this.$state.spaceId = null;
       this.$state.manualId = null;
       this.$state.articleId = null;
       this.$state.spaceTitle = null;
       this.$state.articleVersion = null;
+      this.$state.activeLink = null;
     },
   },
   persist: true,
