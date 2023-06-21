@@ -5,7 +5,7 @@
     <DashboardLayout>
       <RouterLink :to="{ name: 'spaces' }" class="hover:text-gray-900  text-base rounded">
         <svg aria-hidden="true"
-          class="w-6 h-8 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+          class="w-5 h-5 inline text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
           fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
           </path>

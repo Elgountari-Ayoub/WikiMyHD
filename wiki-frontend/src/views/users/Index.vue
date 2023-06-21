@@ -198,7 +198,7 @@
                     </thead>
                     <tbody>
                         <tr v-if="!searchInput" v-for="user in usersStore.users" :key="user.id"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50  dark:hover:bg-gray-600">
                             <td class="px-6 py-4 ">
                                 <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
                                 <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
@@ -215,9 +215,8 @@
                             <td class="px-6 py-4">
                                 {{ user.email }}
                             </td>
-
+                                
                             <td class="px-6 py-4">
-                                <button @click="user.showSpaces = !user.showSpaces">Toggle Spaces</button>
                                 <ul>
                                     <li v-for="spaceTitle in getUserSpacesTitles(user)">
                                         - {{ spaceTitle }}

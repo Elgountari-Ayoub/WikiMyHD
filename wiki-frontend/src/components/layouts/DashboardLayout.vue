@@ -88,20 +88,21 @@
         class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Sidebar">
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+            <div class="focus:bg-red-500">Cick</div>
             <ul class="space-y-2 font-medium gap-1">
                 <li @click="setActiveLink('spaces')">
                     <div :class="{ 'bg-gray-200 ': isActiveLink('spaces') }"
-                        class="flex spaces-color flex w-full hover:bg-gray-200 items-center p-2 text-gray-900 rounded-lg dark:text-white dark:hover:bg-gray-700">
+                        class="flex spaces-color flex w-full hover:bg-gray-200 hover:text-blue-600 items-center p-2 text-gray-900 rounded-lg dark:text-white dark:hover:bg-gray-700">
 
                         <button @click="toggleSpacesList">
                             <svg v-if="showSpacesList" aria-hidden="true"
-                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
                             <svg v-else aria-hidden="true"
-                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                                 </path>
@@ -109,30 +110,31 @@
                         </button>
 
                         <RouterLink :to="{ name: 'spaces' }" @click="spaceIdStore.spaceId = null"
-                            class="spaces-color flex w-full items-center text-gray-900 rounded-lg dark:text-white dark:hover:bg-gray-700">
-                            <span class="text-3xl text-gray-500">
-                                <i v-if="isActiveLink('spaces')" class="ri-dashboard-line"></i>
-                                <i v-else class="ri-dashboard-fill text-3xl "></i>
+                            class="spaces-color flex w-full items-center rounded-lg dark:text-white dark:hover:bg-gray-700">
+                            <span class="text-2xl ">
+                                <!-- <i v-if="isActiveLink('spaces')" class="ri-dashboard-line"></i>
+                                <i v-else class="ri-dashboard-fill text-3xl "></i> -->
+                                <i  class="ri-dashboard-line"></i>
                             </span>
                             <span class="ml-3">Espaces</span>
                         </RouterLink>
                     </div>
                     <!-- Spaces list -->
                     <transition name="fade">
-                        <ul v-if="showSpacesList" class="ml-14">
-                            <li v-for="space in spacesStore.spaces" class="cursor-pointer my-2 hover:bg-gray-100 p-2 rounded">
+                        <ul v-if="showSpacesList" class="ml-10">
+                            <li v-for="space in spacesStore.spaces" class="cursor-pointer my-2  p-2 rounded">
                                 <!-- Arrow icon -->
-                                <div class="flex">
+                                <div class="flex hover:text-blue-500">
                                     <button @click="toggleManualsList(space.id)">
                                         <svg v-if="isManualsListVisible(space.id)" aria-hidden="true"
-                                            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                            class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                         <svg v-else aria-hidden="true"
-                                            class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
+                                            class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transform transition-transform"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -143,12 +145,17 @@
                                 </div>
                                 <!-- Manuals list -->
                                 <transition name="fade">
-                                    <ul v-if="isManualsListVisible(space.id)" class="ml-14">
-                                        <li v-for="manual in space.manuals" class="cursor-pointer">
+                                    <ul v-if="isManualsListVisible(space.id)" class="ml-10">
+                                        <li v-for="manual in space.manuals"
+                                            class="cursor-pointer px-2 rounded">
                                             <!-- getArticles -->
                                             <!-- <span @click="getManuals(space.id, space.title)">{{ manual.title }}</span> -->
-                                            <span @click="toManual(space.id, manual.id)">{{ manual.title }}</span>
-
+                                            <!-- <span @click="toManual(space.id, manual.id)">{{ manual.title }}</span> -->
+                                            <button @click="toManual(space.id, manual.id)"
+                                                class="font-bold hover:text-blue-500 text-ellipsis" :title="manual.title">
+                                                {{ manual.title.length > 10 ? manual.title.slice(0, 10) + '...' :
+                                                    manual.title }}
+                                            </button>
                                         </li>
                                     </ul>
                                 </transition>
@@ -160,12 +167,13 @@
                 <li v-if="userStore.isAdmin" @click="setActiveLink('manuals')">
                     <RouterLink :to="{ name: 'manuals' }" @click="spaceIdStore.spaceId == null"
                         :class="{ 'bg-gray-200': isActiveLink('manuals') }"
-                        class="manuals-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <span class="text-3xl text-gray-500">
-                            <i v-if="isActiveLink('manuals')" class="ri-folder-3-line"></i>
-                            <i v-else class="ri-folder-3-fill"></i>
+                        class="flex items-center p-2  hover:text-blue-600 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span class="text-2xl ">
+                            <i  class="ri-folder-3-line"></i>
+                            <!-- <i v-if="isActiveLink('manuals')" class="ri-folder-3-line"></i>
+                            <i v-else class="ri-folder-3-fill"></i> -->
                         </span>
-                        <span class="manual-color flex-1 ml-3 whitespace-nowrap">Manuels</span>
+                        <span class="manual-color flex-1 ml-4 whitespace-nowrap ">Manuels</span>
                         <!-- <span class="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> -->
                     </RouterLink>
                 </li>
@@ -173,22 +181,13 @@
                 <li v-if="userStore.isAdmin" @click="setActiveLink('articles')">
                     <RouterLink :to="{ name: 'articles' }" @click="spaceIdStore.spaceId = null"
                         :class="{ 'bg-gray-200': isActiveLink('articles') }"
-                        class="articles-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <!-- <svg aria-hidden="true"
-                            class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z">
-                            </path>
-                            <path
-                                d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z">
-                            </path>
-                        </svg> -->
-                        <span class="text-3xl text-gray-500">
-                            <i v-if="isActiveLink('articles')" class="ri-article-line"></i>
-                            <i v-else class="ri-article-fill"></i>
+                        class="articles-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 hover:text-blue-600 dark:hover:bg-gray-700">
+                        <span class="text-2xl">
+                            <i class="ri-article-line"></i>
+                            <!-- <i v-if="isActiveLink('articles')" class="ri-article-line"></i>
+                            <i v-else class="ri-article-fill"></i> -->
                         </span>
-                        <span class="flex-1 ml-3 whitespace-nowrap">Articles</span>
+                        <span class="flex-1 ml-4 whitespace-nowrap">Articles</span>
                         <!-- <span class="inline-flex items-center justify-center w-3 h-3 p-3 ml-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span> -->
                     </RouterLink>
                 </li>
@@ -196,24 +195,26 @@
                 <li v-if="userStore.isAdmin" @click="setActiveLink('users')">
                     <RouterLink :to="{ name: 'users' }" @click="spaceIdStore.spaceId = null"
                         :class="{ 'bg-gray-200': isActiveLink('users') }"
-                        class="users-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <span class="text-3xl text-gray-500">
-                            <i v-if="isActiveLink('users')" class="ri-user-settings-line"></i>
-                            <i v-else class="ri-user-settings-fill"></i>
+                        class="users-color flex hover:text-blue-600 items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span class="text-2xl">
+                            <i class="ri-user-settings-line"></i>
+                            <!-- <i v-if="isActiveLink('users')" class="ri-user-settings-line"></i>
+                            <i v-else class="ri-user-settings-fill"></i> -->
                         </span>
-                        <span class="flex-1 ml-3 whitespace-nowrap">Gestion des utilisateurs</span>
+                        <span class="flex-1 ml-4 whitespace-nowrap">Gestion des utilisateurs</span>
                     </RouterLink>
                 </li>
 
                 <li v-if="userStore.isAdmin" @click="setActiveLink('articlesManagement')">
                     <RouterLink :to="{ name: 'articlesManagement' }" @click="spaceIdStore.spaceId = null"
                         :class="{ 'bg-gray-200': isActiveLink('articlesManagement') }"
-                        class="users-management-color flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <span class="text-3xl text-gray-500">
-                            <i v-if="isActiveLink('articlesManagement')" class="ri-file-settings-line"></i>
-                            <i v-else class="ri-file-settings-fill"></i>
+                        class="users-management-color hover:text-blue-600 flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span class="text-2xl">
+                            <i class="ri-file-settings-line"></i>
+                            <!-- <i v-if="isActiveLink('articlesManagement')" class="ri-file-settings-line"></i>
+                            <i v-else class="ri-file-settings-fill"></i> -->
                         </span>
-                        <span class="flex-1 ml-3 whitespace-nowrap">Gestion des articles</span>
+                        <span class="flex-1 ml-4 whitespace-nowrap">Gestion des articles</span>
                     </RouterLink>
                 </li>
             </ul>
