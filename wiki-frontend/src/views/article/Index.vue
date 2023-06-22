@@ -25,8 +25,14 @@
                     <div v-if="!searchInput" v-for="article in articlesStore.articles"
                         class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
 
-                        <div class="border-b flex gap-2 text-sm flex-start pb-2">
-                            {{ article.space.title }} <strong>:</strong> {{ article.manual.title }}
+                        <div class="border-b flex items-center justify-between text-[13px] flex-start pb-2 ">
+                            <!-- :style="{ backgroundColor: article.color }" -->
+                            <span :title="article.space.title">{{ article.space.title.length > 16 ? article.space.title.slice(0, 16) + '...' :
+                                article.space.title }}</span>
+                            <strong class="">/</strong>
+                            <span :title="article.manual.title">{{ article.manual.title.length > 16 ? article.manual.title.slice(0, 16) + '...' :
+                                article.manual.title }}</span>
+
                         </div>
 
                         <!-- LOGO -->
@@ -39,8 +45,8 @@
 
                         <div class="flex justify-center items-center ">
                             <!-- Title -->
-                            <button @click="toArticle(article.id)"
-                                class="font-bold hover:text-blue-500 text-ellipsis" :title="article.title">
+                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500 text-ellipsis"
+                                :title="article.title">
                                 {{ article.title.length > 20 ? article.title.slice(0, 20) + '...' : article.title }}
                             </button>
                             <!-- Btns -->
@@ -76,8 +82,8 @@
 
                         <div class="flex justify-center items-center ">
                             <!-- Title -->
-                            <button @click="toArticle(article.id)"
-                                class="font-bold hover:text-blue-500 text-ellipsis" :title="article.title">
+                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500 text-ellipsis"
+                                :title="article.title">
                                 {{ article.title.length > 20 ? article.title.slice(0, 20) + '...' : article.title }}
                             </button>
 

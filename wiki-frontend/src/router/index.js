@@ -12,10 +12,10 @@ import Manuals from "../views/manual/Index.vue";
 import Manual from "../views/manual/Show.vue";
 
 import Articles from "../views/article/Index.vue";
-import Article from "../views/article/Show.vue"
-import AddArticle from "../views/article/Add.vue"
-import EditArticle from "../views/article/Edit.vue"
-import articlesManagement from "../views/article/articlesManagement.vue"
+import Article from "../views/article/Show.vue";
+import AddArticle from "../views/article/Add.vue";
+import EditArticle from "../views/article/Edit.vue";
+import articlesManagement from "../views/article/articlesManagement.vue";
 
 import AccountView from "../views/AccountView.vue";
 import ProfileSection from "../views/account/ProfileSection.vue";
@@ -23,7 +23,9 @@ import ProfileSection from "../views/account/ProfileSection.vue";
 import UsersIndex from "../views/users/Index.vue";
 import { useUserStore } from "../stores/user-store";
 
-import notFoundView from '../views/notFoundView.vue'
+import notFoundView from "../views/notFoundView.vue";
+import axios from "axios";
+import { ref } from "vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -83,7 +85,6 @@ const router = createRouter({
       props: true,
     },
 
-
     // Manual route
     // All manuals
     {
@@ -130,8 +131,6 @@ const router = createRouter({
       props: true,
     },
 
-
-
     // Users management route
     {
       path: "/users",
@@ -151,8 +150,7 @@ const router = createRouter({
       name: "notFound",
       component: notFoundView,
     },
-    
-    
+
     // Test
     {
       path: "/test",
@@ -166,18 +164,49 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  const notExist = !['test', 'notFound','dashboard', 'home', 'register', 'login', 'users','profileSection', 'spaces', 'space', 'manuals', 'manual', 'articles', 'article', 'addArticle', 'editArticle', 'articlesManagement'].includes(to.name);
+  const notExist = ![
+    "test",
+    "notFound",
+    "dashboard",
+    "home",
+    "register",
+    "login",
+    "users",
+    "profileSection",
+    "spaces",
+    "space",
+    "manuals",
+    "manual",
+    "articles",
+    "article",
+    "addArticle",
+    "editArticle",
+    "articlesManagement",
+  ].includes(to.name);
   const requiresAuth = !["home", "register", "login"].includes(to.name);
   const requiresAuthoriz = ["users"].includes(to.name);
-  const isAuthenticated = userStore.id;
-  const isAuthorized = userStore.role == "admin" ? true : false;
-  if (requiresAuth && !isAuthenticated) {
-    next({ name: "login" });
-  } else if (requiresAuthoriz && (!isAuthorized || !isAuthenticated) || notExist) {
-    next({ name: "notFound"});
-  } else {
-    next();
-  }
+  const isAuthenticated = ref(false);
+
+  await axios
+    .get("/api/auth-status")
+    .then((response) => {
+      isAuthenticated.value = response.data.res;
+      const isAuthorized = userStore.role == "admin" ? true : false;
+      console.log(isAuthenticated.value);
+      if (requiresAuth && !isAuthenticated.value) {
+        next({ name: "login" });
+      } else if (
+        (requiresAuthoriz && (!isAuthorized || !isAuthenticated)) ||
+        notExist
+        ) {
+          next({ name: "notFound" });
+        } else {
+        next();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 export default router;

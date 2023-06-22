@@ -29,8 +29,9 @@
                             <tr v-for="article in articlesStore.articles" :key="article.id"
                                 class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                 <th scope="row"
-                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ article.title }}
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    :title="article.title">
+                                        {{ article.title.length > 30 ? article.title.slice(0, 30) + '...' : article.title }}
                                 </th>
                                 <td class="px-6 py-4">
                                     {{ article.space.title }}
@@ -39,14 +40,15 @@
                                     {{ article.manual.title }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <select v-model="selectedVersion" @change="toArticle(article.id)" class="outline-0 rounded-full">
+                                    <select v-model="selectedVersion" @change="toArticle(article.id)"
+                                        class="outline-0 rounded-full">
                                         <option v-for="version in article.versions" :key="version.id" :value="version.id">
                                             {{ version.version_number }}
                                         </option>
                                     </select>
 
                                 </td>
-                                <td class="px-6 py-4 grid grid-cols-3 gap-0">
+                                <td class="px-6 py-4 grid grid-cols-3 gap-1">
                                     <button @click="toArticle(article.id)"
                                         class="text-lg text-green-500 rounded-md hover:text-green-700 sm:text-sm md:text-base">
                                         <i class="ri-article-line"></i>

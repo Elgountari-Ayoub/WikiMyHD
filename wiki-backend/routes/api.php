@@ -47,9 +47,7 @@ Route::get('/getUser', [UserController::class, 'getUser']);
 // GET USER STATUS
 Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
 
-Route::get('/articles', [ArticleController::class, 'index']);
-Route::post('/articles', [ArticleController::class, 'store']);
-Route::get('/users/getauth', [UserController::class, 'getAuth']);
+
 
 
 // ------------------------------------------------------------------------------------
@@ -61,13 +59,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // USER ROUTES
     // GET AUTH USER DATA
-    // Route::get('/users/getauth', [UserController::class, 'getAuth']);
-
+    Route::get('/users/getauth', [UserController::class, 'getAuth']);
+    
     // -- UPDATE AUTH USER PROFILE
     Route::put('/update', [UserController::class, 'update']);
 
     // --LOGOUT
     Route::post('/logout', [AuthController::class, 'logout']);
+
+
 
 
 
@@ -102,7 +102,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // ARTICLE ROUTES
     // -- Consultation
-    // Route::get('/articles', [ArticleController::class, 'index']);
+    Route::get('/articles', [ArticleController::class, 'index']);
 
     // -- get articles by space id
     Route::get('/articles/{id}/space', [ArticleController::class, 'getArticlesBySpaceId']);
@@ -121,6 +121,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // --Delete
     Route::delete('/articles/{id}', [ArticleController::class, 'destroy']);
 });
+
+
+
 // -------------------------------------------------------------------------
 // -------------------------------------------------------------------------
 // -----------------------------------   ADMIN   ---------------------------
@@ -151,7 +154,7 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     Route::post('/assignspace', [UserController::class, 'assignSpace']);
     // assignmanual
     Route::post('/assignmanual', [UserController::class, 'assignManual']);
-    
+
     // CREATE USER
     Route::post('/createUser', [UserController::class, 'store']);
 

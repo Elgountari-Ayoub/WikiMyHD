@@ -43,7 +43,8 @@
                         <span>
                             {{ space.users.length }}<i class="ri-group-line"></i>
                         </span>
-                        <i class="ri-information-line cursor-pointer" :title="space.description"></i>
+                        <i class="ri-information-line cursor-pointer" :title="space.description" @click="showDescription(space.description)"></i>
+
                     </div>
 
                     <!-- LOGO -->
@@ -121,7 +122,8 @@
                         <span>
                             {{ space.users.length }}<i class="ri-group-line"></i>
                         </span>
-                        <i class="ri-information-line cursor-pointer" :title="space.description"></i>
+                        <i class="ri-information-line cursor-pointer" :title="space.description" @click="showDescription(space.description)"></i>
+
                     </div>
 
                     <!-- LOGO -->
@@ -515,6 +517,12 @@ const toSpace = (spaceId) => {
 //     };
 // });
 
+
+const showDescription = (description) => {
+    Swal.fire({
+        text: description
+    })
+}
 </script>
 
 <style>

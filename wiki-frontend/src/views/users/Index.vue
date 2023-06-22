@@ -3,8 +3,8 @@
     <DashboardLayout>
 
         <div v-if="isModalOpen" @click.self="closeModal"
-            class="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-scroll">
-            <div class="bg-white rounded-md shadow-2xl w-96">
+            class="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-scroll ">
+            <div class="bg-white rounded-md shadow-2xl w-96 min-h-[99vh] ">
 
                 <!-- Toggle Taps Buttons -->
                 <div class="flex w-full bg-gray-200 pt-4 text-sm ">
@@ -28,25 +28,26 @@
                         <form @submit.prevent="createUser">
                             <div class="mb-4">
                                 <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
-                                    :error="errors.name ? errors.name[0] : ''" />
+                                    class="text-sm" :error="errors.name ? errors.name[0] : ''" />
                             </div>
 
                             <div class="mb-4">
                                 <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email"
-                                    inputType="email" :error="errors.email ? errors.email[0] : ''" />
+                                    inputType="email" class="text-sm" :error="errors.email ? errors.email[0] : ''" />
                             </div>
                             <div class="mb-4">
                                 <TextInput label="Mot de passe" v-model:input="password" inputType="password"
-                                    :error="errors.password ? errors.password[0] : ''" />
+                                    class="text-sm" :error="errors.password ? errors.password[0] : ''" />
                             </div>
                             <div class="mb-4">
                                 <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation"
-                                    inputType="password" :error="errors.password ? errors.password[0] : ''" />
+                                    inputType="password" class="text-sm"
+                                    :error="errors.password ? errors.password[0] : ''" />
 
                             </div>
                             <div class="mb-4">
                                 <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
-                                    :error="errors.post ? errors.post[0] : ''" />
+                                    class="text-sm" :error="errors.post ? errors.post[0] : ''" />
                             </div>
                             <div class="flex justify-between text-sm">
                                 <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
@@ -191,9 +192,9 @@
                             <th scope="col" class="px-6 py-3"> <!--approved or not -->
                                 Status
                             </th>
-                            <!-- <th scope="col" class="px-6 py-3">
-                            <span class="">Edit</span>
-                        </th> -->
+                            <th scope="col" class="px-6 py-3">
+                                <span class="">Changer</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -215,7 +216,7 @@
                             <td class="px-6 py-4">
                                 {{ user.email }}
                             </td>
-                                
+
                             <td class="px-6 py-4">
                                 <ul>
                                     <li v-for="spaceTitle in getUserSpacesTitles(user)">
@@ -247,13 +248,21 @@
                                     class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
                             </td>
                             <td class="px-6 py-4 font-bold text-xl text-green-500" v-else-if="user.status === 1">
-                                <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
+                                <i class="ri-shut-down-line text-green-500" title="approuvée"></i>
+                                <i @click="cancel(user.id, -1)" title="Annuler"
+                                    class="ri-user-unfollow-line cursor-pointer text-red-500 hover:text-red-700"></i>
                             </td>
                             <td class="px-6 py-4 font-bold text-xl text-red-500" v-else>
                                 <i @click="cancel(user.id, -1)" title="Annulé"
                                     class="ri-close-line bg-red-500 text-white"></i>
+                                <i @click="showAssignModel(user.id, 1)" title="Approuvée"
+                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
                             </td>
+
                             <!-- End Status -->
+                            <!-- <td class="px-6 py-4 font-bold text-xl text-red-500" >
+                                <i class="ri-user-unfollow-line"></i>
+                            </td> -->
                         </tr>
                         <tr v-else v-for="user in filteredUsers"
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
@@ -311,6 +320,11 @@
                             <td class="px-6 py-4 font-bold text-xl text-red-500" v-else>
                                 <i @click="cancel(user.id, -1)" title="Annulé"
                                     class="ri-close-line bg-red-500 text-white"></i>
+                            </td>
+
+                            <td class="px-6 py-4 font-bold text-xl text-green-500">
+                                <i class="ri-user-unfollow-line"></i>
+                                <!-- <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i> -->
                             </td>
                             <!-- End Status -->
                             <!-- <td class="px-6 py-4 text-left">
@@ -507,6 +521,7 @@ async function createUser() {
 
     // If there are any errors, stop form submission
     if (Object.keys(errors.value).length > 0) {
+        isAddUserModalOpen.value = true;
         return
     }
 
@@ -526,6 +541,7 @@ async function createUser() {
 
         }).then(response => {
             showModal.value = false;
+            closeModal();
             closeAddUserModal();
             console.log(response);
             // Clear form fields
@@ -676,106 +692,4 @@ const getUserManualsTitles = (user) => {
 // Toggle the Spaces list
 </script>
 
-<style lang="scss" scoped>
-/**
-
-        <div v-if="isAddUserModalOpen"
-            class="fixed inset-0 z-30 flex flex-col items-center justify-center bg-blue-50  overflow-scroll">
-
-            <button @click="toggleModals" :class="{ 'bg-blue-500': isAddUserModalOpen }"
-                class="bg-green-500 text-white w-fit m-auto p-2 rounded">toggle</button>
-
-            <div class="flex bg-gray-500 justify-between">
-
-                <!--Start Add User Section -->
-                <!-- Modal 1 -->
-                <div v-if="isAddUserModalOpen" class=" " @click.self="closeAddUserModal">
-                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-6 text-3xl font-bold">Créer un utilisateur</h1>
-                        <form @submit.prevent="createUser">
-                            <div class="mb-4">
-                                <TextInput label="Nom" placeholder="Elgountari Ayoub" v-model:input="name" inputType="text"
-                                    :error="errors.name ? errors.name[0] : ''" />
-                            </div>
-
-                            <div class="mb-4">
-                                <TextInput label="Email" placeholder="elgountariayoub22@gmai.com" v-model:input="email"
-                                    inputType="email" :error="errors.email ? errors.email[0] : ''" />
-                            </div>
-                            <div class="mb-4">
-                                <TextInput label="Mot de passe" v-model:input="password" inputType="password"
-                                    :error="errors.password ? errors.password[0] : ''" />
-                            </div>
-                            <div class="mb-4">
-                                <TextInput label="Confiramtion de mot de passe" v-model:input="password_confirmation"
-                                    inputType="password" :error="errors.password ? errors.password[0] : ''" />
-
-                            </div>
-                            <div class="mb-4">
-                                <TextInput label="Post" placeholder="Web Developer" v-model:input="post" inputType="text"
-                                    :error="errors.post ? errors.post[0] : ''" />
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
-                                    Créer
-                                </button>
-
-                                <span @click="showModal = true"
-                                    class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
-                                    Attribution d'espaces/manuels.
-                                </span>
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-                <!--End Add User Section -->
-
-                <!-- Start [Assing Spaces/Manuals To User] Section -->
-                <!-- Modal 2-->
-                <div v-if="showModal" class=" ">
-                    <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
-                        <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
-                            <div class="text-lg font-bold text-gray-900">Sélectionner les espaces et les manuel</div>
-
-                            <!-- Spaces Multi-Select -->
-                            <div class="w-full">
-                                <label for="spaces" class="block text-sm font-medium text-gray-700 mb-1">Spaces</label>
-                                <select multiple v-model="selectedSpaces" id="spaces" name="spaces[]"
-                                    class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                                    <option v-for="space in spaces" :value="space.id" :key="space.id">{{ space.title }}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <!-- Manuals Dropdown -->
-                            <div class="w-full">
-                                <label for="manual" class="block text-sm font-medium text-gray-700 mb-1">Manuals</label>
-                                <select multiple v-model="selectedManuals" id="manual" name="manual[]"
-                                    class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                                    <option v-for="manual in filteredManuals" :value="manual.id" :key="manual.id">{{
-                                        manual.title }}</option>
-                                </select>
-                            </div>
-
-                            <div class="flex justify-between w-full">
-                                <button @click="showModal = false" type="button"
-                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                    Annuler
-                                </button>
-                                <button @click="handleSubmit" type="button"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Soumettre
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End [Assing Spaces/Manuals To User] Section -->
-                </div>
-            </div>
-        </div>
-
-*/
-</style>
-
-
+<style lang="scss" scoped></style>

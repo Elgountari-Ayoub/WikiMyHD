@@ -88,7 +88,6 @@
         class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Sidebar">
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-            <div class="focus:bg-red-500">Cick</div>
             <ul class="space-y-2 font-medium gap-1">
                 <li @click="setActiveLink('spaces')">
                     <div :class="{ 'bg-gray-200 ': isActiveLink('spaces') }"
@@ -114,7 +113,7 @@
                             <span class="text-2xl ">
                                 <!-- <i v-if="isActiveLink('spaces')" class="ri-dashboard-line"></i>
                                 <i v-else class="ri-dashboard-fill text-3xl "></i> -->
-                                <i  class="ri-dashboard-line"></i>
+                                <i class="ri-dashboard-line"></i>
                             </span>
                             <span class="ml-3">Espaces</span>
                         </RouterLink>
@@ -141,18 +140,17 @@
                                                 d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </button>
-                                    <span @click="toSpace(space.id)">{{ space.title }}</span>
+
+                                    <span @click="toSpace(space.id)" :title="space.title">{{ space.title.length > 15 ? space.title.slice(0, 15)
+                                        + '...' :
+                                        space.title }}</span>
                                 </div>
                                 <!-- Manuals list -->
                                 <transition name="fade">
-                                    <ul v-if="isManualsListVisible(space.id)" class="ml-10">
-                                        <li v-for="manual in space.manuals"
-                                            class="cursor-pointer px-2 rounded">
-                                            <!-- getArticles -->
-                                            <!-- <span @click="getManuals(space.id, space.title)">{{ manual.title }}</span> -->
-                                            <!-- <span @click="toManual(space.id, manual.id)">{{ manual.title }}</span> -->
+                                    <ul v-if="isManualsListVisible(space.id)" class="ml-10 mt-2">
+                                        <li v-for="manual in space.manuals" class="cursor-pointer px-2 rounded">
                                             <button @click="toManual(space.id, manual.id)"
-                                                class="font-bold hover:text-blue-500 text-ellipsis" :title="manual.title">
+                                                class="hover:text-blue-500 text-ellipsis" :title="manual.title">
                                                 {{ manual.title.length > 10 ? manual.title.slice(0, 10) + '...' :
                                                     manual.title }}
                                             </button>
@@ -169,7 +167,7 @@
                         :class="{ 'bg-gray-200': isActiveLink('manuals') }"
                         class="flex items-center p-2  hover:text-blue-600 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
                         <span class="text-2xl ">
-                            <i  class="ri-folder-3-line"></i>
+                            <i class="ri-folder-3-line"></i>
                             <!-- <i v-if="isActiveLink('manuals')" class="ri-folder-3-line"></i>
                             <i v-else class="ri-folder-3-fill"></i> -->
                         </span>
@@ -365,11 +363,11 @@ const getImageUrl = (photo) => {
 }
 
 
-const setActiveLink = (targetLinkName) => {
-    paramsStore.activeLink = targetLinkName ?? 'spaces';
+const setActiveLink = (targetLinkName = 'spaces') => {
+    paramsStore.activeLink = targetLinkName;
 
 }
-setActiveLink(null);
+// setActiveLink(null);
 const isActiveLink = (targetLinkName) => {
     return paramsStore.activeLink === targetLinkName ? true : false;
 }

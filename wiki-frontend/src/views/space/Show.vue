@@ -50,7 +50,8 @@
               <span>
                 {{ manual.users.length }}<i class="ri-group-line"></i>
               </span>
-              <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+              <i class="ri-information-line cursor-pointer" :title="manual.description" @click="showDescription(manual.description)"></i>
+
             </div>
 
             <button @click="toManual(manual.space.id, manual.id)"
@@ -120,7 +121,7 @@
               <span>
                 {{ manual.users.length }}<i class="ri-group-line"></i>
               </span>
-              <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+              <i class="ri-information-line cursor-pointer" :title="manual.description" @click="showDescription(manual.description)"></i>
             </div>
 
             <button @click="toManual(manual.space.id, manual.id)"
@@ -530,6 +531,12 @@ const closeModal = () => {
 const getImageUrl = (photo) => {
   const baseUrl = "http://localhost:8000/storage/";
   return baseUrl + photo; // Concatenating the base URL and the photo variable
+}
+
+const showDescription = (description) => {
+    Swal.fire({
+        text: description
+    })
 }
 
 </script>

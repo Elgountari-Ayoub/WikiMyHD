@@ -33,7 +33,7 @@
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="flex gap-2">
                                 {{ manual.users.length }}<i class="ri-group-line"></i>
-                                <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+                                <i class="ri-information-line cursor-pointer" :title="manual.description" @click="showDescription(manual.description)"></i>
                             </span>
                         </div>
 
@@ -111,7 +111,8 @@
                             <span v-if="!spaceIdStore.spaceId">{{ manual.space.title }}</span>
                             <span class="flex gap-2">
                                 {{ manual.users.length }}<i class="ri-group-line"></i>
-                                <i class="ri-information-line cursor-pointer" :title="manual.description"></i>
+                                <i class="ri-information-line cursor-pointer" :title="manual.description" @click="showDescription(manual.description)"></i>
+
                             </span>
                         </div>
 
@@ -544,6 +545,12 @@ watchEffect(() => {
     };
 });
 
+
+const showDescription = (description) => {
+    Swal.fire({
+        text: description
+    })
+}
 const getImageUrl = (photo) => {
     const baseUrl = "http://localhost:8000/storage/";
     return baseUrl + photo; // Concatenating the base URL and the photo variable

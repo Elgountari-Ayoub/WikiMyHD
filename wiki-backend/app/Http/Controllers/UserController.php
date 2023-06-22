@@ -65,13 +65,9 @@ class UserController extends Controller
     {
         try {
             $id = Auth::id();
-            // $id = 2;
             // GET THE USERS AND HIS SPACES, MANUALS DATA
             $user = User::with('spaces', 'manuals', 'articles')->findOrFail($id);
-            // $spaces = $user->spaces()->with('users', 'manuals')->latest();
-            // $user->spaces = $user->spaces()->with('users', 'manuals')->latest();
-            // $user->manuals = $user->manuals()->with('users', 'space')->latest();
-
+            
             return response()->json([
                 'user' => $user
             ], 200);
@@ -211,8 +207,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-
-
         // return response()->json(['message' => 'Registration successful', 'user' => $request]);
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -221,7 +215,6 @@ class UserController extends Controller
             'post' => 'required|string'
         ]);
 
-
         // Create the user
         $user = User::create([
             'name' => $request->name,
@@ -229,7 +222,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'post' => $request->input('post'),
         ]);
-
+        
         // Assign spaces to him
         $assignSpacesRequest = new Request();
         $assignSpacesRequest = new Request([
