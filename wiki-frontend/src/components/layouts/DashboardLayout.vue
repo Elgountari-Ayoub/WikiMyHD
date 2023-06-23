@@ -292,7 +292,6 @@ onMounted(async () => {
         await spacesStore.getSpaces();
         await manualsStore.getManuals();
     }
-    console.log(spacesStore);
 });
 
 let menuOpen = ref(false)

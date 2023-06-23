@@ -240,23 +240,26 @@
 
                             </td>
                             <!-- Start status -->
-                            <td class="px-6 py-4 font-bold text-xl flex justify-around" v-if="user.status === 0">
+
+                            <td class="px-6 py-4 font-bold text-xl flex justify-between" v-if="user.status === 0">
                                 <!-- en attente -->
                                 <i @click="showAssignModel(user.id, 1)" title="Approuvée"
                                     class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
                                 <i @click="cancel(user.id, -1)" title="Annuler"
                                     class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
                             </td>
-                            <td class="px-6 py-4 font-bold text-xl text-green-500" v-else-if="user.status === 1">
-                                <i class="ri-shut-down-line text-green-500" title="approuvée"></i>
-                                <i @click="cancel(user.id, -1)" title="Annuler"
-                                    class="ri-user-unfollow-line cursor-pointer text-red-500 hover:text-red-700"></i>
+
+                            <td class="px-6 py-4 font-bold text-xl flex justify-betweentext-green-500" v-else-if="user.status === 1">
+                                <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
+                                <!-- <i @click="cancel(user.id, -1)" title="Annuler"
+                                    class="ri-user-unfollow-line cursor-pointer text-red-500 hover:text-red-700"></i> -->
                             </td>
-                            <td class="px-6 py-4 font-bold text-xl text-red-500" v-else>
-                                <i @click="cancel(user.id, -1)" title="Annulé"
+
+                            <td class="px-6 py-4 font-bold text-xl text-red-500 flex gap-4 justify-between" v-else>
+                                <i  title="Annulé"
                                     class="ri-close-line bg-red-500 text-white"></i>
-                                <i @click="showAssignModel(user.id, 1)" title="Approuvée"
-                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
+                                <!-- <i @click="showAssignModel(user.id, 1)" title="Approuvée"
+                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i> -->
                             </td>
 
                             <!-- End Status -->

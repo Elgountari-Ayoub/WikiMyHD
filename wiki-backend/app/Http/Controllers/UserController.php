@@ -201,7 +201,8 @@ class UserController extends Controller
     {
         $user = Auth::user() ?? null;
         return response()->json([
-            'res' => $user === null ? false : true
+            'res' => $user === null ? false : true,
+            'user_status' => $user->status
         ]);
     }
 

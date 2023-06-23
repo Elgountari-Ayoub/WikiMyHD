@@ -17,7 +17,7 @@
 </script>
 
 
-<style>
+<style >
 @keyframes dotAnimation {
     0% {
         left: 0;
