@@ -42,7 +42,7 @@ import Nav from '../components/Nav.vue';
 
 import axios from 'axios';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'; 
 import Swal from 'sweetalert2';
 import TextInput from '../components/global/TextInput.vue';
 import { useUserStore } from '../stores/user-store'
@@ -62,12 +62,36 @@ const userStore = useUserStore();
 
 const router = useRouter()
 async function register() {
+  errors.value = {} // Reset any previous errors
+  // Validate form inputs 
+  if (!name.value) {
+    errors.value.name = ['Veuillez entrer votre nom']
+  }
+
+  if (!email.value) {
+    errors.value.email = ['Veuillez entrer votre adresse e-mail']
+  }
+
+  if (!password.value) {
+    errors.value.password = ['Veuillez entrer un mot de passe']
+  } else if (password.value !== password_confirmation.value) {
+    errors.value.password = ['Les mots de passe ne correspondent pas']
+  }
+
+  if (!post.value) {
+    errors.value.post = ['Veuillez entrer votre poste']
+  }
+
+  // If there are any errors, stop form submission
+  if (Object.keys(errors.value).length > 0) {
+    isAddUserModalOpen.value = true;
+    return
+  }
   try {
     // Get CSRF token from Laravel
     const csrf = await axios.get('/sanctum/csrf-cookie');
 
     errors.value = [];
-    console.log("this is the empty errors array\n", errors.value);
     const res = await axios.post('/register', {
       name: name.value,
       email: email.value,
@@ -95,8 +119,6 @@ async function register() {
     // empty the errors array
     errors.value = [];
 
-    // send a notification to the admin to approve this new user
-    // code ...
 
   } catch (err) {
     errors.value = err.response.data.errors;

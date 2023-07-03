@@ -189,12 +189,12 @@
                             <th scope="col" class="px-6 py-3 w-16">
                                 Post
                             </th>
-                            <th scope="col" class="px-6 py-3"> <!--approved or not -->
+                            <th scope="col" class="px-6 py-3"> 
                                 Status
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <!-- <th scope="col" class="px-6 py-3">
                                 <span class="">Changer</span>
-                            </th>
+                            </th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -223,7 +223,6 @@
                                         - {{ spaceTitle }}
                                     </li>
                                 </ul>
-
                             </td>
 
                             <td class="px-6 py-4">
@@ -233,14 +232,11 @@
 
                                     </li>
                                 </ul>
-
                             </td>
                             <td class="px-6 py-4">
                                 {{ user.post }}
-
                             </td>
                             <!-- Start status -->
-
                             <td class="px-6 py-4 font-bold text-xl flex justify-between" v-if="user.status === 0">
                                 <!-- en attente -->
                                 <i @click="showAssignModel(user.id, 1)" title="Approuvée"
@@ -367,9 +363,14 @@ const userStore = useUserStore();
 const usersStore = useUsersStore();
 const spacesStore = useSpacesStore();
 
-onMounted(async () => {
+const spaces = ref([]);
+const getUsers = onMounted(async () => {
     await usersStore.getUsers();
-});
+
+    await spacesStore.getSpaces();
+    spaces.value = spacesStore.spaces;
+})
+
 const showModal = ref(false);
 
 const userId = ref(null);
@@ -382,7 +383,7 @@ const showAssignModel = async (user_id, _status) => {
 }
 
 const cancel = async (userId, status) => {
-    await axios.post('/api/approve', {
+    await axios.post('/api/updateUserStatus', {
         user_id: userId,
         status: status
     }).then(async (response) => {
@@ -399,12 +400,6 @@ const getImageUrl = (photo) => {
     const baseUrl = "http://localhost:8000/storage/";
     return baseUrl + photo;
 }
-
-const spaces = ref([]);
-onMounted(async () => {
-    await spacesStore.getSpaces();
-    spaces.value = spacesStore.spaces;
-})
 
 const selectedSpaces = ref([]);
 const selectedManuals = ref([]);
@@ -430,7 +425,7 @@ const handleSubmit = () => {
         showModal.value = false;
         shareSpaces();
         shareManuals();
-        approve(userId.value, status.value)
+        updateUserStatus(userId.value, status.value)
         userId.value = null;
         status.value = null;
         selectedSpaces.value = [];
@@ -451,8 +446,8 @@ watchEffect(() => {
     updateManuals();
 });
 
-const approve = async (userId, status) => {
-    await axios.post('/api/approve', {
+const updateUserStatus = async (userId, status) => {
+    await axios.post('/api/updateUserStatus', {
         user_id: userId,
         status: status
     }).then(async (response) => {
@@ -568,6 +563,7 @@ async function createUser() {
 
             // empty the errors array
             errors.value = [];
+            getUsers();
         }).catch(error => {
             console.log('ERROR\n\n', error);
             errors.value = error.response.data.errors;
@@ -643,7 +639,6 @@ watch(searchInput, () => {
 });
 
 const getUserByName = (user) => {
-    console.log(user.name.toLowerCase().includes(searchInput.value.toLowerCase()));
     return user.name.toLowerCase().includes(searchInput.value.toLowerCase())
 }
 const getUserByEmail = (user) => {

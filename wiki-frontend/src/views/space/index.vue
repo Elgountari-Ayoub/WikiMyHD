@@ -44,9 +44,7 @@
                             {{ space.users.length }}<i class="ri-group-line"></i>
                         </span>
                         <i class="ri-information-line cursor-pointer" :title="space.description" @click="showDescription(space.description)"></i>
-
                     </div>
-
                     <!-- LOGO -->
                     <button @click="toSpace(space.id)"
                         class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"

@@ -30,6 +30,7 @@ class RegisteredUserController extends Controller
             'post' => 'required|string'
         ]);
 
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -43,6 +44,9 @@ class RegisteredUserController extends Controller
 
         // Auth::login($user);
 
-        return response()->json(['message' => 'Registration successful', 'user' => $user]);
+        return response()->json([
+            'message' => 'Registration successful',
+            'user' => $user,
+        ]);
     }
 }

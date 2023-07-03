@@ -23,7 +23,7 @@ class MembershipApplicationMailController extends Controller
         $this->userName = $name;
         $this->userEmail = $email;
         $this->userPoste = $poste;
-        $this->demandesUrl = env('FRONTEND_URL').'/users';
+        $this->demandesUrl =  env('FRONTEND_URL').'/users';
 
     }
 

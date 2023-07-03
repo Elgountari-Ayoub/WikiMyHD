@@ -18,9 +18,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
-            'Illuminate\Foundation\Events\ServerShutdown' => [
-                ClearSessionOnServerShutdown::class,
-            ],
+            // 'Illuminate\Foundation\Events\ServerShutdown' => [
+            //     ClearSessionOnServerShutdown::class,
+            // ],
 
         ],
 

@@ -13,15 +13,21 @@ class RegisterConfirmedMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $userName;
+    public $email;
+    public $pass;
+    public $post;
     public $spaces;
     public $loginUrl;
     public $logoUrl;
     /**
      * Create a new message instance.
      */
-    public function __construct($userName, $spaces, $loginUrl, $logoUrl)
+    public function __construct($userName, $email, $pass, $post, $spaces, $loginUrl, $logoUrl)
     {
         $this->userName = $userName;
+        $this->email = $email;
+        $this->pass = $pass;
+        $this->post = $post;
         $this->spaces = $spaces;
         $this->loginUrl = $loginUrl;
         $this->logoUrl = $logoUrl;

@@ -67,7 +67,7 @@ class UserController extends Controller
             $id = Auth::id();
             // GET THE USERS AND HIS SPACES, MANUALS DATA
             $user = User::with('spaces', 'manuals', 'articles')->findOrFail($id);
-            
+
             return response()->json([
                 'user' => $user
             ], 200);
@@ -181,7 +181,7 @@ class UserController extends Controller
                 }])->get();
 
                 // send a register confirmed mail
-                $mail = new RegisterConfirmedMailController($user->name, $spaces);
+                $mail = new RegisterConfirmedMailController($user->name, $request->email, $request->pass, $request->post, $spaces);
                 $mail->sendMail();
             }
             // Return a success response
@@ -202,7 +202,7 @@ class UserController extends Controller
         $user = Auth::user() ?? null;
         return response()->json([
             'res' => $user === null ? false : true,
-            'user_status' => $user->status
+            // 'user_status' => $user->status
         ]);
     }
 
@@ -223,7 +223,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'post' => $request->input('post'),
         ]);
-        
+
         // Assign spaces to him
         $assignSpacesRequest = new Request();
         $assignSpacesRequest = new Request([
@@ -244,6 +244,9 @@ class UserController extends Controller
         $approvementRequest = new Request();
         $approvementRequest = new Request([
             'user_id' => $user->id,
+            'email' => $request->email,
+            'pass' => $request->password,
+            'post' => $request->post,
             'status' => 1,
         ]);
         $this->updateStatus($approvementRequest);

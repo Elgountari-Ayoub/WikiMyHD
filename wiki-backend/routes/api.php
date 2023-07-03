@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/getUser', [UserController::class, 'getUser']);
+// Route::get('/getUser', [UserController::class, 'getUser']);
 
 
 // ------------------------------------------------------------------------------------
@@ -46,6 +46,9 @@ Route::get('/getUser', [UserController::class, 'getUser']);
 
 // GET USER STATUS
 Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
+// Route::get('/getEnv', function () {
+// return 3;
+// });
 
 
 
@@ -142,7 +145,7 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
         ->where('id', '[0-9]+');
 
     // -- APPROVEMENT
-    Route::post('/approve', [UserController::class, 'updateStatus']);
+    Route::post('/updateUserStatus', [UserController::class, 'updateStatus']);
 
     // -- DELETE => Soft delete [status = 0]
     Route::post('/delete', [UserController::class, 'updateStatus']);

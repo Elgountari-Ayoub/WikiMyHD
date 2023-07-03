@@ -9,18 +9,30 @@
 {{-- Body --}}
 # Félicitations, votre demande d'inscription a été approuvée !
 
-Bonjour {{ $userName }},
+Bonjour **{{ $userName }}**,
 
-Nous sommes ravis de vous informer que votre demande d'inscription a été approuvée. Vous pouvez maintenant accéder aux espaces suivants :
+
+Nous sommes ravis de vous informer que votre demande d'inscription a été approuvée. Vous pouvez maintenant accéder aux espaces suivants:
 
 @component('mail::panel')
 @foreach ($spaces as $space)
 * {{ $space['title'] }}
 @foreach ($space['manuals'] as $manual)
-    * {{ $manual['title'] }}
+* {{ $manual['title'] }}
 @endforeach
 @endforeach
 @endcomponent
+
+Veuillez trouver ci-dessous vos informations de connexion :
+
+Adresse e-mail : **{{ $email }}**
+
+Mot de passe : **{{ $pass }}**
+
+Vous avez été approuvé pour le poste suivant : {{ $post }}
+
+
+
 
 Pour commencer, veuillez cliquer sur le bouton ci-dessous pour accéder à la page de connexion :
 
