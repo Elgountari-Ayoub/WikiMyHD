@@ -63,7 +63,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // USER ROUTES
     // GET AUTH USER DATA
     Route::get('/users/getauth', [UserController::class, 'getAuth']);
-    
+
     // -- UPDATE AUTH USER PROFILE
     Route::put('/update', [UserController::class, 'update']);
 
@@ -144,11 +144,17 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     Route::get('/users/{id}', [UserController::class, 'show'])
         ->where('id', '[0-9]+');
 
-    // -- APPROVEMENT
+    // already approved => to 1 or -1 or -2
     Route::post('/updateUserStatus', [UserController::class, 'updateStatus']);
+    // hasn't approved yet => to 1 and send an email
+    Route::post('/approve', [UserController::class, 'approve']);
 
     // -- DELETE => Soft delete [status = 0]
     Route::post('/delete', [UserController::class, 'updateStatus']);
+
+    // DELETE PERMENATLLY
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
 
     // UPDATE USER DATA
     Route::put('/update/{id}', [UserController::class, 'update']);

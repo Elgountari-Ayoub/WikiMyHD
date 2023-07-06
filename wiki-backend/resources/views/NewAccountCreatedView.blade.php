@@ -7,12 +7,15 @@
 @endslot
 
 {{-- Body --}}
-# Félicitations, votre demande d'inscription a été approuvée !
+# Bienvenue **{{ $userName }}** sur WikiMyHD !
 
-Bonjour **{{ $userName }}**,
+Votre nouveau compte a été créé par l'administrateur. Veuillez trouver ci-dessous vos informations de connexion :
 
+Adresse e-mail : **{{ $email }}**
 
-Nous sommes ravis de vous informer que votre demande d'inscription a été approuvée.
+Mot de passe : **{{ $pass }}**
+
+Vous avez été approuvé pour le poste suivant : {{ $post }}
 
 Vous pouvez maintenant accéder aux espaces suivants:
 

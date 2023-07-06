@@ -50,6 +50,24 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
             'status' => 0,
         ]);
+        $password = Hash::make('pass2005');
+        User::factory()->create([
+            'name' => 'Azzden',
+            'email' => 'azzdendrive@gmail.com',
+            'post' => 'Student',
+            'password' => $password,
+            'role' => 'user',
+            'status' => 0,
+        ]);
+        $password = Hash::make('ali1999');
+        User::factory()->create([
+            'name' => 'Ali',
+            'email' => 'abdelalikhalif1999@gmail.com',
+            'post' => 'Python developer',
+            'password' => $password,
+            'role' => 'user',
+            'status' => 0,
+        ]);
 
         // for ($i = 65; $i <= 90; $i++) {
         //     $letter = chr($i);

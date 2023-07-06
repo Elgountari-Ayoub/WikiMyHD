@@ -39,6 +39,14 @@ class UserController extends Controller
         }
     }
 
+    public function getAuthStatus()
+    {
+        $user = Auth::user() ?? null;
+        return response()->json([
+            'res' => $user === null ? false : true,
+            // 'user_status' => $user->status
+        ]);
+    }
     /**
      * Display the specified resource.
      */
@@ -144,14 +152,46 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $this->updateStatus($id, 0);
-    }
 
+
+    public function sendRegisterConfirmedMail(Request $request)
+    {
+        try {
+            $user = User::find($request->user_id);
+            $spaces = $user->spaces()->with('manuals')->get();
+
+            $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
+                $query->whereHas('users', function ($query) use ($user) {
+                    $query->where('users.id', $user->id);
+                });
+            }])->get();
+
+            // send a register confirmed mail
+            $mail = new RegisterConfirmedMailController($user->name, $user->email, $request->pass, $user->post, $spaces);
+            $mail->sendMail();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+    public function sendNewAccountCretaedMail(Request $request)
+    {
+        try {
+            $user = User::find($request->user_id);
+            $spaces = $user->spaces()->with('manuals')->get();
+
+            $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
+                $query->whereHas('users', function ($query) use ($user) {
+                    $query->where('users.id', $user->id);
+                });
+            }])->get();
+
+            // send a register confirmed mail
+            $mail = new NewAccountCreatedMailController($user->name, $user->email, $request->pass, $user->post, $spaces);
+            $mail->sendMail();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
     /**
      * Update the specified resource from storage
      */
@@ -170,40 +210,54 @@ class UserController extends Controller
                     'status' => $request->status,
                 ]);
 
-            $user = User::find($request->user_id);
-            if ($request->status === 1) {
-                $spaces = $user->spaces()->with('manuals')->get();
-
-                $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
-                    $query->whereHas('users', function ($query) use ($user) {
-                        $query->where('users.id', $user->id);
-                    });
-                }])->get();
-
-                // send a register confirmed mail
-                $mail = new RegisterConfirmedMailController($user->name, $request->email, $request->pass, $request->post, $spaces);
-                $mail->sendMail();
-            }
             // Return a success response
             return response()->json([
                 'message' => 'User status updated successfully',
-                'user' => $user,
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
-                'user' => null
             ], 404);
         }
     }
 
-    public function getAuthStatus()
+    public function approve(Request  $request)
     {
-        $user = Auth::user() ?? null;
-        return response()->json([
-            'res' => $user === null ? false : true,
-            // 'user_status' => $user->status
-        ]);
+        try {
+            $this->updateStatus($request);
+            $this->sendRegisterConfirmedMail($request);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+    public function archive(Request  $request)
+    {
+        try {
+            $this->updateStatus($request); // to -1 if has been approved before, to -2 if hasn't
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+    /**
+     * Delete the user permanently
+     */
+    public function destroy($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return response()->json([
+                'user' => $user,
+                'message' => 'The user deleted successfully',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'user' => $id,
+                'message' => $e->getMessage(),
+            ], 404);
+        }
     }
 
     public function store(Request $request)
@@ -244,12 +298,17 @@ class UserController extends Controller
         $approvementRequest = new Request();
         $approvementRequest = new Request([
             'user_id' => $user->id,
-            'email' => $request->email,
-            'pass' => $request->password,
-            'post' => $request->post,
             'status' => 1,
         ]);
         $this->updateStatus($approvementRequest);
+
+        // Aend new account created mail request
+        $sendNewAccountCretaedMailRequest = new Request();
+        $sendNewAccountCretaedMailRequest = new Request([
+            'user_id' => $user->id,
+            'pass' => $request->password,
+        ]);
+        $this->sendNewAccountCretaedMail($sendNewAccountCretaedMailRequest);
 
         // $mail = new MembershipApplicationMailController($user->name, $user->email, $user->post);
         // $mail->sendMail();

@@ -164,9 +164,7 @@ class SpaceController extends Controller
     public function destroy($id)
     {
         try {
-
             // DELETE THE SPACE
-            // $space = Space::with('users', 'manuals', 'articles')->findOrFail($id);
             $space = Space::with('users', 'manuals')->findOrFail($id);
             $space->delete();
 
