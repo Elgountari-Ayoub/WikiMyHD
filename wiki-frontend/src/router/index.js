@@ -192,7 +192,6 @@ router.beforeEach(async (to, from, next) => {
     .then((response) => {
       isAuthenticated.value = response.data.res;
       const isAuthorized = userStore.role == "admin" ? true : false;
-      console.log(isAuthenticated.value);
       if (requiresAuth && !isAuthenticated.value) {
         next({ name: "login" });
       } else if (

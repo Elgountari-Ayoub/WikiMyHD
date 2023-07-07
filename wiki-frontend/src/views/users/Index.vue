@@ -14,10 +14,6 @@
                     <button @click="OpenAssignSpaceModal"
                         class="text-black bg-gray-50 w-fit rounded-t p-2 px-4  border-2 border-b-white"
                         :class="{ 'bg-transparent text-blue-500 hover:text-blue-700 border-2 border-solid border-b-gray-200 hover:border-gray-300': isAddUserModalOpen }">Attribuer</button>
-                    <!-- <button @click="OpenAssignSpaceModal" class="bg-black text-gray-100 w-fit rounded-t p-2 px-4 "
-                        :class="{ 'text-gray-900 bg-gray-200': isAddUserModalOpen }">Attribuer</button> -->
-
-
                 </div>
 
                 <!--Start Add User Section -->
@@ -53,11 +49,6 @@
                                 <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600">
                                     Créer
                                 </button>
-
-                                <!-- <span @click="showModal = true"
-                                    class="px-4 py-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
-                                    Attribution d'espaces/manuels.
-                                </span> -->
                             </div>
                         </form>
 
@@ -97,6 +88,8 @@
                     <!-- </div> -->
                     <!-- End [Assing Spaces/Manuals To User] Section -->
                 </div>
+                <!--End [Assing Spaces/Manuals To User] Section -->
+
             </div>
         </div>
 
@@ -157,16 +150,26 @@
                 </div>
                 <input v-model="searchInput" name="search" type="text" id="simple-search"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 "
-                    placeholder="Search">
+                    placeholder="rechercher par nom email ou toute propriété">
             </div>
         </div>
 
         <!-- ------------------------------------------------------------------------------------------------------ -->
 
+
+        <!-- Toggle Taps Buttons -->
+        <div class="flex w-full bg-gray-200 pt-4 text-sm ">
+            <button @click="onActiveUsers = true"
+                class="text-black bg-gray-50 w-fit rounded-t p-2 px-4 ml-4 border-2 border-b-gray-200"
+                :class="{ 'bg-transparent text-blue-500 hover:text-blue-700 border-2 border-solid border-b-gray-200 hover:border-gray-300': !onActiveUsers }">Actif</button>
+            <button @click="onActiveUsers = false"
+                class="text-black bg-gray-50 w-fit rounded-t p-2 px-4  border-2 border-b-gray-200"
+                :class="{ 'bg-transparent text-blue-500 hover:text-blue-700 border-2 border-solid border-b-gray-200 hover:border-gray-300': onActiveUsers }">Archivé</button>
+        </div>
         <!-- table -->
         <div v-if="usersStore.users && userStore.isAdmin">
             <div class="relative  shadow-md sm:rounded-lg overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
+                <table v-if="onActiveUsers" class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3    ">
@@ -189,147 +192,233 @@
                             <th scope="col" class="px-6 py-3 w-16">
                                 Post
                             </th>
-                            <th scope="col" class="px-6 py-3"> 
-                                Status
+                            <th scope="col" class="px-6 py-3 w-16">
+                                Rôle
                             </th>
-                            <!-- <th scope="col" class="px-6 py-3">
-                                <span class="">Changer</span>
-                            </th> -->
+                            <th scope="col" class="px-6 py-3">
+                                Statut
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Actualisation
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="!searchInput" v-for="user in usersStore.users" :key="user.id"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50  dark:hover:bg-gray-600">
-                            <td class="px-6 py-4 ">
-                                <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
-                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
-                                    </path>
-                                </svg>
-                            </td>
-                            <th scope="row" class="px-6 py-4  font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ user.name }}
+                        <template v-for="(user, index) in  filteredUsers()" :key="index">
+                            <tr v-if="user.status === 0 || user.status === 1"
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50  dark:hover:bg-gray-600">
+                                <td class="px-6 py-4 ">
+                                    <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
+                                    <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                        class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                                        </path>
+                                    </svg>
+                                </td>
+                                <th scope="row"
+                                    class="px-6 py-4  font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ user.name }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ user.email }}
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <ul>
+                                        <li v-for="spaceTitle in getUserSpacesTitles(user)">
+                                            - {{ spaceTitle }}
+                                        </li>
+                                    </ul>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <ul>
+                                        <li v-for="manualTitle in getUserManualsTitles(user)">
+                                            - {{ manualTitle }}
+
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ user.post }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ user.role }}
+                                </td>
+                                <!-- Start status -->
+                                <td class="px-6 py-4 font-bold text-xl flex justify-between" v-if="user.status === 0">
+                                    <!-- en attente -->
+                                    <i @click="showAssignModel(user.id, 1)" title="Approuvée"
+                                        class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
+                                    <i @click="archive(user.id, -2)" title="Annuler"
+                                        class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
+                                </td>
+
+                                <td class="px-6 py-4 font-bold text-xl flex justify-betweentext-green-500"
+                                    v-else-if="user.status === 1">
+                                    <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
+
+                                </td>
+
+                                <td v-else class="px-6 py-4 font-bold text-xl text-red-500 flex gap-4 justify-between">
+                                    <i title="Annulé" class="ri-close-line bg-red-500 text-white"></i>
+                                </td>
+
+                                <!-- toggle user status -->
+                                <td v-if="user.status === 1 && user.role != 'admin'"
+                                    class="px-6 py-4 font-bold text-sm text-red-500  gap-4 justify-between">
+                                    <button @click="toggleSwitch(index, user.id, user.status)"
+                                        :class="{ 'bg-green-500': user.status === 1, 'bg-red-500': !(user.status === 1) }"
+                                        class="relative w-16 h-8  px-1 rounded-full transition-colors duration-300">
+                                        <span
+                                            :class="{ 'translate-x-8': user.status === 1, 'translate-x-0': !(user.status === 1) }"
+                                            class="block w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300"></span>
+                                        <span
+                                            class="absolute inset-0 flex items-center justify-center font-semibold text-white z-10">
+                                            <span v-if="user.status === 1" class="mr-auto ml-1">On</span>
+                                            <span v-if="!(user.status === 1)" class="ml-auto mr-1">Off</span>
+
+                                        </span>
+                                    </button>
+                                </td>
+                                <td>
+
+                                </td>
+                            </tr>
+                        </template>
+
+
+                    </tbody>
+                </table>
+                <table v-else class="w-full text-sm text-left text-gray-500 dark:text-gray-400 mb-20">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3    ">
+                                Photo
                             </th>
-                            <td class="px-6 py-4">
-                                {{ user.email }}
-                            </td>
-
-                            <td class="px-6 py-4">
-                                <ul>
-                                    <li v-for="spaceTitle in getUserSpacesTitles(user)">
-                                        - {{ spaceTitle }}
-                                    </li>
-                                </ul>
-                            </td>
-
-                            <td class="px-6 py-4">
-                                <ul>
-                                    <li v-for="manualTitle in getUserManualsTitles(user)">
-                                        - {{ manualTitle }}
-
-                                    </li>
-                                </ul>
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ user.post }}
-                            </td>
-                            <!-- Start status -->
-                            <td class="px-6 py-4 font-bold text-xl flex justify-between" v-if="user.status === 0">
-                                <!-- en attente -->
-                                <i @click="showAssignModel(user.id, 1)" title="Approuvée"
-                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
-                                <i @click="cancel(user.id, -1)" title="Annuler"
-                                    class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
-                            </td>
-
-                            <td class="px-6 py-4 font-bold text-xl flex justify-betweentext-green-500" v-else-if="user.status === 1">
-                                <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
-                                <!-- <i @click="cancel(user.id, -1)" title="Annuler"
-                                    class="ri-user-unfollow-line cursor-pointer text-red-500 hover:text-red-700"></i> -->
-                            </td>
-
-                            <td class="px-6 py-4 font-bold text-xl text-red-500 flex gap-4 justify-between" v-else>
-                                <i  title="Annulé"
-                                    class="ri-close-line bg-red-500 text-white"></i>
-                                <!-- <i @click="showAssignModel(user.id, 1)" title="Approuvée"
-                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i> -->
-                            </td>
-
-                            <!-- End Status -->
-                            <!-- <td class="px-6 py-4 font-bold text-xl text-red-500" >
-                                <i class="ri-user-unfollow-line"></i>
-                            </td> -->
-                        </tr>
-                        <tr v-else v-for="user in filteredUsers"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <td class="px-6 py-4 ">
-                                <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
-                                <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                    class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
-                                    </path>
-                                </svg>
-                            </td>
-                            <th scope="row" class="px-6 py-4  font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ user.name }}
+                            <th scope="col" class="px-6 py-3">
+                                Nom Utilisateur
                             </th>
-                            <td class="px-6 py-4">
-                                {{ user.email }}
-                            </td>
+                            <th scope="col" class="px-6 py-3">
+                                Email
+                            </th>
 
-                            <td class="px-6 py-4">
-                                <ul>
-                                    <li v-for="spaceTitle in getUserSpacesTitles(user)">
-                                        - {{ spaceTitle }}
+                            <th scope="col" class="px-6 py-3">
+                                Espaces
+                            </th>
 
-                                    </li>
-                                </ul>
-
-                            </td>
-
-                            <td class="px-6 py-4">
-                                <ul>
-                                    <li v-for="manualTitle in getUserManualsTitles(user)">
-                                        - {{ manualTitle }}
-
-                                    </li>
-                                </ul>
-
-                            </td>
-                            <td class="px-6 py-4">
-                                {{ user.post }}
-
-                            </td>
-                            <!-- Start status -->
-                            <td class="px-6 py-4 font-bold text-xl flex justify-around" v-if="user.status === 0">
-                                <!-- en attente -->
-                                <i @click="showAssignModel(user.id, 1)" title="Approuvée"
-                                    class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
-                                <i @click="cancel(user.id, -1)" title="Annuler"
-                                    class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
-                            </td>
-                            <td class="px-6 py-4 font-bold text-xl text-green-500" v-else-if="user.status === 1">
-                                <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
-                            </td>
-                            <td class="px-6 py-4 font-bold text-xl text-red-500" v-else>
-                                <i @click="cancel(user.id, -1)" title="Annulé"
-                                    class="ri-close-line bg-red-500 text-white"></i>
-                            </td>
-
-                            <td class="px-6 py-4 font-bold text-xl text-green-500">
-                                <i class="ri-user-unfollow-line"></i>
-                                <!-- <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i> -->
-                            </td>
-                            <!-- End Status -->
-                            <!-- <td class="px-6 py-4 text-left">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td> -->
+                            <th scope="col" class="px-6 py-3">
+                                Manuels
+                            </th>
+                            <th scope="col" class="px-6 py-3 w-16">
+                                Post
+                            </th>
+                            <th scope="col" class="px-6 py-3 w-16">
+                                Rôle
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Statut
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Actualisation
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Suppression
+                            </th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <template v-for="(user, index) in  filteredUsers()" :key="index">
+
+                            <tr v-if="user.status === -1 || user.status === -2"
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50  dark:hover:bg-gray-600">
+                                <td class="px-6 py-4 ">
+                                    <img v-if="user.photo" class="w-8 rounded-full" :src="getImageUrl(user.photo)" alt="">
+                                    <svg v-else fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                        class="flex-shrink-0  bg-white w-8 h-8 rounded-full text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z">
+                                        </path>
+                                    </svg>
+                                </td>
+                                <th scope="row"
+                                    class="px-6 py-4  font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ user.name }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ user.email }}
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <ul>
+                                        <li v-for="spaceTitle in getUserSpacesTitles(user)">
+                                            - {{ spaceTitle }}
+                                        </li>
+                                    </ul>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <ul>
+                                        <li v-for="manualTitle in getUserManualsTitles(user)">
+                                            - {{ manualTitle }}
+
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ user.post }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ user.role }}
+                                </td>
+                                <!-- Start status -->
+                                <td class="px-6 py-4 font-bold text-xl flex justify-between" v-if="user.status === 0">
+                                    <!-- en attente -->
+                                    <i @click="showAssignModel(user.id, 1)" title="Approuvée"
+                                        class="ri-check-line cursor-pointer text-blue-500 hover:text-blue-700"></i>
+                                    <i @click="archive(user.id, -1)" title="Annuler"
+                                        class="ri-close-line cursor-pointer text-red-500 hover:text-red-700"></i>
+                                </td>
+
+                                <td class="px-6 py-4 font-bold text-xl flex justify-betweentext-green-500"
+                                    v-else-if="user.status === 1">
+                                    <i class="ri-check-line bg-green-500 text-white" title="approuvée"></i>
+
+                                </td>
+
+                                <td v-else class="px-6 py-4 font-bold text-xl text-red-500 flex gap-4 justify-between">
+                                    <i title="Annulé" class="ri-close-line bg-red-500 text-white"></i>
+                                </td>
+                                <!-- End status -->
+
+                                <!-- toggle user status -->
+                                <td v-if="user.status !== 0"
+                                    class="px-6 py-4 font-bold text-sm text-red-500  gap-4 justify-between">
+                                    <button @click="toggleSwitch(index, user.id, user.status)"
+                                        :class="{ 'bg-green-500': user.status === 1, 'bg-red-500': !(user.status === 1) }"
+                                        class="relative w-16 h-8  px-1 rounded-full transition-colors duration-300">
+                                        <span
+                                            :class="{ 'translate-x-8': user.status === 1, 'translate-x-0': !(user.status === 1) }"
+                                            class="block w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300"></span>
+                                        <span
+                                            class="absolute inset-0 flex items-center justify-center font-semibold text-white z-10">
+                                            <span v-if="user.status === 1" class="mr-auto ml-1">On</span>
+                                            <span v-if="!(user.status === 1)" class="ml-auto mr-1">Off</span>
+
+                                        </span>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span @click="deleteUser(user.id)"
+                                        class="text-white bg-red-500 px-2 py-2 cursor-pointer hover:bg-red-600 rounded m-auto">supprimer</span>
+                                </td>
+                            </tr>
+                        </template>
+
+
                     </tbody>
                 </table>
             </div>
@@ -369,6 +458,14 @@ const getUsers = onMounted(async () => {
 
     await spacesStore.getSpaces();
     spaces.value = spacesStore.spaces;
+
+    isOn.value = usersStore.users.map(user => {
+        if (user.status == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    });
 })
 
 const showModal = ref(false);
@@ -382,7 +479,7 @@ const showAssignModel = async (user_id, _status) => {
 
 }
 
-const cancel = async (userId, status) => {
+const archive = async (userId, status) => {
     await axios.post('/api/updateUserStatus', {
         user_id: userId,
         status: status
@@ -394,6 +491,28 @@ const cancel = async (userId, status) => {
         console.log('ERROR IN CANCLE USER');
     });
     // usersStore.getUsers();
+}
+const deleteUser = async (userId) => {
+
+    Swal.fire({
+        title: "Êtes-vous sûr(e) ?",
+        text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: 'Confirmer',
+        denyButtonText: `Annuler`,
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await axios.delete(`/api/users/${userId}`)
+                .then(async (response) => {
+                    console.log(response);
+                    await usersStore.getUsers();
+                }).catch(error => {
+                    console.log(error);
+                    console.log('ERROR IN DELETING THE USER');
+                });
+        }
+    })
 }
 
 const getImageUrl = (photo) => {
@@ -423,14 +542,21 @@ const handleSubmit = () => {
     }
     else {
         showModal.value = false;
-        shareSpaces();
-        shareManuals();
-        updateUserStatus(userId.value, status.value)
+        if (selectedSpaces.value.length > 0) {
+            console.log(selectedSpaces.value);
+            shareSpaces();
+        }
+        if (selectedManuals.value.length > 0) {
+            console.log(selectedManuals.value);
+            shareManuals();
+        }
+        approve(userId.value, status.value)
         userId.value = null;
         status.value = null;
         selectedSpaces.value = [];
         selectedManuals.value = [];
     };
+    getUsers();
 }
 
 const updateManuals = () => {
@@ -454,7 +580,7 @@ const updateUserStatus = async (userId, status) => {
         console.log(response);
         await usersStore.getUsers();
     }).catch(error => {
-        console.log('ERROR IN APPROVING');
+        console.log('ERROR IN UPDATING THE STATUS');
         console.log(error);
 
     })
@@ -479,6 +605,22 @@ const shareManuals = async () => {
         console.log(error);
     })
 }
+
+// ############################################################################################################
+const approve = async (userId, status) => {
+    await axios.post('/api/approve', {
+        user_id: userId,
+        status: status
+    }).then(async (response) => {
+        console.log(response);
+        await usersStore.getUsers();
+    }).catch(error => {
+        console.log('ERROR IN APPROVING');
+        console.log(error);
+
+    })
+}
+// ############################################################################################################
 
 // -----------------------------------------------------------------------------|   |  ----
 // -----------------------------------------------------------------------------|   | |---|
@@ -613,11 +755,6 @@ const toggleAddUserModal = () => {
     isAddUserModalOpen.value = !isAddUserModalOpen.value;
 }
 
-const tapOpen = ref(true);
-const toggleModals = () => {
-    isAddUserModalOpen.value = !isAddUserModalOpen.value
-};
-
 const OpenCrearUserModal = () => {
     isAddUserModalOpen.value = true;
 }
@@ -630,12 +767,9 @@ const OpenAssignSpaceModal = () => {
 
 
 // Start The Search Section
-const searchInput = ref(null)
+const searchInput = ref('')
 watch(searchInput, () => {
-    let isEmpty = /^\s*$/.test(searchInput.value);
-    if (isEmpty) {
-        searchInput.value = null;
-    }
+    filteredUsers();
 });
 
 const getUserByName = (user) => {
@@ -656,11 +790,17 @@ const getUserBySpace = (user) => {
 const getUserByanual = (user) => {
     return user.manuals.some(manual => manual.title.toLowerCase().includes(searchInput.value.toLowerCase()));
 }
-const filteredUsers = computed(() => {
-    return usersStore.users.filter(user => {
-        return getUserByName(user) || getUserBySpace(user) || getUserByanual(user) || getUserByEmail(user) || getUserByPost(user) || getUserByRole(user);
-    });
-});
+const filteredUsers = () => {
+    let isEmpty = /^\s*$/.test(searchInput.value);
+    if (isEmpty) {
+        return usersStore.users
+    } else {
+        return usersStore.users.filter(user => {
+            return getUserByName(user) || getUserBySpace(user) || getUserByanual(user) || getUserByEmail(user) || getUserByPost(user) || getUserByRole(user);
+        });
+    }
+
+};
 // End The Search Section
 
 // ---------------------------------
@@ -688,6 +828,38 @@ const getUserManualsTitles = (user) => {
 // End The User Manuals Section
 
 // Toggle the Spaces list
+
+
+// Toggle the user status
+const isOn = ref([]);
+
+const toggleSwitch = (index, user_id, oldStatus, newStatus) => {
+
+    Swal.fire({
+        title: "Êtes-vous sûr(e) ?",
+        // text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: 'Confirmer',
+        denyButtonText: `Annuler`,
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            if (oldStatus === newStatus) {
+                return;
+            }
+            if (isOn.value[index]) {
+                archive(user_id, -1);
+            } else if (oldStatus === -1) {
+                updateUserStatus(user_id, 1)
+            } else if (oldStatus === -2) {
+                showAssignModel(user_id, 1)
+            }
+        }
+    })
+
+};
+const onActiveUsers = ref(true);
+
 </script>
 
 <style lang="scss" scoped></style>

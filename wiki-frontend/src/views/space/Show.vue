@@ -22,7 +22,7 @@
           <!-- Add manual : most have the space that will have the manual-->
           <button @click="openModal" type="submit"
             class="px-4 py-2 w-2/12 text-white text-sm bg-green-500 rounded-md hover:bg-green-600 ">
-            Ajouter Manual
+            Ajouter Manuel
           </button>
           <!-- <SearchInput /> -->
           <div class="flex items-center m-auto w-8/12 sticky gap-4 z-96 ">

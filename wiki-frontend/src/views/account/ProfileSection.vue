@@ -33,7 +33,7 @@
 
               <span class="flex-shrink-0 ml-4">
                 <button type="button" @click="nameEditing = true"
-                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Mise à jour</button>
               </span>
 
             </dd>
@@ -55,7 +55,7 @@
 
               <span class="flex-shrink-0 ml-4">
                 <button type="button" @click="emailEditing = true"
-                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Mise à jour</button>
               </span>
             </dd>
           </div>
@@ -75,7 +75,7 @@
 
               <span class="flex-shrink-0 ml-4">
                 <button type="button" @click="passwordEditing = true, newPassword = ''"
-                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Mise à jour</button>
               </span>
             </dd>
           </div>
@@ -97,7 +97,7 @@
 
               <span class="flex-shrink-0 ml-4" v-if="isAdmin">
                 <button type="button" @click="postEditing = true"
-                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Mise à jour</button>
               </span>
 
             </dd>
@@ -118,7 +118,7 @@
 
               <span class="flex-shrink-0 ml-4" v-if="isAdmin">
                 <button type="button" @click="roleEditing = true"
-                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                  class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Mise à jour</button>
               </span>
 
             </dd>
@@ -145,7 +145,7 @@
                 <img class="h-16 rounded-lg" :src="getImageUrl(userStore.photo)" alt="">
                 <span class="flex-shrink-0 ml-4">
                   <button type="button" @click="photoEditing = true"
-                    class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+                    class="font-medium text-indigo-600 bg-white rounded-md hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Mise à jour</button>
                 </span>
               </span>
 

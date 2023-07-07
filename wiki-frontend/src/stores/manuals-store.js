@@ -16,7 +16,6 @@ export const useManualsStore = defineStore("manuals", {
           return false;
         }
         if (manuals.length === 0) {
-          console.log("manuals array length = ", manuals.length);
           return false;
         }
         this.$state.manuals = manuals.map((manual) => ({

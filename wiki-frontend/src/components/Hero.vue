@@ -3,7 +3,7 @@
     <div class="container px-4 py-12 m-auto sm:py-16 lg:py-20">
       <div class=" mx-auto text-center mt-24">
         <h1
-          class="font-extrabold text-gray-800 transition duration-500 ease-in-out hover:text-blue-600 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+          class="font-extrabold text-gray-800 transition duration-500 ease-in-out hover:text-blue-600 text-3xl sm:text-4xl md:text-5xl lg:text-5xl">
           <p>Bienvenue sur notre site!</p>
           Explorez et découvrez le monde de la connaissance.
         </h1>
