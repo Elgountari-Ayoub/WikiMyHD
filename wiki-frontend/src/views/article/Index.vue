@@ -18,6 +18,16 @@
                         placeholder="Search">
                 </div>
 
+                <div v-if="exportingArticle" class="fixed inset-0 z-50 flex items-center justify-center ">
+                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
+                        <span>
+                            Exporting the article
+                        </span>
+                        <LoadingAnimation />
+                    </div>
+
+                </div>
+
                 <LoadingAnimation v-if="articlesStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[60vh]">
@@ -27,11 +37,18 @@
 
                         <div class="border-b flex items-center justify-between text-[13px] flex-start pb-2 ">
                             <!-- :style="{ backgroundColor: article.color }" -->
-                            <span :title="article.space.title">{{ article.space.title.length > 16 ? article.space.title.slice(0, 16) + '...' :
+                            <span :title="article.space.title">{{ article.space.title.length > 16 ?
+                                article.space.title.slice(0, 16) + '...' :
                                 article.space.title }}</span>
                             <strong class="">/</strong>
-                            <span :title="article.manual.title">{{ article.manual.title.length > 16 ? article.manual.title.slice(0, 16) + '...' :
+                            <span :title="article.manual.title">{{ article.manual.title.length > 16 ?
+                                article.manual.title.slice(0, 16) + '...' :
                                 article.manual.title }}</span>
+                            <button @click="exportArticle(article.id)"
+                                class="text-base bg-green-500 text-white rounded px-1 cursor-pointer">
+
+                                <i class="ri-file-transfer-line"></i>
+                            </button>
 
                         </div>
 
@@ -62,8 +79,15 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- Author -->
-                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
+                        <div class="flex space-between">
+                            <!-- Author -->
+                            <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
+
+                            <button @click="shareArticle(article.id)" class="text-base rounded-md  sm:text-sm md:text-base">
+                                <i class="ri-share-line cursor-pointer"></i>
+
+                            </button>
+                        </div>
                     </div>
                     <div v-else v-for="article in filteredArticles"
                         class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
@@ -220,6 +244,43 @@ const deleteArticle = async (articleId) => {
         }
     })
 }
+
+
+
+// Satart export article section---------------------------------------------
+const exportingArticle = ref(false);
+const exportArticle = async (articleId) => {
+    exportingArticle.value = true;
+    await axios.get(`/api/exportArticle/${articleId}`, { responseType: 'arraybuffer' })
+        .then(response => {
+            const file = new Blob([response.data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+
+            // Triggering file download
+            const link = document.createElement('a');
+            link.href = fileURL;
+            link.setAttribute('download', 'article.pdf');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        }).catch(error => {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Échec d\'exporte, actualisez la page et réessayez',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            console.log(error);
+        }
+        )
+
+}
+
+
+// End export article section------------------------------------------------
+
 
 // Search---------------------------------------------
 

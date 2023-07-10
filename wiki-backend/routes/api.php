@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Route;
 
 // GET USER STATUS
 Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
+Route::get('/exportArticle/{id}', [ArticleController::class, 'exportArticle']);
 // Route::get('/getEnv', function () {
 // return 3;
 // });

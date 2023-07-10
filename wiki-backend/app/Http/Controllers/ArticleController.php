@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
+use Dompdf\Dompdf;
+use Symfony\Component\HttpFoundation\Response;
+// use Illuminate\Support\Facades\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class ArticleController extends Controller
 {
@@ -110,7 +116,7 @@ class ArticleController extends Controller
                     'article' => $article
                 ], 200);
             } else {
-                $user = User::findOrFail( Auth::id());
+                $user = User::findOrFail(Auth::id());
                 $article = Article::findOrFail($id);
                 $manual = $article->manual;
                 $manualBelongsToUser = $user->manuals()->where('manual_id', $manual->id)->exists();
@@ -127,6 +133,37 @@ class ArticleController extends Controller
                     'article' => $article
                 ], 200);
             }
+        } catch (Exception $e) {
+            return response()->json([
+                'article' => null,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
+    public function exportArticle($id)
+    {
+        try {
+            $article = Article::find($id);
+            $lastArticle = ArticleVersion::where('article_id', $article->id)->latest('id')->first();
+            $data = [
+                'article' => $article
+            ];
+
+            $pdf = Pdf::loadView('pdf.article', $data);
+            $pdfContents = $pdf->output();
+            $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
+
+            // return response()->json([
+            //     'url' => 'data:application/pdf;base64,' . base64_encode($pdfContents),
+            //     'filename' => $filename,
+            // ]);
+
+            return response($pdfContents)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+
+
         } catch (Exception $e) {
             return response()->json([
                 'article' => null,

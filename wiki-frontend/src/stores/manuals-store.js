@@ -38,7 +38,7 @@ export const useManualsStore = defineStore("manuals", {
 
     // GEt all the manuals
     async getManuals() {
-      this.$state.manuals = [];
+      // this.$state.manuals = [];
       await axios
         .get("/api/manuals")
         .then((response) => {

@@ -31,7 +31,7 @@ export const useManualStore = defineStore("manual", {
         console.log(error);
       }
     },
-    // get Manual By Space id
+    // get Manual By  id
     async getManual(manualId) {
       if (manualId) {
         await axios

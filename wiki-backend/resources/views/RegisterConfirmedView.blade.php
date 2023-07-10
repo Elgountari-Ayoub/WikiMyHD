@@ -39,7 +39,6 @@ Accéder à la page de connexion
 <div style="background-color: #ddd ;border-radius: 1rem ; padding: 1rem; margin-bottom: 2rem;">
     <!-- <img src="{{ $logoUrl }}" alt="{{ config('app.name') }} Logo" style="height: 80px;"> -->
     <img src="https://havetdigital.fr/img/logo.png" alt="{{ config('app.name') }} Logo" style="height: 80px;">
-
 </div>
 
 Si vous avez des questions ou avez besoin d'aide, n'hésitez pas à contacter notre équipe d'assistance.
