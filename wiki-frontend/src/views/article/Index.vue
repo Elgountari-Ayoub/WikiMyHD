@@ -44,11 +44,16 @@
                             <span :title="article.manual.title">{{ article.manual.title.length > 16 ?
                                 article.manual.title.slice(0, 16) + '...' :
                                 article.manual.title }}</span>
-                            <button @click="exportArticle(article.id)"
+                            <span v-if="exportArticleId === article.id"
+                                class="text-base bg-green-500 text-white rounded px-1 cursor-pointer w-fit animate-bounce">
+                                <i class="ri-file-transfer-line"></i>
+                            </span>
+                            <button v-else @click="exportArticle(article.id)"
                                 class="text-base bg-green-500 text-white rounded px-1 cursor-pointer">
-
                                 <i class="ri-file-transfer-line"></i>
                             </button>
+
+
 
                         </div>
 
@@ -85,7 +90,6 @@
 
                             <button @click="shareArticle(article.id)" class="text-base rounded-md  sm:text-sm md:text-base">
                                 <i class="ri-share-line cursor-pointer"></i>
-
                             </button>
                         </div>
                     </div>
@@ -249,17 +253,23 @@ const deleteArticle = async (articleId) => {
 
 // Satart export article section---------------------------------------------
 const exportingArticle = ref(false);
+const exportArticleId = ref(null);
 const exportArticle = async (articleId) => {
-    exportingArticle.value = true;
+    // exportingArticle.value = true;
+    exportArticleId.value = articleId;
     await axios.get(`/api/exportArticle/${articleId}`, { responseType: 'arraybuffer' })
         .then(response => {
+            exportingArticle.value = false;
+            let fileName = response.headers['content-disposition'].split('=')[1].replace(/"/g, '')
+            exportingArticle.value = false;
+
             const file = new Blob([response.data], { type: 'application/pdf' });
             const fileURL = URL.createObjectURL(file);
 
             // Triggering file download
             const link = document.createElement('a');
             link.href = fileURL;
-            link.setAttribute('download', 'article.pdf');
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -275,6 +285,8 @@ const exportArticle = async (articleId) => {
             console.log(error);
         }
         )
+
+    exportArticleId.value = null
 
 }
 

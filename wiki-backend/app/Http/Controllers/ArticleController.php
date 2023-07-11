@@ -150,16 +150,15 @@ class ArticleController extends Controller
             ];
 
             $pdf = Pdf::loadView('pdf.article', $data);
-            $pdfContents = $pdf->output();
+            // $pdfContents = $pdf->output();
+            $pdfContents = $pdf->download();
+            // return 1;
             $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
-
-            // return response()->json([
-            //     'url' => 'data:application/pdf;base64,' . base64_encode($pdfContents),
-            //     'filename' => $filename,
-            // ]);
+            // return response()->download($pdfContents, $filename);
 
             return response($pdfContents)
             ->header('Content-Type', 'application/pdf')
+            ->header('Access-Control-Expose-Headers','Content-Disposition')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
 
 

@@ -66,10 +66,10 @@
                         </div>
                         <div class="flex -justify-between text-sm">
                             <span class="mr-auto text-sm">By {{ getCreatorName(manual.users) }}</span>
-                            <!-- share space -->
+                            <!-- share manual -->
                             <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
                                 @click="openShareModal(manual.id)"></i>
-                            <!-- Share space with users Modal-->
+                            <!-- Share manual with users Modal-->
                             <div v-show="isShareModalOpen"
                                 class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
                                 <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
