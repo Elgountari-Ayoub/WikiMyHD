@@ -20,9 +20,9 @@ Vous pouvez maintenant accéder aux espaces suivants:
 @if (count($spaces) > 0)
 @foreach ($spaces as $space)
 * {{ $space['title'] }}
-@foreach ($space['manuals'] as $manual)
-* {{ $manual['title'] }}
-@endforeach
+    @foreach ($space['manuals'] as $manual)
+    * {{ $manual['title'] }}
+    @endforeach
 @endforeach
 @else
 Pas des espaces disponibles.

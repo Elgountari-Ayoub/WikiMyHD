@@ -182,7 +182,6 @@ class ArticleController extends Controller
             $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
 
             $pdf = Pdf::loadView('pdf.article', $data);
-
             foreach ($request->users as $userId) {
                 $user = User::find($userId)->first();
                 $request = new Request([
@@ -190,11 +189,12 @@ class ArticleController extends Controller
                     'pass' => '1234'
                 ]);
 
-                Mail::to($user->email)->send(
+                Mail::to('azzdendrive@gmail.com')->send(
                     new ShareArticleMail(
                         $pdf,
                     )
                 );
+                // return;
                 // $this->sendRegisterConfirmedMail($request);
             }
 

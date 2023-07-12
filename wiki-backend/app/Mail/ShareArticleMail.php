@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -27,7 +28,7 @@ class ShareArticleMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Share Article Mail',
+            subject: 'WikiMyHd a partagé un article avec vous',
         );
     }
 
@@ -37,7 +38,8 @@ class ShareArticleMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'ShareArticleMailView',
+            markdown: 'ShareArticleMailView',
+            with: [$this->pdf]
         );
     }
 
@@ -48,6 +50,9 @@ class ShareArticleMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        return [
+            Attachment::fromData(fn () => $this->pdf->output(), 'Report.pdf')
+                ->withMime('application/pdf'),
+        ];
     }
 }
