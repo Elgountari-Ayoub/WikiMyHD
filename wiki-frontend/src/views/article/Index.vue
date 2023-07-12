@@ -84,13 +84,43 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="flex space-between">
-                            <!-- Author -->
+
+                        <div class="flex -justify-between text-sm">
                             <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
 
-                            <button @click="shareArticle(article.id)" class="text-base rounded-md  sm:text-sm md:text-base">
-                                <i class="ri-share-line cursor-pointer"></i>
-                            </button>
+                            <!-- share article -->
+                            <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
+                                @click="openShareModal(article.id)"></i>
+                            <!-- Share article with users Modal-->
+                            <div v-show="isShareModalOpen"
+                                class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                                <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                                    <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                                        <div class="text-lg font-bold text-gray-900 self-center">Users</div>
+                                        <div class="w-full">
+                                            <label for="spaces"
+                                                class="block text-sm font-medium text-gray-700 mb-1"></label>
+                                            <input type="text" v-model="searchQuery" placeholder="rechercher des utilisateurs"
+                                                class="w-full text-sm px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md mb-2" />
+                                            <select multiple v-model="selectedUsers" id="spaces" name="spaces[]"
+                                                class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                                <option v-for="user in filteredUsers" :value="user.id" :key="user.id">{{
+                                                    user.name
+                                                }}
+                                                </option>
+                                            </select>
+                                            <div class="flex justify-between">
+                                                <button class="p-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                                                    @click="shareArticleWithUsers()">Soumettre</button>
+
+                                                <button class="p-2 mt-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                                                    @click="closeShareModal()">Fermer</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div v-else v-for="article in filteredArticles"
@@ -159,6 +189,7 @@ import { useManualStore } from '../../stores/manual-store';
 
 import { useArticlesSotre } from '../../stores/articles-store';
 import { useParamsStore } from '../../stores/params-store';
+import { useUsersStore } from '../../stores/users-store';
 import { computed } from '@vue/reactivity';
 
 axios.defaults.withCredentials = true;
@@ -174,6 +205,11 @@ articlesStore.clearArticles();
 const getArticles = onMounted(async () => {
     articlesStore.getArticles();
 });
+
+const selectedUsers = ref([]);
+const searchQuery = ref('');
+const usersStore = useUsersStore();
+const isShareModalOpen = ref(false);
 
 const getCreatorId = (users) => {
 
@@ -196,6 +232,50 @@ const getCreatorName = (users) => {
     return creatorName;
 }
 
+
+// Start [Share Articles with users] Section
+
+
+const articleId = ref(null);
+function openShareModal(article_id) {
+    isShareModalOpen.value = true;
+    articleId.value = article_id
+}
+function closeShareModal() {
+    isShareModalOpen.value = false;
+    articleId.value = null;
+    searchQuery.value = '';
+    selectedUsers.value = [];
+}
+
+
+const filteredUsers = computed(() => {
+    return usersStore.users.filter(user => {
+        if (user.status === 1 && user.role != 'admin') {
+            return user.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+        }
+    });
+});
+
+const shareArticleWithUsers = async () => {
+    if (selectedUsers.value.length > 0) {
+        // return;
+        await axios.post('/api/assignUsersToArticle', {
+            article_id: articleId.value,
+            users: selectedUsers.value,
+        }).then(response => {
+            console.log(response);
+            closeShareModal();
+            getArticles()
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+
+}
+
+// End [Share Articles with users] Section
 const isModalOpen = ref(false);
 const modalRef = ref(null);
 // Add article model

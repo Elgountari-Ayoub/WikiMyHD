@@ -187,7 +187,7 @@
                 <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
                     @click.self="closeModal">
                     <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un manual</h1>
+                        <h1 class="mb-4 text-2xl font-semibold">Ajouter un manuel</h1>
                         <form @submit.prevent="addManual" class="space-y-4 ">
                             <div>
                                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>
@@ -301,9 +301,9 @@ const filteredUsers = computed(() => {
     });
 });
 
-function openShareModal(space_id) {
+function openShareModal(manual_id) {
     isShareModalOpen.value = true;
-    manualId.value = space_id
+    manualId.value = manual_id
 }
 function closeShareModal() {
     isShareModalOpen.value = false;

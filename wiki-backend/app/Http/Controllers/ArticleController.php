@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ShareArticleMail;
 use App\Models\User;
 use App\Models\Space;
 use App\Models\Manual;
@@ -148,20 +149,15 @@ class ArticleController extends Controller
             $data = [
                 'article' => $article
             ];
+            $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
 
             $pdf = Pdf::loadView('pdf.article', $data);
-            // $pdfContents = $pdf->output();
             $pdfContents = $pdf->download();
-            // return 1;
-            $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
-            // return response()->download($pdfContents, $filename);
 
             return response($pdfContents)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Access-Control-Expose-Headers','Content-Disposition')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
-
-
+                ->header('Content-Type', 'application/pdf')
+                ->header('Access-Control-Expose-Headers', 'Content-Disposition')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
 
         } catch (Exception $e) {
             return response()->json([
@@ -171,6 +167,48 @@ class ArticleController extends Controller
         }
     }
 
+    public function assignUsersToArticle(Request $request)
+    {
+        try {
+            $request->validate([
+                'article_id' => 'required',
+                'users' => 'required|array'
+            ]);
+            $article = Article::findOrFail($request->article_id);
+            $lastArticle = ArticleVersion::where('article_id', $article->id)->latest('id')->first();
+            $data = [
+                'article' => $article
+            ];
+            $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
+
+            $pdf = Pdf::loadView('pdf.article', $data);
+
+            foreach ($request->users as $userId) {
+                $user = User::find($userId)->first();
+                $request = new Request([
+                    'user_id' => $userId,
+                    'pass' => '1234'
+                ]);
+
+                Mail::to($user->email)->send(
+                    new ShareArticleMail(
+                        $pdf,
+                    )
+                );
+                // $this->sendRegisterConfirmedMail($request);
+            }
+
+            return response()->json([
+                'article' => $article,
+                'users_assigned' => true
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'users_assigned' => false,
+                'message' => $e->getMessage()
+            ], 402);
+        }
+    }
     public function showByVersion($id, $version)
     {
         try {

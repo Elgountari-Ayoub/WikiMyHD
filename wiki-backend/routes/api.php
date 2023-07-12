@@ -46,7 +46,6 @@ use Illuminate\Support\Facades\Route;
 
 // GET USER STATUS
 Route::get('/auth-status', [UserController::class, 'getAuthStatus']);
-Route::get('/exportArticle/{id}', [ArticleController::class, 'exportArticle']);
 // Route::get('/getEnv', function () {
 // return 3;
 // });
@@ -186,4 +185,11 @@ Route::group(['middleware' => ['auth:sanctum', 'admin']], function () {
     // MANUAL ROUTES
     // assignUserToManual
     Route::post('/assignUserToManual', [ManualController::class, 'assignUserToManual']);
+    
+    
+    // Article
+    Route::get('/exportArticle/{id}', [ArticleController::class, 'exportArticle']);
+    // assignUserToArticle
+    Route::post('/assignUsersToArticle', [ArticleController::class, 'assignUsersToArticle']);
+
 });
