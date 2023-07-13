@@ -18,14 +18,17 @@ Vous pouvez maintenant accéder aux espaces suivants:
 
 @component('mail::panel')
 @if (count($spaces) > 0)
-@foreach ($spaces as $space)
+
+@foreach($spaces as $space)
 * {{ $space['title'] }}
-    @foreach ($space['manuals'] as $manual)
+@foreach($space['manuals'] as $manual)
     * {{ $manual['title'] }}
-    @endforeach
 @endforeach
+
+@endforeach
+
 @else
-Pas des espaces disponibles.
+Pas de espaces disponibles.
 @endif
 @endcomponent
 

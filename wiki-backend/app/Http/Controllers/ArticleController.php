@@ -175,27 +175,20 @@ class ArticleController extends Controller
                 'users' => 'required|array'
             ]);
             $article = Article::findOrFail($request->article_id);
-            $lastArticle = ArticleVersion::where('article_id', $article->id)->latest('id')->first();
             $data = [
                 'article' => $article
             ];
-            $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
 
             $pdf = Pdf::loadView('pdf.article', $data);
             foreach ($request->users as $userId) {
-                $user = User::find($userId)->first();
-                $request = new Request([
-                    'user_id' => $userId,
-                    'pass' => '1234'
-                ]);
+                $user = User::find($userId);
 
-                Mail::to('azzdendrive@gmail.com')->send(
+                Mail::to("$user->email")->send(
                     new ShareArticleMail(
                         $pdf,
                     )
                 );
                 // return;
-                // $this->sendRegisterConfirmedMail($request);
             }
 
             return response()->json([

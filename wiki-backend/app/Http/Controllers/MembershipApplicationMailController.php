@@ -29,8 +29,8 @@ class MembershipApplicationMailController extends Controller
 
     public function sendMail()
     {
-       
-        Mail::to('elgountariayoub22@gmail.com')->send(new MembershipApplicationMail(
+       $adminEmail = env('MAIL_USERNAME');
+        Mail::to("$adminEmail")->send(new MembershipApplicationMail(
             $this->userName,
             $this->userEmail,
             $this->userPoste,

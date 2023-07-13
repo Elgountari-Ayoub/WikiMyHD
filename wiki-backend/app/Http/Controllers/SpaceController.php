@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ShareSpaceMail;
 use App\Models\Space;
 use App\Models\User;
 use Exception;
@@ -9,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Support\Facades\Mail;
+
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -24,7 +27,7 @@ class SpaceController extends Controller
 
             if ($authRole == 'admin') {
                 // $spaces =  Space::with('users', 'manuals', 'articles')->orderBy('id', 'desc')->get();
-                $spaces =  Space::with('users', 'manuals')->orderBy('id', 'desc')->get();
+                $spaces = Space::with('users', 'manuals')->orderBy('id', 'desc')->get();
                 return response()->json([
                     'spaces' => $spaces,
                 ], 200);
@@ -32,11 +35,14 @@ class SpaceController extends Controller
                 $user = User::findOrFail(Auth::id());
 
                 // $spaces = $user->spaces()->with(['users', 'articles', 'manuals' => function ($query) use ($user) {
-                $spaces = $user->spaces()->with(['users', 'manuals' => function ($query) use ($user) {
-                    $query->whereHas('users', function ($query) use ($user) {
-                        $query->where('users.id', $user->id);
-                    });
-                }])->orderBy('id', 'desc')->get();
+                $spaces = $user->spaces()->with([
+                    'users',
+                    'manuals' => function ($query) use ($user) {
+                        $query->whereHas('users', function ($query) use ($user) {
+                            $query->where('users.id', $user->id);
+                        });
+                    }
+                ])->orderBy('id', 'desc')->get();
 
                 return response()->json([
                     'spaces' => $spaces,
@@ -108,11 +114,14 @@ class SpaceController extends Controller
                 $user = User::findOrFail(Auth::id());
                 // $space = $user->spaces()->with('users', 'manuals')->findOrFail($id);
                 // $space = $user->spaces()->with(['users', 'articles', 'manuals' => function ($query) use ($user) {
-                $space = $user->spaces()->with(['users', 'manuals' => function ($query) use ($user) {
-                    $query->whereHas('users', function ($query) use ($user) {
-                        $query->where('users.id', $user->id);
-                    });
-                }])->findOrFail($id);
+                $space = $user->spaces()->with([
+                    'users',
+                    'manuals' => function ($query) use ($user) {
+                        $query->whereHas('users', function ($query) use ($user) {
+                            $query->where('users.id', $user->id);
+                        });
+                    }
+                ])->findOrFail($id);
 
                 return response()->json([
                     'space' => $space
@@ -226,6 +235,15 @@ class SpaceController extends Controller
             $users = User::whereIn('id', $request->users)->get();
 
             $space->users()->syncWithoutDetaching($users->pluck('id')->toArray());
+
+            // send the email
+
+            foreach ($users as $user) {
+                Mail::to("$user->email")->send(
+                    new ShareSpaceMail($space)
+                );
+            }
+
             return response()->json([
                 'space' => $space,
                 'users_assigned' => true
@@ -238,4 +256,4 @@ class SpaceController extends Controller
         }
     }
 
-}   
+}

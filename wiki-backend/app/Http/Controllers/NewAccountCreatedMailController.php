@@ -29,17 +29,23 @@ class NewAccountCreatedMailController extends Controller
 
     public function sendMail()
     {
-        $this->loginUrl = env('FRONTEND_URL') . '/login';
-        $this->logoUrl = env('APP_LOGO');
+        try {
+            $this->loginUrl = env('FRONTEND_URL') . '/login';
+            $this->logoUrl = env('APP_LOGO');
 
-        Mail::to($this->email)->send(new NewAccountCreatedMail(
-            $this->userName,
-            $this->email,
-            $this->pass,
-            $this->post,
-            $this->spaces,
-            $this->loginUrl,
-            $this->logoUrl
-        ));
+            Mail::to("$this->email")->send(
+                new NewAccountCreatedMail(
+                    $this->userName,
+                    $this->email,
+                    $this->pass,
+                    $this->post,
+                    $this->spaces,
+                    $this->loginUrl,
+                    $this->logoUrl
+                )
+            );
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 }

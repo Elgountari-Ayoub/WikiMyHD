@@ -32,7 +32,7 @@ class RegisterConfirmedMailController extends Controller
         $this->loginUrl = env('FRONTEND_URL') . '/login';
         $this->logoUrl = env('APP_LOGO');
 
-        Mail::to($this->email)->send(new RegisterConfirmedMail(
+        Mail::to("$this->email")->send(new RegisterConfirmedMail(
             $this->userName,
             $this->email,
             $this->pass,

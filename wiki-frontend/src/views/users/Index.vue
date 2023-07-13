@@ -176,7 +176,7 @@
                                 Photo
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Nom Utilisateur
+                                nom
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Email
@@ -199,7 +199,7 @@
                                 Statut
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Actualisation
+                                Changer
                             </th>
                         </tr>
                     </thead>
@@ -299,7 +299,7 @@
                                 Photo
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Nom Utilisateur
+                                nom
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Email
@@ -322,7 +322,7 @@
                                 Statut
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Actualisation
+                                Changer
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Suppression

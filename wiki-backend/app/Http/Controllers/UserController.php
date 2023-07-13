@@ -158,7 +158,6 @@ class UserController extends Controller
     {
         try {
             $user = User::find($request->user_id);
-            $spaces = $user->spaces()->with('manuals')->get();
 
             $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
                 $query->whereHas('users', function ($query) use ($user) {
@@ -177,7 +176,6 @@ class UserController extends Controller
     {
         try {
             $user = User::find($request->user_id);
-            $spaces = $user->spaces()->with('manuals')->get();
 
             $spaces = $user->spaces()->with(['manuals' => function ($query) use ($user) {
                 $query->whereHas('users', function ($query) use ($user) {
@@ -185,9 +183,10 @@ class UserController extends Controller
                 });
             }])->get();
 
+
             // send a register confirmed mail
             $mail = new NewAccountCreatedMailController($user->name, $user->email, $request->pass, $user->post, $spaces);
-            $mail->sendMail();
+            return $mail->sendMail();
         } catch (\Throwable $th) {
             //throw $th;
         }
@@ -302,19 +301,17 @@ class UserController extends Controller
         ]);
         $this->updateStatus($approvementRequest);
 
-        // Aend new account created mail request
+        // send new account created mail request
         $sendNewAccountCretaedMailRequest = new Request();
         $sendNewAccountCretaedMailRequest = new Request([
             'user_id' => $user->id,
             'pass' => $request->password,
         ]);
-        $this->sendNewAccountCretaedMail($sendNewAccountCretaedMailRequest);
-
-        // $mail = new MembershipApplicationMailController($user->name, $user->email, $user->post);
-        // $mail->sendMail();
 
         event(new Registered($user));
 
+        $this->sendNewAccountCretaedMail($sendNewAccountCretaedMailRequest);
+        
         return response()->json(['message' => 'Registration successful', 'user' => $user]);
     }
 

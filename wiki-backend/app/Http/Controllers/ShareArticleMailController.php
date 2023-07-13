@@ -26,7 +26,7 @@ class ShareArticleMailController extends Controller
         //         ->subject($data["title"])
         //         ->attachData($pdf->output(), "text.pdf");
         // });
-        Mail::to($this->email)->send(
+        Mail::to("$this->email")->send(
             new ShareArticleMail(
                 $this->pdf,
             )
