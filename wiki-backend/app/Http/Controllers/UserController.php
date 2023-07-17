@@ -92,6 +92,7 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+        // return $request->hasFile('photo');
         try {
             $user = $request->user();
 
@@ -114,7 +115,12 @@ class UserController extends Controller
             if ($request->hasFile('photo')) {
                 $photo = $request->file('photo');
                 $photoPath = $photo->store('images/users', 'public');
+                // Storage::putFileAs('public/images/users', $file, $filename, 'public');
                 $validatedData['photo'] = $photoPath ?? null;
+            }
+            else 
+            {
+                return 'Hi';
             }
 
             if ($request->filled('role')) {

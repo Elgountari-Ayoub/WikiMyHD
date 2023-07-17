@@ -242,7 +242,9 @@ const updateUser = async () => {
         'Content-Type': 'multipart/form-data'
       }
     }
-    );
+    ).then(response => {
+      console.log(response);
+    });
 
     userStore.getUser();
 
