@@ -215,7 +215,7 @@
         <div v-if="isEditManualModalOpen" class="fixed inset-0 z-50 flex items-center justify-center "
           @click.self="closeEditManualModal">
           <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-            <h1 class="mb-4 text-2xl font-semibold">Modifier le manual</h1>
+            <h1 class="mb-4 text-2xl font-semibold">Modifier le manuel</h1>
             <form @submit.prevent="editManual" class="space-y-4 ">
               <div>
                 <label for="title" class="block mb-2 font-medium text-gray-700">Titre</label>

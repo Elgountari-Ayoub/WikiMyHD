@@ -118,10 +118,6 @@ class UserController extends Controller
                 // Storage::putFileAs('public/images/users', $file, $filename, 'public');
                 $validatedData['photo'] = $photoPath ?? null;
             }
-            else 
-            {
-                return 'Hi';
-            }
 
             if ($request->filled('role')) {
                 $validatedData['role'] = $request->input('role');

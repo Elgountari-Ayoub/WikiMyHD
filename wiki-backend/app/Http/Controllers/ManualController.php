@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ShareManualMail;
 use App\Models\User;
 use App\Models\Space;
 use App\Models\Manual;
@@ -23,7 +24,7 @@ class ManualController extends Controller
             $authRole = Auth::user()->role;
 
             if ($authRole == 'admin') {
-                $manuals =  Manual::with('users', 'space')->orderBy('id', 'desc')->get();
+                $manuals = Manual::with('users', 'space')->orderBy('id', 'desc')->get();
                 return response()->json([
                     'manuals' => $manuals
                 ], 200);
@@ -221,6 +222,12 @@ class ManualController extends Controller
             $space->users()->syncWithoutDetaching($users->pluck('id')->toArray());
 
 
+            // send the email
+            foreach ($users as $user) {
+                Mail::to("$user->email")->send(
+                    new ShareManualMail($manual, $space)
+                );
+            }
             return response()->json([
                 'manual' => $manual,
                 'users_assigned' => true
