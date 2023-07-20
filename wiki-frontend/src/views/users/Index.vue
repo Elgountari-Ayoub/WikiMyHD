@@ -331,7 +331,7 @@
                     </thead>
                     <tbody>
                         <template v-for="(user, index) in  filteredUsers()" :key="index">
-
+                            
                             <tr v-if="user.status === -1 || user.status === -2"
                                 class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50  dark:hover:bg-gray-600">
                                 <td class="px-6 py-4 ">
@@ -745,14 +745,8 @@ const closeModal = () => {
 }
 
 const isAddUserModalOpen = ref(false);
-const openAddUserModal = () => {
-    isAddUserModalOpen.value = true;
-}
 const closeAddUserModal = () => {
     isAddUserModalOpen.value = false;
-}
-const toggleAddUserModal = () => {
-    isAddUserModalOpen.value = !isAddUserModalOpen.value;
 }
 
 const OpenCrearUserModal = () => {

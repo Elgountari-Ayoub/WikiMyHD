@@ -18,21 +18,11 @@
                         placeholder="Search">
                 </div>
 
-                <div v-if="exportingArticle" class="fixed inset-0 z-50 flex items-center justify-center ">
-                    <div class="p-6 bg-white rounded-md shadow-2xl w-96" ref="modal">
-                        <span>
-                            Exporting the article
-                        </span>
-                        <LoadingAnimation />
-                    </div>
-
-                </div>
-
                 <LoadingAnimation v-if="articlesStore.articles.length == 0" />
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 min-h-[60vh]">
 
-                    <div v-if="!searchInput" v-for="article in articlesStore.articles"
+                    <div v-for="article in filteredArticles()"
                         class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
 
                         <div class="border-b flex items-center justify-between text-[13px] flex-start pb-2 ">
@@ -52,9 +42,6 @@
                                 class="text-base bg-green-500 text-white rounded px-1 cursor-pointer">
                                 <i class="ri-file-transfer-line"></i>
                             </button>
-
-
-
                         </div>
 
                         <!-- LOGO -->
@@ -122,44 +109,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div v-else v-for="article in filteredArticles"
-                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 ">
-
-                        <div class="border-b flex gap-2 text-sm flex-start pb-2">
-                            {{ article.space.title }} <strong>:</strong> {{ article.manual.title }}
-                        </div>
-
-                        <!-- LOGO -->
-                        <button @click="toArticle(article.id)"
-                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-                            :style="{ backgroundColor: article.color }">
-                            <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
-                            </span>
-                        </button>
-
-                        <div class="flex justify-center items-center ">
-                            <!-- Title -->
-                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500 text-ellipsis"
-                                :title="article.title">
-                                {{ article.title.length > 20 ? article.title.slice(0, 20) + '...' : article.title }}
-                            </button>
-
-                            <!-- Btns -->
-                            <div class="ml-auto flex gap-4"
-                                v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
-                                <button @click="toEditArticle(article.id)"
-                                    class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
-                                    <i class="ri-pencil-line"></i>
-                                </button>
-                                <button @click="deleteArticle(article.id)"
-                                    class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
-                                    <i class="ri-delete-bin-6-line"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Author -->
-                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
                     </div>
                 </div>
             </div>
@@ -232,9 +181,7 @@ const getCreatorName = (users) => {
     return creatorName;
 }
 
-
 // Start [Share Articles with users] Section
-
 
 const articleId = ref(null);
 function openShareModal(article_id) {
@@ -247,7 +194,6 @@ function closeShareModal() {
     searchQuery.value = '';
     selectedUsers.value = [];
 }
-
 
 const filteredUsers = computed(() => {
     return usersStore.users.filter(user => {
@@ -278,12 +224,6 @@ const shareArticleWithUsers = async () => {
 // End [Share Articles with users] Section
 const isModalOpen = ref(false);
 const modalRef = ref(null);
-// Add article model
-const openModal = () => {
-    form.value.title = '';
-    form.value.description = '';
-    isModalOpen.value = true;
-};
 
 const closeModal = () => {
     isModalOpen.value = false;
@@ -376,20 +316,27 @@ const exportArticle = async (articleId) => {
 
 // Search---------------------------------------------
 
-const searchInput = ref(null)
+// Start Search---------------------------------------------
+const searchInput = ref('')
 watch(searchInput, () => {
-    let isEmpty = /^\s*$/.test(searchInput.value);
-    if (isEmpty) {
-        searchInput.value = null;
-    }
+    filteredArticles();
 });
 
-const filteredArticles = computed(() => {
-    return articlesStore.articles.filter(article => {
-        return article.title.toLowerCase().includes(searchInput.value.toLowerCase()) || article.content.toLowerCase().includes(searchInput.value.toLowerCase());
-    });
-});
-// Search---------------------------------------------
+const filteredArticles = () => {
+    let isEmpty = /^\s*$/.test(searchInput.value);
+    console.log(isEmpty);
+    if (isEmpty) {
+        return articlesStore.articles
+    }
+    else {
+        console.log(searchInput.value);
+        return articlesStore.articles.filter(article => {
+            return article.title.toLowerCase().includes(searchInput.value.toLowerCase()) || article.content.toLowerCase().includes(searchInput.value.toLowerCase());
+        });
+    }
+};
+
+// End Search---------------------------------------------
 
 // HELPERS-------------------------
 // Edit Article Modal

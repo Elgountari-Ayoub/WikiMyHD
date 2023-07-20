@@ -65,7 +65,7 @@
                 <div v-else
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 ">
 
-                    <div v-if="!searchInput" v-for="article in articlesStore.articles"
+                    <div v-for="article in filteredArticles()"
                         class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
 
 
@@ -97,44 +97,50 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- Author -->
-                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
-                    </div>
-                    <div v-else v-for="article in filteredArticles"
-                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
 
+                        <div class="flex -justify-between text-sm">
+                            <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
 
-                        <!-- LOGO -->
-                        <button @click="toArticle(article.id)"
-                            class="flex items-center justify-center w-16 h-16 rounded-full m-auto text-white"
-                            :style="{ backgroundColor: article.color }">
-                            <span class="text-2xl ">{{ article.title[0].toUpperCase() }}
-                            </span>
-                        </button>
+                            <!-- share article -->
+                            <i v-if="userStore.isAdmin == true" class="ri-share-line cursor-pointer"
+                                @click="openShareModal(article.id)"></i>
+                            <!-- Share article with users Modal-->
+                            <div v-show="isShareModalOpen"
+                                class="fixed z-10 inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                                <div class="relative mx-auto max-w-lg bg-white rounded-lg shadow-lg">
+                                    <div class="flex flex-col items-start justify-between p-6 space-y-4 w-96">
+                                        <div class="text-lg font-bold text-gray-900 self-center">Users</div>
+                                        <div class="w-full">
+                                            <label for="spaces"
+                                                class="block text-sm font-medium text-gray-700 mb-1"></label>
+                                            <input type="text" v-model="searchQuery"
+                                                placeholder="rechercher des utilisateurs"
+                                                class="w-full text-sm px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md mb-2" />
+                                            <select multiple v-model="selectedUsers" id="spaces" name="spaces[]"
+                                                class="w-full px-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                                <option v-for="user in filteredUsers" :value="user.id" :key="user.id">{{
+                                                    user.name
+                                                }}
+                                                </option>
+                                            </select>
+                                            <div class="flex justify-between">
+                                                <button class="p-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                                                    @click="shareArticleWithUsers()">Soumettre</button>
 
-                        <div class="flex justify-center items-center ">
-                            <!-- Title -->
-                            <button @click="toArticle(article.id)" class="font-bold hover:text-blue-500 text-ellipsis"
-                                :title="article.title">
-                                {{ article.title.length > 20 ? article.title.slice(0, 20) + '...' : article.title }}
-                            </button>
+                                                <button class="p-2 mt-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                                                    @click="closeShareModal()">Fermer</button>
 
-                            <!-- Btns -->
-                            <div class="ml-auto flex gap-4"
-                                v-if='getCreatorId(article.users) == userStore.id || userStore.isAdmin'>
-                                <button @click="toEditArticle(article.id)"
-                                    class="text-lg text-blue-500 rounded-md hover:text-blue-700 sm:text-sm md:text-base">
-                                    <i class="ri-pencil-line"></i>
-                                </button>
-                                <button @click="deleteArticle(article.id)"
-                                    class="text-lg text-red-500 rounded-md hover:text-red-700 sm:text-sm md:text-base">
-                                    <i class="ri-delete-bin-6-line"></i>
-                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <!-- Author -->
-                        <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span>
+                        <!-- <span class="mr-auto text-sm">By {{ getCreatorName(article.users) }}</span> -->
                     </div>
+
                 </div>
             </div>
         </DashboardLayout>
@@ -163,6 +169,7 @@ import { useManualStore } from '../../stores/manual-store';
 
 import { useArticlesSotre } from '../../stores/articles-store';
 import { useParamsStore } from '../../stores/params-store';
+import { useUsersStore } from '../../stores/users-store';
 
 
 axios.defaults.withCredentials = true;
@@ -215,12 +222,6 @@ watch(() => spaceStore.id, (newValue, oldValue) => {
 
 const isModalOpen = ref(false);
 const modalRef = ref(null);
-// Add article model
-const openModal = () => {
-    form.value.title = '';
-    form.value.description = '';
-    isModalOpen.value = true;
-};
 
 const closeModal = () => {
     isModalOpen.value = false;
@@ -268,22 +269,27 @@ const deleteArticle = async (articleId) => {
 
 // Search
 
-// Search---------------------------------------------
-const searchInput = ref(null)
+// Start Search---------------------------------------------
+const searchInput = ref('')
 watch(searchInput, () => {
+    filteredArticles();
+});
+
+const filteredArticles = () => {
     let isEmpty = /^\s*$/.test(searchInput.value);
+    console.log(isEmpty);
     if (isEmpty) {
-        searchInput.value = null;
+        return articlesStore.articles
     }
-});
+    else {
+        console.log(searchInput.value);
+        return articlesStore.articles.filter(article => {
+            return article.title.toLowerCase().includes(searchInput.value.toLowerCase()) || article.content.toLowerCase().includes(searchInput.value.toLowerCase());
+        });
+    }
+};
 
-const filteredArticles = computed(() => {
-    return articlesStore.articles.filter(article => {
-        return article.title.toLowerCase().includes(searchInput.value.toLowerCase()) || article.content.toLowerCase().includes(searchInput.value.toLowerCase());
-    });
-});
-// Search---------------------------------------------
-
+// End Search---------------------------------------------
 
 // const searchInput = ref(null)
 // const search = async () => {
@@ -345,10 +351,52 @@ watchEffect(() => {
     };
 });
 
-const getImageUrl = (photo) => {
-    const baseUrl = "http://localhost:8000/storage/";
-    return baseUrl + photo; // Concatenating the base URL and the photo variable
+// Start [Share Articles with users] Section
+
+const selectedUsers = ref([]);
+const searchQuery = ref('');
+const usersStore = useUsersStore();
+const isShareModalOpen = ref(false);
+
+const articleId = ref(null);
+function openShareModal(article_id) {
+    isShareModalOpen.value = true;
+    articleId.value = article_id
 }
+function closeShareModal() {
+    isShareModalOpen.value = false;
+    articleId.value = null;
+    searchQuery.value = '';
+    selectedUsers.value = [];
+}
+
+const filteredUsers = computed(() => {
+    return usersStore.users.filter(user => {
+        if (user.status === 1 && user.role != 'admin') {
+            return user.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+        }
+    });
+});
+
+const shareArticleWithUsers = async () => {
+    if (selectedUsers.value.length > 0) {
+        // return;
+        await axios.post('/api/assignUsersToArticle', {
+            article_id: articleId.value,
+            users: selectedUsers.value,
+        }).then(response => {
+            closeShareModal();
+            console.log(response);
+            getArticles()
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+
+}
+
+// End [Share Articles with users] Section
 
 </script>
   

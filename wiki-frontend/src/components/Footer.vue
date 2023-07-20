@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-gray-100">
+    <footer class="bg-gray-100 absolute bottom-0 w-full">
         <div class="container px-4 py-2 mx-auto sm:py-2 lg:py-8">
             <div class="text-center text-gray-600 ">
                 <p>&copy; 2023 WikiMyHd. All rights reserved.</p>

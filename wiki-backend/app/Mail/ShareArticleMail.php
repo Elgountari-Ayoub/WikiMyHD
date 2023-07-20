@@ -14,12 +14,14 @@ class ShareArticleMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $pdf;
+    public $filename;
     /**
      * Create a new message instance.
      */
-    public function __construct($pdf)
+    public function __construct($pdf, $filename)
     {
         $this->pdf = $pdf;
+        $this->filename = $filename;
     }
 
     /**
@@ -39,7 +41,7 @@ class ShareArticleMail extends Mailable
     {
         return new Content(
             markdown: 'ShareArticleMailView',
-            with: [$this->pdf]
+            with: [$this->pdf, $this->filename]
         );
     }
 
@@ -51,7 +53,7 @@ class ShareArticleMail extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromData(fn () => $this->pdf->output(), 'Report.pdf')
+            Attachment::fromData(fn () => $this->pdf->output(), "$this->filename")
                 ->withMime('application/pdf'),
         ];
     }

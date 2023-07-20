@@ -23,33 +23,33 @@ class DatabaseSeeder extends Seeder
 
         $password = Hash::make('admin');
         \App\Models\User::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@gmail.com',
+            'name' => 'havet',
+            'email' => 'havetdigital@gmail.com',
             'post' => 'director',
             'password' => $password,
             'role' => 'admin',
             'status' => 1,
         ]);
 
-        $password = Hash::make('ayoub');
-        User::factory()->create([
-            'name' => 'Ayoub',
-            'email' => 'ayoub@gmail.com',
-            'post' => 'Web developer',
-            'password' => $password,
-            'role' => 'user',
-            'status' => 0,
-        ]);
+        // $password = Hash::make('ayoub');
+        // User::factory()->create([
+        //     'name' => 'Ayoub',
+        //     'email' => 'ayoub@gmail.com',
+        //     'post' => 'Web developer',
+        //     'password' => $password,
+        //     'role' => 'user',
+        //     'status' => 0,
+        // ]);
 
-        $password = Hash::make('hamid');
-        User::factory()->create([
-            'name' => 'Hamid',
-            'email' => 'hamid@gmail.com',
-            'post' => 'Builder',
-            'password' => $password,
-            'role' => 'user',
-            'status' => 0,
-        ]);
+        // $password = Hash::make('hamid');
+        // User::factory()->create([
+        //     'name' => 'Hamid',
+        //     'email' => 'hamid@gmail.com',
+        //     'post' => 'Builder',
+        //     'password' => $password,
+        //     'role' => 'user',
+        //     'status' => 0,
+        // ]);
         $password = Hash::make('pass2005');
         User::factory()->create([
             'name' => 'Azzden',
@@ -59,15 +59,15 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
             'status' => 0,
         ]);
-        $password = Hash::make('ali1999');
-        User::factory()->create([
-            'name' => 'Ali',
-            'email' => 'abdelalikhalif1999@gmail.com',
-            'post' => 'Python developer',
-            'password' => $password,
-            'role' => 'user',
-            'status' => 0,
-        ]);
+        // $password = Hash::make('ali1999');
+        // User::factory()->create([
+        //     'name' => 'Ali',
+        //     'email' => 'abdelalikhalif1999@gmail.com',
+        //     'post' => 'Python developer',
+        //     'password' => $password,
+        //     'role' => 'user',
+        //     'status' => 0,
+        // ]);
 
         // for ($i = 65; $i <= 90; $i++) {
         //     $letter = chr($i);

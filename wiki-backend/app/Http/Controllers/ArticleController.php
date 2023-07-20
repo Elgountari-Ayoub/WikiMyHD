@@ -175,9 +175,11 @@ class ArticleController extends Controller
                 'users' => 'required|array'
             ]);
             $article = Article::findOrFail($request->article_id);
+            $lastArticle = ArticleVersion::where('article_id', $article->id)->latest('id')->first();
             $data = [
                 'article' => $article
             ];
+            $filename = $article->title . '-' . $lastArticle->version_number . '.pdf';
 
             $pdf = Pdf::loadView('pdf.article', $data);
             foreach ($request->users as $userId) {
@@ -185,7 +187,7 @@ class ArticleController extends Controller
 
                 Mail::to("$user->email")->send(
                     new ShareArticleMail(
-                        $pdf,
+                        $pdf,$filename
                     )
                 );
                 // return;
