@@ -20,30 +20,26 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request) //: Response
     {
-        try {
-            $request->authenticate();
-            $request->session()->regenerate();
-            $id = Auth::id();
-            $user = User::findOrFail($id);
-            if ($user->status === 1) {
-                return response()->json([
-                    'user' => $user,
-                    'approved' => true
-                ], 200);
-            } else {
-                Auth::logout($user);
-                return response()->json([
-                    'user' => $user,
-                    'approved' => false
-                ], 200);
-            }
-        } catch (Exception $e) {
+
+        $request->authenticate();
+        $request->session()->regenerate();
+        $id = Auth::id();
+        $user = User::findOrFail($id);
+        if ($user->status === 1) {
+            return response()->json([
+                'user' => $user,
+                'approved' => true
+            ], 200);
+        } else {
             Auth::logout($user);
             return response()->json([
-                'user' => null,
-                'error message' => $e->getMessage()
-            ], 404);
+                'user' => $user,
+                'approved' => false
+            ], 200);
         }
+
+        return response()->noContent();
+
     }
 
     /**

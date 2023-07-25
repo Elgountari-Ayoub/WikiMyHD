@@ -291,30 +291,6 @@ const filteredArticles = () => {
 
 // End Search---------------------------------------------
 
-// const searchInput = ref(null)
-// const search = async () => {
-//     try {
-//         if (!searchInput.value) {
-//             if (manualsStore.manuals.length === 0) {
-//                 manualsStore.getArticles();
-//             }
-//             return;
-//         }
-//         const response = await axios.get(`/api/manuals/search/${searchInput.value}`);
-//         if (response.data.length > 0) {
-//             manualsStore.manuals = response.data
-//             manualsStore.manuals.forEach(element => {
-//                 element.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-//             })
-//             return;
-//         }
-//         manualsStore.manuals = [];
-
-//     } catch (error) {
-//         // Handle the error here if needed
-//         console.error(error);
-//     }
-// };
 
 // HELPERS-------------------------
 // Edit Article Modal

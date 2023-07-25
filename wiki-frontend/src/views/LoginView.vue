@@ -6,7 +6,7 @@
             <h1 class="mb-6 text-3xl font-bold">Connexion</h1>
             <form @submit.prevent="login">
                 <div class="mb-4">
-                    <TextInput label="Email" inputType="email" placeholder="elgountariayoub22@gmai.com"
+                    <TextInput class="text-sm" label="Email" inputType="email" placeholder="elgountariayoub22@gmai.com"
                         v-model:input="email" :error="errors.email ? errors.email[0] : ''" />
                 </div>
                 <div class="mb-4">
@@ -83,51 +83,6 @@ async function login() {
             })
 
             router.push({ name: 'profileSection' })
-
-            return;
-            // get spaces
-            try {
-                const spacesRes = await axios.get('/api/spaces');
-                console.log('the user spaces geted with success!\n');
-
-                spacesStore.setSpaces(spacesRes);
-                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
-            } catch (err) {
-                console.log('ERROR IN getIGN/SAVING SPACES\n\n', err);
-            }
-
-            // GET THE LOGGED SPACES
-            await axios.get('/api/spaces').then(response => {
-                console.log('the user spaces geted with success!\n');
-                spacesStore.setSpaces(response);
-                console.log('the user spaces saved with success!\n\n', spacesStore.spaces);
-            }).catch(error => {
-                console.log('ERROR IN getIGN/SAVING SPACES\n\n', error);
-            });
-
-
-            // GET THE LOGGED USER MANUALS
-            await axios.get('/api/manuals').then(response => {
-                console.log('the user manuals geted with success:\n',);
-                manualsStore.setManuals(response)
-                console.log('the user manuals saved with success!\n\n', response);
-            }).catch(error => {
-                console.log('ERROR IN getIGN MANUALS\n\n', error);
-            })
-
-            // GET THE USERS DATA IF THE LOGGED IN USER IS AN ADMIN
-            if (userStore.isAdmin) {
-                await axios.get('/api/users').then(response => {
-                    console.log('the users data geted with success:\n');
-                    usersStore.setUsers(response.data.users)
-                    console.log('the users data saved with success:\n', usersStore);
-                }).catch(error => {
-                    console.log('ERROR IN getIGN USERS\n\n', error);
-                })
-            }
-
-
-
         }
         // if not approved
         else {
@@ -139,20 +94,11 @@ async function login() {
             });
         }
     }).catch(error => {
-        console.log('error in login', error);
         errors.value = error.response.data.errors;
-        if (response.data.guest === false) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Quelque chose s\'est mal passé!',
-            })
-        } else {
-
+        if (errors.value.email[0] == 'These credentials do not match our records.') {
+            errors.value.email[0] = 'Ces identifiants ne correspondent pas à nos dossiers.'
         }
-
-    }
-    );
+    });
 
 }
 </script>
