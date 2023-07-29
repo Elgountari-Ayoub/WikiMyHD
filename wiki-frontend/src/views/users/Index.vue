@@ -827,8 +827,7 @@ const getUserManualsTitles = (user) => {
 // Toggle the user status
 const isOn = ref([]);
 
-const toggleSwitch = (index, user_id, oldStatus, newStatus) => {
-
+const toggleSwitch = (index, user_id, oldStatus) => {
     Swal.fire({
         title: "Êtes-vous sûr(e) ?",
         // text: "Une fois supprimé, cet élément ne pourra pas être récupéré !",
@@ -838,9 +837,6 @@ const toggleSwitch = (index, user_id, oldStatus, newStatus) => {
         denyButtonText: `Annuler`,
     }).then(async (result) => {
         if (result.isConfirmed) {
-            if (oldStatus === newStatus) {
-                return;
-            }
             if (isOn.value[index]) {
                 archive(user_id, -1);
             } else if (oldStatus === -1) {

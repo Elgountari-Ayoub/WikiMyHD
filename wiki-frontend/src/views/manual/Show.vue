@@ -66,8 +66,16 @@
                     class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl-custom-grid-cols-4 xl:grid-cols-4 gap-4 mb-4 ">
 
                     <div v-for="article in filteredArticles()"
-                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-16 ">
+                        class="flex flex-col shadow-md justify-between gap-2 rounded h-60 bg-gray-50 dark:bg-gray-800 p-4 pt-4 ">
 
+                        <span v-if="exportArticleId === article.id"
+                            class="text-base bg-green-500 text-white rounded px-1 cursor-pointer w-fit animate-bounce ml-auto">
+                            <i class="ri-file-transfer-line"></i>
+                        </span>
+                        <button v-else @click="exportArticle(article.id)"
+                            class="text-base bg-green-500 text-white rounded px-1 cursor-pointer w-fit ml-auto">
+                            <i class="ri-file-transfer-line"></i>
+                        </button>
 
                         <!-- LOGO -->
                         <button @click="toArticle(article.id)"
@@ -266,6 +274,45 @@ const deleteArticle = async (articleId) => {
         }
     })
 }
+
+
+
+// Satart export article section---------------------------------------------
+const exportArticleId = ref(null);
+const exportArticle = async (articleId) => {
+    exportArticleId.value = articleId;
+    await axios.get(`/api/exportArticle/${articleId}`, { responseType: 'arraybuffer' })
+        .then(response => {
+            let fileName = response.headers['content-disposition'].split('=')[1].replace(/"/g, '')
+
+            const file = new Blob([response.data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+
+            // Triggering file download
+            const link = document.createElement('a');
+            link.href = fileURL;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        }).catch(error => {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Échec d\'exporte, actualisez la page et réessayez',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            console.log(error);
+        }
+        )
+
+    exportArticleId.value = null
+
+}
+// End export article section------------------------------------------------
+
 
 // Search
 

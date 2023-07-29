@@ -272,16 +272,12 @@ const deleteArticle = async (articleId) => {
 
 
 // Satart export article section---------------------------------------------
-const exportingArticle = ref(false);
 const exportArticleId = ref(null);
 const exportArticle = async (articleId) => {
-    // exportingArticle.value = true;
     exportArticleId.value = articleId;
     await axios.get(`/api/exportArticle/${articleId}`, { responseType: 'arraybuffer' })
         .then(response => {
-            exportingArticle.value = false;
             let fileName = response.headers['content-disposition'].split('=')[1].replace(/"/g, '')
-            exportingArticle.value = false;
 
             const file = new Blob([response.data], { type: 'application/pdf' });
             const fileURL = URL.createObjectURL(file);
@@ -309,8 +305,6 @@ const exportArticle = async (articleId) => {
     exportArticleId.value = null
 
 }
-
-
 // End export article section------------------------------------------------
 
 
@@ -324,7 +318,6 @@ watch(searchInput, () => {
 
 const filteredArticles = () => {
     let isEmpty = /^\s*$/.test(searchInput.value);
-    console.log(isEmpty);
     if (isEmpty) {
         return articlesStore.articles
     }
