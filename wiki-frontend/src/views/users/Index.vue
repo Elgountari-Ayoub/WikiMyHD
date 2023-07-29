@@ -516,7 +516,7 @@ const deleteUser = async (userId) => {
 }
 
 const getImageUrl = (photo) => {
-    const baseUrl = "http://localhost:8000/storage/";
+    const baseUrl = axios.defaults.baseURL + "/storage/";
     return baseUrl + photo;
 }
 
