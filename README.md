@@ -1,3 +1,7 @@
+[Use Case Diagram](https://drive.google.com/file/d/1klaTauGKRIxHmAfHI4GtriqjfUioeV6n/view?usp=sharing)
+
+[Class Diagram](https://drive.google.com/file/d/1Oae3_h2NsW2ELiKM9F-_pE9i7nX-3zHF/view?usp=sharing)
+
 Section Employé :
 
 Gestion des manuels :
